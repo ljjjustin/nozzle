@@ -1,0 +1,11 @@
+[DEFAULT]
+debug=True
+verbose=True
+sql_connection=mysql://root:nova@127.0.0.1:3306/nozzle
+api_paste_config = api-paste.ini
+api_listen=127.0.0.1
+api_listen_port=5557
+broadcast_listen=127.0.0.1
+broadcast_listen_port=5558
+feedback_listen=127.0.0.1
+feedback_listen_port=5559
