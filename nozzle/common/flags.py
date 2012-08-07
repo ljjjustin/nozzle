@@ -20,6 +20,15 @@
 
 from nozzle.openstack.common import cfg
 
+default_opts = [
+    cfg.StrOpt('auth_strategy',
+               default='noauth',
+               help='authorize strategy'),
+    cfg.StrOpt('api_paste_config',
+               default='api-paste.ini',
+               help='paste configuration file'),
+]
+
 
 api_opts = [
     cfg.StrOpt('api_listen',
@@ -67,6 +76,7 @@ protocol_opts = [
     ]
 
 FLAGS = cfg.CONF
+FLAGS.register_opts(default_opts)
 FLAGS.register_opts(api_opts)
 FLAGS.register_opts(sql_opts)
 FLAGS.register_opts(protocol_opts)

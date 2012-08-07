@@ -1,16 +1,17 @@
 [composite:nozzle]
 use = egg:Paste#urlmap
 /: nozzleversions
-##/v1.0: nozzle_v1_0
+/v1.0: nozzleapi_v1_0
 
-##[pipeline:nozzle_v1_0]
-##pipeline = faultwrap nozzle_v1_0
+[composite:nozzleapi_v1_0]
+use = call:nozzle.api.auth:pipeline_factory
+noauth = faultwrap nozzleapi_app_v1_0
 
-##[filter:faultwrap]
-##paste.filter_factory = nozzle.api:FaultWrapper.factory
-
-##[app:nozzle_v1_0]
-##paste.app_factory = nozzle.api:APIRouterV10.factory
+[filter:faultwrap]
+paste.filter_factory = nozzle.api:FaultWrapper.factory
 
 [app:nozzleversions]
 paste.app_factory = nozzle.api.versions:Versions.factory
+
+[app:nozzleapi_app_v1_0]
+paste.app_factory = nozzle.api:APIRouterV10.factory

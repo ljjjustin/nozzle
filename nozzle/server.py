@@ -18,18 +18,11 @@
 
 import sys
 
-from nozzle.openstack.common import cfg
 from nozzle.openstack.common import wsgi
 
 from nozzle.common import flags
 from nozzle.common import log as logging
 from nozzle.common import utils
-
-default_opts = [
-    cfg.StrOpt('api_paste_config', default='api-paste.ini'),
-]
-
-flags.FLAGS.register_opts(default_opts)
 
 LOG = logging.getLogger(__name__)
 
@@ -50,7 +43,6 @@ def main():
     LOG.debug("*" * 80)
 
     app = utils.load_paste_app("nozzle")
-    import pdb; pdb.set_trace()
-    server = wsgi.Server('nozzle')
+    server = wsgi.Server()
     server.start(app, 5557)
     server.wait()

@@ -16,30 +16,66 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import logging
 import routes
 import webob.dec
 import webob.exc
 
 from nozzle.openstack.common import wsgi
 
+from nozzle.api import loadbalancer
+
 
 class FaultWrapper(wsgi.Middleware):
+
+    @classmethod
+    def factory(cls, global_config, **local_config):
+        def _factory(app):
+            return cls(app, **local_config)
+        return _factory
 
     @webob.dec.wsgify(RequestClass=wsgi.Request)
     def __call__(self, req):
         try:
-            req.get_response(self.application)
+            return req.get_response(self.application)
         except Exception as ex:
             ## handle exception
             return str(ex)
 
 
 class APIRouter(wsgi.Router):
+    """
+    Base class for nozzle API routes.
+    """
+
+    @classmethod
+    def factory(cls, global_config, **local_config):
+        return cls()
 
     def __init__(self):
         mapper = routes.Mapper()
-        self._setup_routes()
+        self._setup_basic_routes(mapper)
+        super(APIRouter, self).__init__(mapper)
 
-    def _setup_routes(self, mapper):
-        ##mapper.connect()
-        pass
+    def _setup_basic_routes(self, mapper):
+        lb_resource = loadbalancer.create_resource()
+
+        mapper.connect('/loadbalancers', controller=lb_resource,
+                        action='index', conditions=dict(method=['GET']))
+        mapper.connect('/loadbalancers/detail', controller=lb_resource,
+                        action='detail', conditions=dict(method=['GET']))
+        mapper.connect('/loadbalancers', controller=lb_resource,
+                        action='create', conditions=dict(method=['POST']))
+        mapper.connect('/loadbalancers/{id}', controller=lb_resource,
+                        action='show', conditions=dict(method=['GET']))
+        mapper.connect('/loadbalancers/{id}', controller=lb_resource,
+                        action='update', conditions=dict(method=['PUT']))
+        mapper.connect('/loadbalancers/{id}', controller=lb_resource,
+                        action='delete', conditions=dict(method=['DELETE']))
+
+
+class APIRouterV10(APIRouter):
+    """
+    API routes mapping for nozzle API v1.0
+    """
+    _version = '1.0'
