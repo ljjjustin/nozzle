@@ -16,20 +16,21 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import os
-import sys
-sys.path.insert(0, os.getcwd())
+from nozzle.client.v1_0 import ListCommand
+from nozzle.client.v1_0 import ShowCommand
 
-from nozzle.common import flags
-from nozzle.common import log as logging
-from nozzle.common import utils
-from nozzle import service
 
-if __name__ == '__main__':
-    utils.default_cfgfile()
-    flags.FLAGS(sys.argv)
-    logging.setup('nozzle')
+class ListLoadBalancer(ListCommand):
 
-    service = service.WSGIService("nozzle")
-    service.start()
-    service.wait()
+    def get_data(self, parsed_args):
+        cols = ('ID', 'Name')
+        data = ('123', 'test')
+        return (cols, (data,))
+
+
+class ShowLoadBalancer(ShowCommand):
+
+    def get_data(self, parsed_args):
+        cols = ('ID', 'Name', 'Detail')
+        data = ('123', 'test', 'details')
+        return (cols, data)

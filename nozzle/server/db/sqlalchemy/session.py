@@ -1,5 +1,5 @@
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
-#
+
 # Copyright 2012 Sina Corporation
 # All Rights Reserved.
 # Author: Justin Ljj <iamljj@gmail.com>
@@ -17,7 +17,7 @@
 #    under the License.
 
 """
-SQLAlchemy models for nozzle data.
+SQLAlchemy models for shunt data.
 """
 import time
 
@@ -27,7 +27,7 @@ from sqlalchemy.exc import DisconnectionError
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import sessionmaker
 
-from nozzle.common import flags
+from shunt import flags
 
 _MAKER = None
 _ENGINE = None

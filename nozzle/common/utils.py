@@ -1,3 +1,5 @@
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
+#
 # Copyright 2012 Sina Corporation
 # All Rights Reserved.
 # Author: Justin Ljj <iamljj@gmail.com>
@@ -13,8 +15,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-#
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
 
 import inspect
 import os
@@ -25,6 +25,11 @@ from paste import deploy
 
 from nozzle.openstack.common import cfg
 from nozzle.openstack.common import timeutils
+
+from nozzle.common import log as logging
+
+
+LOG = logging.getLogger(__name__)
 
 
 def default_cfgfile(filename='nozzle.conf', args=None):
@@ -71,9 +76,88 @@ def load_paste_app(app_name):
     return app
 
 
+def show_configs():
+    LOG.debug("*" * 80)
+    LOG.debug("Configuration options gathered from config file:")
+    LOG.debug("================================================")
+    items = dict([(k, v) for k, v in cfg.CONF.items()
+                  if k not in ('__file__', 'here')])
+    for key, value in sorted(items.items()):
+        LOG.debug("%(key)-30s %(value)s" % {'key': key,
+                                            'value': value})
+    LOG.debug("*" * 80)
+
+
 def str_uuid():
     return str(uuid.uuid4())
 
 
 def utcnow():
     return timeutils.utcnow()
+
+"""
+def delete_if_exists(pathname):
+    try:
+        os.unlink(pathname)
+    except OSError as (errno, strerror):
+        if errno == 2:  # doesn't exist
+            return
+        else:
+            raise
+
+
+def backup_config(filepath, backup_dir):
+    if not os.path.exists(filepath):
+        return
+
+    time_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %f")
+    dst = os.path.join(backup_dir, time_str)
+    try:
+        shutil.move(filepath, dst)
+    except OSError as (errno, strerror):
+        LOG.error('shutil.move(%s, %s) fail: %s' % (filepath, dst, strerror))
+        utils.delete_if_exists(filepath)
+        raise
+"""
+
+
+"""
+def execute(cmd):
+    # TODO(wenjianhn) try?
+    # NOTE(wenjianhn): shlex supports ascii only
+    cmd = cmd.encode('ascii')
+
+    try:
+        LOG.debug('Running cmd (subprocess): %s', cmd)
+        subprocess.check_output(shlex.split(cmd), stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        LOG.warning('[%s] failed: %s' % (cmd, e.output))
+        raise exception.ProcessExecutionError(
+            exit_code=e.returncode,
+            output=e.output,
+            cmd=cmd)
+"""
+
+"""
+def synchronized(name):
+    def wrap(f):
+        @functools.wraps(f)
+        def inner(*args, **kwargs):
+            LOG.debug('Attempting to grab file lock "%(lock)s" for '
+                        'method "%(method)s"...' %
+                      {'lock': name, 'method': f.__name__})
+
+            lock_file_path = os.path.join('/var/run',
+                                          'sws-lb-worker.%s' % name)
+
+            lock = lockfile.FileLock(lock_file_path, threaded=False)
+
+            with lock:
+                LOG.debug('Got file lock "%(lock)s" for '
+                            'method "%(method)s"...' %
+                          {'lock': name, 'method': f.__name__})
+                return f(*args, **kwargs)
+
+        return inner
+    return wrap
+"""

@@ -16,20 +16,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import os
-import sys
-sys.path.insert(0, os.getcwd())
+"""load balancer states."""
 
-from nozzle.common import flags
-from nozzle.common import log as logging
-from nozzle.common import utils
-from nozzle import service
-
-if __name__ == '__main__':
-    utils.default_cfgfile()
-    flags.FLAGS(sys.argv)
-    logging.setup('nozzle')
-
-    service = service.WSGIService("nozzle")
-    service.start()
-    service.wait()
+ACTIVE = 'active'
+CREATING = 'creating'
+DELETING = 'deleting'
+UPDATING = 'updating'
+DELETED = 'deleted'
+ERROR = 'error'

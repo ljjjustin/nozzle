@@ -27,7 +27,25 @@ default_opts = [
     cfg.StrOpt('api_paste_config',
                default='api-paste.ini',
                help='paste configuration file'),
-]
+    cfg.StrOpt('keystone_username',
+               default='demo',
+               help='Username to access keystone'),
+    cfg.StrOpt('keystone_password',
+               default='demo',
+               help='Password to access keystone'),
+    cfg.StrOpt('keystone_tenant_name',
+               default='demo',
+               help='Tenant name to access keystone'),
+    cfg.StrOpt('keystone_auth_url',
+               default='http://localhost:5000/v2.0',
+               help='URL to access keystone'),
+    cfg.StrOpt('server_manager',
+               default='nozzle.server.manager.ServerManager',
+               help='full class name for server manager'),
+    cfg.StrOpt=('worker_manager',
+                default='nozzle.worker.manager.WorkerManager',
+                help='full class name for worker manager')
+    ]
 
 
 api_opts = [
@@ -50,6 +68,7 @@ api_opts = [
                default=5559,
                help='Port for nozzle api to get response from worker.'),
     ]
+
 
 sql_opts = [
     cfg.StrOpt('sql_connection',

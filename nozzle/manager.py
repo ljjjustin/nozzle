@@ -16,20 +16,23 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import os
-import sys
-sys.path.insert(0, os.getcwd())
+class Manager(object):
 
-from nozzle.common import flags
-from nozzle.common import log as logging
-from nozzle.common import utils
-from nozzle import service
+    def __init__(self):
+        super(Manager, self).__init__()
 
-if __name__ == '__main__':
-    utils.default_cfgfile()
-    flags.FLAGS(sys.argv)
-    logging.setup('nozzle')
+    def init_host(self):
+        """Handle initialization if this is a standalone service.
 
-    service = service.WSGIService("nozzle")
-    service.start()
-    service.wait()
+        Child class should override this method
+
+        """
+        pass
+
+    def periodic_tasks(self, context):
+        """Tasks to be run at a periodic interval."""
+        for task in self._periodic_tasks:
+            try:
+                task(self, context)
+            except Exception as e:
+                ##LOG.exception(_("Running periodic task"))

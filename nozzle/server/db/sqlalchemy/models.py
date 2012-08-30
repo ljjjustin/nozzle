@@ -1,5 +1,5 @@
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
-#
+
 # Copyright 2012 Sina Corporation
 # All Rights Reserved.
 # Author: Justin Ljj <iamljj@gmail.com>
@@ -17,24 +17,29 @@
 #    under the License.
 
 """
-SQLAlchemy models for nozzle data.
+SQLAlchemy models for shunt data.
 """
+import datetime
 
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Boolean, DateTime, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship, backref, object_mapper
 
-from nozzle.common import utils
 
 BASE = declarative_base()
+
+
+def utcnow():
+    return datetime.datetime.utcnow()
 
 
 class ShuntBase(object):
     """Base class for Shunt Models."""
     __table_args__ = {'mysql_engine': 'InnoDB'}
-    created_at = Column(DateTime, default=utils.utcnow)
-    updated_at = Column(DateTime, onupdate=utils.utcnow)
+    created_at = Column(DateTime, default=utcnow)
+    updated_at = Column(DateTime, onupdate=utcnow)
     deleted_at = Column(DateTime)
     deleted = Column(Boolean, default=False)
 
@@ -74,24 +79,25 @@ class LoadBalancer(BASE, ShuntBase):
     """Represents a load balancer."""
 
     __tablename__ = 'load_balancers'
-    id = Column(String(36), primary_key=True)
-    user_id = Column(String(255), nullable=False)
-    tenant_id = Column(String(255), nullable=False)
-    free = Column(Boolean, default=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
-    state = Column(String(16), nullable=False)
-    protocol = Column(String(16), nullable=False)
+    user_id = Column(String(255), nullable=False)
+    project_id = Column(String(255), nullable=False)
+    free = Column(Boolean, default=False)
+    uuid = Column(String(36), nullable=False)
+    state = Column(String(255), nullable=False)
+    protocol = Column(String(255), nullable=False)
     dns_prefix = Column(String(255), nullable=False)
-    instance_port = Column(Integer, nullable=False)
     listen_port = Column(Integer, nullable=False)
+    instance_port = Column(Integer, nullable=False)
 
 
 class LoadBalancerConfig(BASE, ShuntBase):
     """Represents the configuration of a load balancer."""
 
     __tablename__ = 'load_balancer_configs'
-    id = Column(String(36), primary_key=True, default=utils.str_uuid)
-    load_balancer_id = Column(String(36), ForeignKey('load_balancers.id'))
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    load_balancer_id = Column(Integer, ForeignKey('load_balancers.id'))
     balancing_method = Column(String(255), nullable=False)
     health_check_timeout_ms = Column(Integer)
     health_check_interval_ms = Column(Integer)
@@ -112,8 +118,8 @@ class LoadBalancerDomain(BASE, ShuntBase):
     """Represents a domain binding to load balancer."""
 
     __tablename__ = 'load_balancer_domains'
-    id = Column(String(36), primary_key=True, default=utils.str_uuid)
-    load_balancer_id = Column(String(36), ForeignKey('load_balancers.id'))
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    load_balancer_id = Column(Integer, ForeignKey('load_balancers.id'))
     name = Column(String(255), nullable=False)
 
     load_balancer = relationship(LoadBalancer,
@@ -126,12 +132,9 @@ class LoadBalancerDomain(BASE, ShuntBase):
 
 
 class LoadBalancerInstanceAssociation(BASE, ShuntBase):
-    """Represents a instance binding to load balancer."""
-
     __tablename__ = 'load_balancer_instance_association'
-    load_balancer_id = Column(String(36), ForeignKey('load_balancers.id'))
+    load_balancer_id = Column(Integer, primary_key=True)
     instance_uuid = Column(String(36), primary_key=True)
-    instance_ip = Column(String(64), nullable=False)
 
     load_balancer = relationship(LoadBalancer,
                            backref=backref('instances'),

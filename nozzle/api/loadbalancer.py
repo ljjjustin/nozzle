@@ -18,31 +18,64 @@
 
 import logging
 
+import zmq
+
 from nozzle.openstack.common import wsgi
 
 from nozzle.api import base
 
+class ZmqClient(object):
+
+    def __init__(self, host='127.0.0.1', port=5557):
+        url = "tcp://%s:%s" % (host, port)
+        context = zmq.Context()
+        self.handler = context.socket(zmq.REQ)
+        self.handler.connect(url)
+
+    def __del__(self):
+        self.handler.close()
+
+    def call(self, msg_body):
+        msg_type = "lb"
+        msg_id = str(uuid.uuid4())
+        self.handler.send_multipart(msg_type, msg_id, json.dumps(msg_body))
+        return self.handler.recv_multipart()
+
+
 class Controller(base.Controller):
 
     def __init__(self):
+        self.client = ZmqClient()
         super(Controller, self).__init__()
 
-    def index(self, request):
-        return dict({"loadbalancers": []})
+    def index(self, req):
+        context = req.environ['nozzle.context']
+        msg_body = {
+            'method': 'get_all_load_balancers',
+            'args': {
+                'tenant_id': context.tenant_id,
+                'user_id': context.user_id,
+            },
+        }
+        client = self.get_client()
+        ret = client.call(msg_body)
+        if ret['code'] != 200:
+            raise exc.HTTPUnauthorized(ret['message'])
+        return dict({"loadbalancers": ret['data']})
 
-    def detail(self, request):
+    def detail(self, req):
         return dict({"loadbalancers": 'detail'})
 
-    def create(self, request, body=None):
+    def create(self, req, body=None):
         return dict({"loadbalancer": { "id": "create" }})
 
-    def show(self, request, id):
+    def show(self, req, id):
         return dict({"loadbalancer": { "id": "show" }})
 
-    def update(self, request, id, body=None):
+    def update(self, req, id, body=None):
         return dict({"loadbalancer": { "id": "update" }})
 
-    def delete(self, request, id):
+    def delete(self, req, id):
         return dict({"loadbalancer": { "id": "delete" }})
 
 
