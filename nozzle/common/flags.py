@@ -42,9 +42,9 @@ default_opts = [
     cfg.StrOpt('server_manager',
                default='nozzle.server.manager.ServerManager',
                help='full class name for server manager'),
-    cfg.StrOpt=('worker_manager',
-                default='nozzle.worker.manager.WorkerManager',
-                help='full class name for worker manager')
+    cfg.StrOpt('worker_manager',
+               default='nozzle.worker.manager.WorkerManager',
+               help='full class name for worker manager')
     ]
 
 
@@ -53,7 +53,7 @@ api_opts = [
                default='127.0.0.1',
                help='IP address for nozzle API to listen.'),
     cfg.IntOpt('api_listen_port',
-               default=5557,
+               default=5556,
                help='Port for nozzle api to listen.'),
     cfg.StrOpt('broadcast_listen',
                default='127.0.0.1',

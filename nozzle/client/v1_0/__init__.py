@@ -113,15 +113,26 @@ class ListCommand(NozzleCommand, Lister):
 
     def get_parser(self, prog_name):
         parser = super(ListCommand, self).get_parser(prog_name)
-        #parser.add_argument(
-        #        'id', metavar='ID or name of %s to delete' % self.resource)
         return parser
 
     def get_data(self, parsed_args):
-        import pdb; pdb.set_trace()
         nozzle_client = self.get_client()
-        obj_lister = getattr(nozzle_client, "list_%s" % self.resource)
-        ##data = obj_lister()
+        obj_lister = getattr(nozzle_client, "list_%ss" % self.resource)
+
+        data = obj_lister()
+        info = []
+        collection = self.resource + 's'
+        if collection in data:
+            info = data[collection]
+        columns =  len(info) > 0 and sorted(info[0].keys()) or []
+        rows = []
+        for i in info:
+            row = []
+            for k, v in i.items():
+                row.append(v)
+            rows.append(tuple(row))
+
+        return (columns, tuple(rows))
 
 
 class ShowCommand(NozzleCommand, ShowOne):

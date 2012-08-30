@@ -22,10 +22,12 @@ from nozzle.client.v1_0 import ShowCommand
 
 class ListLoadBalancer(ListCommand):
 
-    def get_data(self, parsed_args):
-        cols = ('ID', 'Name')
-        data = ('123', 'test')
-        return (cols, (data,))
+    resource = 'loadbalancer'
+
+    #def get_data(self, parsed_args):
+    #    cols = ('ID', 'Name')
+    #    data = ('123', 'test')
+    #    return (cols, (data,))
 
 
 class ShowLoadBalancer(ShowCommand):

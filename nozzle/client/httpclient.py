@@ -42,8 +42,8 @@ class ServiceCatalog(object):
         return token
 
     def url_for(self, attr=None, filter_value=None,
-                service_type='network', endpoint_type='adminURL'):
-        """Fetch the admin URL from the Quantum service for
+                service_type='loadbalance', endpoint_type='adminURL'):
+        """Fetch the admin URL from the load balance service for
         a particular endpoint attribute. If none given, return
         the first. See tests for sample service catalog."""
 

@@ -1,9 +1,9 @@
 [DEFAULT]
 verbose=True
 api_paste_config = api-paste.ini
-auth_strategy = noauth
-api_listen=127.0.0.1
-api_listen_port=5557
+auth_strategy = keystone
+api_listen=0.0.0.0
+api_listen_port=5556
 broadcast_listen=127.0.0.1
 broadcast_listen_port=5558
 feedback_listen=127.0.0.1

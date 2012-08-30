@@ -64,14 +64,12 @@ def load_paste_app(app_name):
 
     config_file = cfg.CONF.find_file(cfg.CONF.api_paste_config)
     config_path = os.path.abspath(config_file)
-    ##LOG.info("Config paste file: %s", config_path)
 
     try:
         app = deploy.loadapp("config:%s" % config_path, name=app_name)
     except (LookupError, ImportError):
         msg = ("Unable to load %(app_name)s from "
                "configuration file %(config_path)s.") % locals()
-        ##LOG.exception(msg)
         raise RuntimeError(msg)
     return app
 

@@ -16,13 +16,15 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import webob.exc
 import logging
-
 import zmq
 
+from nozzle.openstack.common import jsonutils
 from nozzle.openstack.common import wsgi
 
 from nozzle.api import base
+from nozzle.common import utils
 
 class ZmqClient(object):
 
@@ -37,9 +39,11 @@ class ZmqClient(object):
 
     def call(self, msg_body):
         msg_type = "lb"
-        msg_id = str(uuid.uuid4())
-        self.handler.send_multipart(msg_type, msg_id, json.dumps(msg_body))
-        return self.handler.recv_multipart()
+        msg_id = utils.str_uuid()
+        self.handler.send_multipart([msg_type, msg_id,
+                                     jsonutils.dumps(msg_body)])
+        msg_type, msg_id, msg_body = self.handler.recv_multipart()
+        return jsonutils.loads(msg_body)
 
 
 class Controller(base.Controller):
@@ -50,26 +54,51 @@ class Controller(base.Controller):
 
     def index(self, req):
         context = req.environ['nozzle.context']
-        msg_body = {
+        zmq_args = {
             'method': 'get_all_load_balancers',
             'args': {
-                'tenant_id': context.tenant_id,
                 'user_id': context.user_id,
+                'tenant_id': context.tenant_id,
             },
         }
-        client = self.get_client()
-        ret = client.call(msg_body)
-        if ret['code'] != 200:
-            raise exc.HTTPUnauthorized(ret['message'])
-        return dict({"loadbalancers": ret['data']})
+        result = self.client.call(zmq_args)
+        if result['code'] != 200:
+            return webob.exc.HTTPError(result['message'])
+        else:
+            return dict({"loadbalancers": result['data']})
 
     def detail(self, req):
-        return dict({"loadbalancers": 'detail'})
+        return self.index(req)
 
     def create(self, req, body=None):
-        return dict({"loadbalancer": { "id": "create" }})
+        import pdb; pdb.set_trace()
+        context = req.environ['nozzle.context']
+        zmq_args = {
+            'method': 'create_load_balancer',
+            'args': {
+                'user_id': context.user_id,
+                'tenant_id': context.tenant_id,
+            },
+        }
+        loadbalancer = body['loadbalancer']
+        zmq_args['args'].update(loadbalancer)
+        result = self.client.call(zmq_args)
+        if result['code'] != 200:
+            return webob.exc.HTTPError(result['message'])
+        else:
+            return dict({"loadbalancer": result['data']})
 
     def show(self, req, id):
+        context = req.environ['nozzle.context']
+        zmq_args = {
+            'method': 'get_all_load_balancers',
+            'args': {
+                'user_id': context.user_id,
+                'tenant_id': context.tenant_id,
+                'uuid': id,
+            },
+        }
+        result = self.client.call(zmq_args)
         return dict({"loadbalancer": { "id": "show" }})
 
     def update(self, req, id, body=None):

@@ -6,6 +6,20 @@ use = egg:Paste#urlmap
 [composite:nozzleapi_v1_0]
 use = call:nozzle.api.auth:pipeline_factory
 noauth = faultwrap nozzleapi_app_v1_0
+keystone = faultwrap authtoken keystonecontext nozzleapi_app_v1_0
+
+[filter:authtoken]
+paste.filter_factory = keystone.middleware.auth_token:filter_factory
+auth_host = 127.0.0.1
+auth_port = 35357
+auth_protocol = http
+admin_tenant_name = service
+admin_user = nozzle
+admin_password = nova
+
+[filter:keystonecontext]
+paste.filter_factory = nozzle.api.auth:KeystoneContext.factory
+
 
 [filter:faultwrap]
 paste.filter_factory = nozzle.api:FaultWrapper.factory

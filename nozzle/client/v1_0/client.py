@@ -36,8 +36,24 @@ class Client(object):
                                endpoint from the service catalog.
     """
 
-    load_balancers_path = "/loadbalancers"
+    loadbalancers_path = "/loadbalancers"
+    loadbalancer_path = "/loadbalancer/%s"
 
+    def create_loadbalancer(self, body=None):
+        """Create a new loadbalancer for a tenant."""
+        return self.post(self.loadbalancers_path, body=body)
+
+    def update_load_balancer(self, loadbalancer, body=None):
+        """Update a loadbalancer."""
+        return self.put(self.loadbalancer_path % (loadbalancer), body=body)
+
+    def delete_load_balancer(self, loadbalancer):
+        """Delete a loadbalancer."""
+        return self.delete(self.loadbalancer_path % (loadbalancer))
+
+    def list_loadbalancers(self, **_params):
+        """Fetches a list of loadbalancers for a tenant."""
+        return self.get(self.loadbalancers_path, params=_params)
 
     def __init__(self, **kwargs):
         """Initialize a new client for the Nozzle v1.0 API."""
@@ -45,6 +61,7 @@ class Client(object):
         self.httpclient = HTTPClient(**kwargs)
         self.version = '1.0'
         self.action_prefix = "/v%s" % self.version
+        self.format = 'json'
         self.retries = 0
         self.retry_interval = 1
 
@@ -60,12 +77,15 @@ class Client(object):
             des_error_body = {'message': error_message}
         # Raise the appropriate exception
         ##exception_handler_v20(status_code, des_error_body)
+        raise Exception(des_error_body)
 
     def do_request(self, method, action, body=None, headers=None, params=None):
         # Add format and tenant_id
-        action += ".%s" % self.format
+        ##action += ".%s" % self.format
+        import pdb; pdb.set_trace()
         action = self.action_prefix + action
-        if type(params) is dict:
+        ##if type(params) is dict:
+        if params:
             action += '?' + urllib.urlencode(params, doseq=1)
         if body:
             body = self.serialize(body)
@@ -109,8 +129,7 @@ class Client(object):
         """
         if status_code == 204:
             return data
-        return Serializer(self._serialization_metadata).deserialize(
-            data, self.content_type())
+        return Serializer().deserialize(data, self.content_type())
 
     def content_type(self, format=None):
         """

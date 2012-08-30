@@ -32,6 +32,12 @@ LOG = logging.getLogger(__name__)
 class KeystoneContext(wsgi.Middleware):
     """Make a request context from keystone headers."""
 
+    @classmethod
+    def factory(cls, global_config, **local_config):
+        def _factory(app):
+            return cls(app, **local_config)
+        return _factory
+
     @webob.dec.wsgify
     def __call__(self, req):
         # Determine the user ID
