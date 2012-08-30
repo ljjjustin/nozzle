@@ -35,4 +35,5 @@ class Manager(object):
             try:
                 task(self, context)
             except Exception as e:
+                pass
                 ##LOG.exception(_("Running periodic task"))

@@ -49,19 +49,8 @@ class Controller(base.Controller):
         super(Controller, self).__init__()
 
     def index(self, req):
-        context = req.environ['nozzle.context']
-        msg_body = {
-            'method': 'get_all_load_balancers',
-            'args': {
-                'tenant_id': context.tenant_id,
-                'user_id': context.user_id,
-            },
-        }
-        client = self.get_client()
-        ret = client.call(msg_body)
-        if ret['code'] != 200:
-            raise exc.HTTPUnauthorized(ret['message'])
-        return dict({"loadbalancers": ret['data']})
+        print "<<< %r" % req
+        return dict({"loadbalancers": 'index'})
 
     def detail(self, req):
         return dict({"loadbalancers": 'detail'})

@@ -18,7 +18,7 @@ setup(
     license = 'Apache',
     author = 'Sina Corp.',
     author_email = 'iamljj@gmail.com',
-    packages = find_packages(exclude=['tests', 'tests.*']),
+    packages = find_packages(exclude=['bin', 'tests', 'tools']),
     classifiers = [
         'Development Status :: 1 - Beta',
         'Environment :: Console',
@@ -28,5 +28,9 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
     ],
-    install_requires = requirements
+    install_requires = requirements,
+    scripts = [
+        'bin/nozzle-api',
+        'bin/nozzle-client',
+    ],
 )

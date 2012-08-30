@@ -54,10 +54,8 @@ class WSGIService(object):
         """Initialize, but do not start the WSGI server."""
         self.name = name
         self.app =  utils.load_paste_app(name)
-        self.manager = self._get_manager()
-        self.server = wsgi.Server(name, self.app,
-                                  flags.FLAGS.api_listen_port,
-                                  flags.FLAGS.api_listen)
+        ##self.manager = self._get_manager()
+        self.server = wsgi.Server()
 
     def _get_manager(self):
         """Initialize a manager class for this service."""
@@ -67,10 +65,12 @@ class WSGIService(object):
 
     def start(self):
         """Start serving this service using loaded configuration."""
-        if self.manager:
-            self.manager.init_host()
+        ##if self.manager:
+        ##    self.manager.init_host()
         utils.show_configs()
-        self.server.start()
+        self.server.start(self.app,
+                          flags.FLAGS.api_listen_port,
+                          flags.FLAGS.api_listen)
 
     def stop(self):
         """Stop serving this API."""

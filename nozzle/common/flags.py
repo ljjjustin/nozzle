@@ -42,9 +42,9 @@ default_opts = [
     cfg.StrOpt('server_manager',
                default='nozzle.server.manager.ServerManager',
                help='full class name for server manager'),
-    cfg.StrOpt=('worker_manager',
-                default='nozzle.worker.manager.WorkerManager',
-                help='full class name for worker manager')
+    cfg.StrOpt('worker_manager',
+               default='nozzle.worker.manager.WorkerManager',
+               help='full class name for worker manager')
     ]
 
 
