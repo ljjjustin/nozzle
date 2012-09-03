@@ -115,7 +115,6 @@ class HTTPClient(httplib2.Http):
         return resp, body
 
     def do_request(self, url, method, **kwargs):
-        import pdb; pdb.set_trace()
         if not self.endpoint_url:
             self.authenticate()
 

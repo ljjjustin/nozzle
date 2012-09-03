@@ -12,6 +12,7 @@ if __name__ == '__main__':
                                   password="nova",
                                   tenant_name="demo",
                                   auth_url="http://localhost:5000/v2.0")
+    print nozzle_client.list_loadbalancers()
     request_body = {
         'loadbalancer': {
             'name': 'http1',
@@ -29,5 +30,7 @@ if __name__ == '__main__':
             }
         }
     }
-    nozzle_client.create_loadbalancer(body=request_body)
-    print nozzle_client.list_loadbalancer()
+    result = nozzle_client.create_loadbalancer(body=request_body)
+    uuid = result['loadbalancer']['uuid']
+    nozzle_client.show_loadbalancer(uuid)
+    nozzle_client.delete_loadbalancer(uuid)

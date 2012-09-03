@@ -71,7 +71,6 @@ class Controller(base.Controller):
         return self.index(req)
 
     def create(self, req, body=None):
-        import pdb; pdb.set_trace()
         context = req.environ['nozzle.context']
         zmq_args = {
             'method': 'create_load_balancer',
@@ -91,7 +90,7 @@ class Controller(base.Controller):
     def show(self, req, id):
         context = req.environ['nozzle.context']
         zmq_args = {
-            'method': 'get_all_load_balancers',
+            'method': 'get_load_balancer',
             'args': {
                 'user_id': context.user_id,
                 'tenant_id': context.tenant_id,
@@ -99,13 +98,43 @@ class Controller(base.Controller):
             },
         }
         result = self.client.call(zmq_args)
-        return dict({"loadbalancer": { "id": "show" }})
+        if result['code'] != 200:
+            return webob.exc.HTTPError(result['message'])
+        else:
+            return dict({"loadbalancer": result['data']})
 
     def update(self, req, id, body=None):
-        return dict({"loadbalancer": { "id": "update" }})
+        context = req.environ['nozzle.context']
+        zmq_args = {
+            'method': 'update_load_balancer',
+            'args': {
+                'user_id': context.user_id,
+                'tenant_id': context.tenant_id,
+                'uuid': id,
+            },
+        }
+        result = self.client.call(zmq_args)
+        if result['code'] != 200:
+            return webob.exc.HTTPError(result['message'])
+        else:
+            return dict({"message": "successful"})
 
     def delete(self, req, id):
-        return dict({"loadbalancer": { "id": "delete" }})
+        import pdb; pdb.set_trace()
+        context = req.environ['nozzle.context']
+        zmq_args = {
+            'method': 'delete_load_balancer',
+            'args': {
+                'user_id': context.user_id,
+                'tenant_id': context.tenant_id,
+                'uuid': id,
+            },
+        }
+        result = self.client.call(zmq_args)
+        if result['code'] != 200:
+            return webob.exc.HTTPError(result['message'])
+        else:
+            return dict({"message": "successful"})
 
 
 def create_resource():

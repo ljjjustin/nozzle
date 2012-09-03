@@ -37,29 +37,28 @@ class Client(object):
     """
 
     loadbalancers_path = "/loadbalancers"
-    loadbalancer_path = "/loadbalancer/%s"
+    loadbalancer_path = "/loadbalancers/%s"
 
-<<<<<<< HEAD
     def create_loadbalancer(self, body=None):
         """Create a new loadbalancer for a tenant."""
         return self.post(self.loadbalancers_path, body=body)
 
-    def update_load_balancer(self, loadbalancer, body=None):
+    def update_loadbalancer(self, loadbalancer, body=None):
         """Update a loadbalancer."""
         return self.put(self.loadbalancer_path % (loadbalancer), body=body)
 
-    def delete_load_balancer(self, loadbalancer):
+    def delete_loadbalancer(self, loadbalancer):
         """Delete a loadbalancer."""
         return self.delete(self.loadbalancer_path % (loadbalancer))
 
     def list_loadbalancers(self, **_params):
         """Fetches a list of loadbalancers for a tenant."""
         return self.get(self.loadbalancers_path, params=_params)
-=======
-    def list_loadbalancers(self, **_params):
-        """Fetches a list of loadbalancers for a tenant."""
-        return self.get(self.load_balancers_path, params=_params)
->>>>>>> bc587885720ce4c5efea5858258cb97e6d3e407c
+
+    def show_loadbalancer(self, loadbalancer):
+        """Fetches information of a certain router."""
+        import pdb; pdb.set_trace()
+        return self.get(self.loadbalancer_path % (loadbalancer))
 
     def __init__(self, **kwargs):
         """Initialize a new client for the Nozzle v1.0 API."""
@@ -87,10 +86,7 @@ class Client(object):
 
     def do_request(self, method, action, body=None, headers=None, params=None):
         # Add format and tenant_id
-        ##action += ".%s" % self.format
-        import pdb; pdb.set_trace()
         action = self.action_prefix + action
-        ##if type(params) is dict:
         if params:
             action += '?' + urllib.urlencode(params, doseq=1)
         if body:
