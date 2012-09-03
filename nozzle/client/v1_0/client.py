@@ -39,7 +39,6 @@ class Client(object):
     loadbalancers_path = "/loadbalancers"
     loadbalancer_path = "/loadbalancer/%s"
 
-<<<<<<< HEAD
     def create_loadbalancer(self, body=None):
         """Create a new loadbalancer for a tenant."""
         return self.post(self.loadbalancers_path, body=body)
@@ -55,11 +54,6 @@ class Client(object):
     def list_loadbalancers(self, **_params):
         """Fetches a list of loadbalancers for a tenant."""
         return self.get(self.loadbalancers_path, params=_params)
-=======
-    def list_loadbalancers(self, **_params):
-        """Fetches a list of loadbalancers for a tenant."""
-        return self.get(self.load_balancers_path, params=_params)
->>>>>>> bc587885720ce4c5efea5858258cb97e6d3e407c
 
     def __init__(self, **kwargs):
         """Initialize a new client for the Nozzle v1.0 API."""
