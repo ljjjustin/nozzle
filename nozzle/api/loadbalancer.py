@@ -113,6 +113,8 @@ class Controller(base.Controller):
                 'uuid': id,
             },
         }
+        loadbalancer = body['loadbalancer']
+        zmq_args['args'].update(loadbalancer)
         result = self.client.call(zmq_args)
         if result['code'] != 200:
             return webob.exc.HTTPError(result['message'])
@@ -120,7 +122,6 @@ class Controller(base.Controller):
             return dict({"message": "successful"})
 
     def delete(self, req, id):
-        import pdb; pdb.set_trace()
         context = req.environ['nozzle.context']
         zmq_args = {
             'method': 'delete_load_balancer',

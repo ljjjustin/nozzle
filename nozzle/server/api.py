@@ -34,12 +34,42 @@ def create_load_balancer(context, **kwargs):
 
 
 def delete_load_balancer(context, **kwargs):
+    expect_keys = [
+        'tenant_id', 'uuid',
+    ]
+    utils.check_input_parameters(expect_keys, **kwargs)
+
+    uuid = kwargs['uuid']
     try:
-        module = protocol.get_protocol_module(kwargs['protocol'])
-        module_func = getattr(module, 'delete_load_balancer')
+        load_balancer_ref = db.load_balancer_get_by_uuid(context, uuid)
+        db.load_balancer_update_state(context, uuid, state.DELETING)
     except Exception, exp:
         raise exception.DeleteLoadBalancerFailed(msg=str(exp))
-    return module_func(context, **kwargs)
+
+    return None
+
+
+def update_load_balancer(context, **kwargs):
+    expect_keys = [
+        'tenant_id', 'uuid',
+    ]
+    utils.check_input_parameters(expect_keys, **kwargs)
+
+    uuid = kwargs['uuid']
+    try:
+        load_balancer_ref = db.load_balancer_get_by_uuid(context, uuid)
+    except Exception, exp:
+        raise exception.UpdateLoadBalancerFailed(msg=str(exp))
+
+    kwargs.update({'protocol': load_balancer_ref.protocol})
+
+    for key, value in kwargs.iteritems():
+        if key == 'config':
+            update_load_balancer_config(context, **kwargs)
+        elif key == 'domains':
+            update_load_balancer_http_servers(context, **kwargs)
+        elif key == 'instances':
+            update_load_balancer_instances(context, **kwargs)
 
 
 def update_load_balancer_config(context, **kwargs):

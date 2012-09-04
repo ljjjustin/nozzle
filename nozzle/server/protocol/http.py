@@ -143,22 +143,6 @@ def create_load_balancer(context, **kwargs):
     return {'data': {'uuid': load_balancer_ref.uuid}}
 
 
-def delete_load_balancer(context, **kwargs):
-    expect_keys = [
-        'user_id', 'tenant_id', 'uuid',
-    ]
-    utils.check_input_parameters(expect_keys, **kwargs)
-
-    uuid = kwargs['uuid']
-    try:
-        load_balancer_ref = db.load_balancer_get_by_uuid(context, uuid)
-        db.load_balancer_update_state(context, uuid, state.DELETING)
-    except Exception, exp:
-        raise exception.DeleteLoadBalancerFailed(msg=str(exp))
-
-    return None
-
-
 def update_load_balancer_config(context, **kwargs):
     expect_keys = [
         'user_id', 'tenant_id', 'protocol',
@@ -266,7 +250,7 @@ def update_load_balancer_http_servers(context, **kwargs):
     try:
         load_balancer_ref = db.load_balancer_get_by_uuid(context, uuid)
     except Exception, exp:
-        raise exception.DeleteLoadBalancerFailed(msg=str(exp))
+        raise exception.UpdateLoadBalancerFailed(msg=str(exp))
 
     new_http_servers = kwargs['http_server_names']
     old_http_servers = map(lambda x: x['name'], load_balancer_ref.domains)

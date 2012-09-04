@@ -74,7 +74,7 @@ def client_routine(*args, **kwargs):
                     response.update(result)
                 # send request to worker
                 try:
-                    msg = api.get_worker_msg(ctxt, method, **args)
+                    msg = api.get_msg_to_worker(ctxt, method, **args)
                     if msg is not None:
                         request_msg = json.dumps(msg)
                         LOG.debug(">>>>>>> worker: %s" % request_msg)
@@ -177,8 +177,8 @@ class ServerManager(manager.Manager):
 
         # Socket to receive messages on
         handler = zmq_context.socket(zmq.REP)
-        handler.bind("tcp://%s:%s" % (FLAGS.api_listen,
-                                      FLAGS.api_listen_port))
+        handler.bind("tcp://%s:%s" % (FLAGS.server_listen,
+                                      FLAGS.server_listen_port))
 
         # Socket to send messages on
         broadcast = zmq_context.socket(zmq.PUB)
