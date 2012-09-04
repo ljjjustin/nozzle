@@ -20,7 +20,7 @@
 
 import copy
 
-from nozzle.common import utils
+from nozzle.openstack.common import timeutils
 from nozzle.db.sqlalchemy.session import get_session
 
 
@@ -48,7 +48,7 @@ class Context(object):
             self.roles.append('admin')
         self.read_deleted = read_deleted
         if not timestamp:
-            timestamp = utils.utcnow()
+            timestamp = timeutils.utcnow()
         self.timestamp = timestamp
         self._session = None
 

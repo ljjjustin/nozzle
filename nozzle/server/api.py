@@ -127,6 +127,7 @@ def get_all_load_balancers(context, **kwargs):
 
     result = []
     try:
+        import pdb; pdb.set_trace()
         filters = {'project_id': kwargs['tenant_id']}
         context = context.elevated(read_deleted='no')
         all_load_balancers = db.load_balancer_get_all(context, filters=filters)
@@ -216,7 +217,7 @@ def update_load_balancer_state(context, **kwargs):
             db.load_balancer_update_state(context, uuid, state.ERROR)
 
 
-def format_msg_to_worker(load_balancer_ref):
+def format_msg_to_client(load_balancer_ref):
     result = dict()
     expect_keys = [
         'uuid', 'name', 'protocol', 'instance_port',
@@ -259,7 +260,7 @@ def format_msg_to_worker(load_balancer_ref):
     return result
 
 
-def format_msg_to_client(load_balancer_ref):
+def format_msg_to_worker(load_balancer_ref):
     result = dict()
     result['user_id'] = load_balancer_ref.user_id
     result['tenant_id'] = load_balancer_ref.project_id
