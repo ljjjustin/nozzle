@@ -26,7 +26,7 @@ from cliff.app import App
 from cliff.commandmanager import CommandManager
 
 from nozzle.openstack.common import importutils
-from nozzle.common import exceptions
+from nozzle.common import exception
 from nozzle.client import manager
 
 VERSION = '1.0'
@@ -184,39 +184,39 @@ class NozzleShell(App):
             if self.options.os_token or self.options.os_url:
                 # Token flow auth takes priority
                 if not self.options.os_token:
-                    raise exceptions.CommandError(
+                    raise exception.CommandError(
                         "You must provide a token via"
                         " either --os_token or env[OS_TOKEN]")
 
                 if not self.options.os_url:
-                    raise exceptions.CommandError(
+                    raise exception.CommandError(
                         "You must provide a service URL via"
                         " either --os_url or env[OS_URL]")
 
             else:
                 # Validate password flow auth
                 if not self.options.os_username:
-                    raise exceptions.CommandError(
+                    raise exception.CommandError(
                         "You must provide a username via"
                         " either --os_username or env[OS_USERNAME]")
 
                 if not self.options.os_password:
-                    raise exceptions.CommandError(
+                    raise exception.CommandError(
                         "You must provide a password via"
                         " either --os_password or env[OS_PASSWORD]")
 
                 if not (self.options.os_tenant_name):
-                    raise exceptions.CommandError(
+                    raise exception.CommandError(
                         "You must provide a tenant_name via"
                         " either --os_tenant_name or via env[OS_TENANT_NAME]")
 
                 if not self.options.os_auth_url:
-                    raise exceptions.CommandError(
+                    raise exception.CommandError(
                         "You must provide an auth url via"
                         " either --os_auth_url or via env[OS_AUTH_URL]")
         else:   # not keystone
             if not self.options.os_url:
-                raise exceptions.CommandError(
+                raise exception.CommandError(
                     "You must provide a service URL via"
                     " either --os_url or env[OS_URL]")
 

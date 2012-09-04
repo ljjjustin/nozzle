@@ -1,16 +1,29 @@
+import logging
 import os
-import sys
-import ConfigParser
-import traceback
 import time
 
-import exception
-import utils
-import validate
+from nozzle.openstack.common import cfg
+from nozzle.common import flags
+from nozzle.common import exception
+from nozzle.common import validate
+from nozzle.common import utils
 
-import logging
+haproxy_opts = [
+    cfg.ListOpt('listen',
+                default=[],
+                help="List of ip which haproxy will listen to"),
+    cfg.StrOpt('listen_port_range',
+               default='10000,61000',
+               help="Port range haproxy need to listen."),
+    cfg.StrOpt('configuration_backup_dir',
+               default='/tmp/',
+               help="Directory for backup haproxy configuration"),
+]
 
-LOG = logging.getLogger('sws-lb-worker.' + __name__)
+FLAGS = flags.FLAGS
+FLAGS.register_opts(haproxy_opts, 'haproxy')
+
+LOG = logging.getLogger(__name__)
 
 
 class HaproxyConfigurer(object):
@@ -26,26 +39,15 @@ class HaproxyConfigurer(object):
     cfg_backup_dir = None
 
     def __init__(self, **kwargs):
-        conf_path = utils.find_config('sws-lb-worker.conf')
-
-        config = ConfigParser.ConfigParser()
-        config.read(conf_path)
-
-        ip_list = config.get('haproxy',
-                             'listen', 1).replace(' ', '').split(',')
-        ##print ip_list
-        for ip in ip_list:
-            ##print ip
+        for ip in FLAGS.haproxy.listen:
             if validate.is_ipv4(ip):
                 self._bind_ip.append(ip)
         ##print self._bind_ip
-        listen_port_range = config.get('haproxy',
-                            'listen_port_range', 1).replace(' ', '').split(',')
+        listen_port_range = FLAGS.haproxy.listen_port_range.split(',')
         self.listen_port_min = int(listen_port_range[0])
         self.listen_port_max = int(listen_port_range[1])
 
-        self.cfg_backup_dir = config.get('haproxy',
-                                    'configuration_backup_dir', 1)
+        self.cfg_backup_dir = FLAGS.haproxy.configuration_backup_dir
 
         if not os.path.exists(self.cfg_backup_dir):
             strerror = ("configuration_backup_dir(dir=%s) does not exist" %

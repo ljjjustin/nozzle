@@ -1,15 +1,29 @@
-import os
-import sys
-import ConfigParser
-import traceback
-
-import exception
-import utils
-import validate
-
 import logging
+import validate
+import os
 
-LOG = logging.getLogger('sws-lb-worker.' + __name__)
+from nozzle.openstack.common import cfg
+from nozzle.common import flags
+from nozzle.common import exception
+from nozzle.common import validate
+from nozzle.common import utils
+
+nginx_opts = [
+    cfg.ListOpt('listen',
+                default=['127.0.0.1:80'],
+                help="List of ip which nginx will listen to"),
+    cfg.StrOpt('access_log_dir',
+               default='/var/log/nginx/',
+               help="Where to store nginx access log."),
+    cfg.StrOpt('backup_dir',
+               default='/tmp/',
+               help="Where to backup nginx configuration."),
+]
+
+FLAGS = flags.FLAGS
+FLAGS.register_opts(nginx_opts, 'nginx')
+
+LOG = logging.getLogger(__name__)
 
 _NGX_UPSTREAM_FMT = '''
 upstream %(upstream_name)s {
@@ -52,21 +66,15 @@ class NginxProxyConfigurer(object):
     access_log_dir = None
 
     def __init__(self, **kwargs):
-        conf_path = utils.find_config('sws-lb-worker.conf')
-
-        config = ConfigParser.ConfigParser()
-        config.read(conf_path)
-
-        ip_port_list = config.get('nginx', 'listen', 1).split(',')
+        ip_port_list = FLAGS.nginx.listen
         validate.is_ipv4_port_list(ip_port_list)
 
         _listen_field = map(lambda x: ("\tlisten %s;" % str(x)),
                             ip_port_list)
         self.listen_field = '\n'.join(_listen_field)
 
-        self.backup_dir = config.get('general', 'backupdir', 1)
-
-        self.access_log_dir = config.get('nginx', 'access_log_dir', 1)
+        self.backup_dir = FLAGS.nginx.backup_dir
+        self.access_log_dir = FLAGS.nginx.access_log_dir
         if not os.path.exists(self.access_log_dir):
             raise exception.DirNotFound(dir=self.access_log_dir)
 
@@ -127,7 +135,6 @@ class NginxProxyConfigurer(object):
             try:
                 self._delete_http_ngx_cfg(msg)
             except:
-                # TODO(wenjianhn): reload ?)
                 pass
             raise exception.NginxCreateProxyError(explanation=str(e))
 

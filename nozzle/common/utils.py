@@ -16,7 +16,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import functools
 import inspect
+import lockfile
 import os
 import sys
 import uuid
@@ -136,7 +138,6 @@ def execute(cmd):
             cmd=cmd)
 """
 
-"""
 def synchronized(name):
     def wrap(f):
         @functools.wraps(f)
@@ -146,7 +147,7 @@ def synchronized(name):
                       {'lock': name, 'method': f.__name__})
 
             lock_file_path = os.path.join('/var/run',
-                                          'sws-lb-worker.%s' % name)
+                                          'nozzle-worker.%s' % name)
 
             lock = lockfile.FileLock(lock_file_path, threaded=False)
 
@@ -158,4 +159,3 @@ def synchronized(name):
 
         return inner
     return wrap
-"""

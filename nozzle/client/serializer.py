@@ -19,7 +19,7 @@
 from xml.dom import minidom
 
 from nozzle.openstack.common import jsonutils
-from nozzle.common import exceptions
+from nozzle.common import exception
 
 
 class Serializer(object):
@@ -44,7 +44,7 @@ class Serializer(object):
         try:
             return handlers[content_type]
         except Exception:
-            raise exceptions.InvalidContentType(content_type=content_type)
+            raise exception.InvalidContentType(content_type=content_type)
 
     def serialize(self, data, content_type):
         """Serialize a dictionary into the specified content type."""
@@ -59,7 +59,7 @@ class Serializer(object):
         try:
             return self.get_deserialize_handler(content_type)(datastring)
         except Exception:
-            raise exceptions.MalformedResponseBody(
+            raise exception.MalformedResponseBody(
                 reason="Unable to deserialize response body")
 
     def get_deserialize_handler(self, content_type):
@@ -71,7 +71,7 @@ class Serializer(object):
         try:
             return handlers[content_type]
         except Exception:
-            raise exceptions.InvalidContentType(content_type=content_type)
+            raise exception.InvalidContentType(content_type=content_type)
 
     def _from_json(self, datastring):
         return jsonutils.loads(datastring)

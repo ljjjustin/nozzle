@@ -19,7 +19,7 @@
 import httplib2
 
 from nozzle.openstack.common import jsonutils
-from nozzle.common import exceptions
+from nozzle.common import exception
 
 
 class ServiceCatalog(object):
@@ -59,9 +59,9 @@ class ServiceCatalog(object):
                     matching_endpoints.append(endpoint)
 
         if not matching_endpoints:
-            raise exceptions.EndpointNotFound()
+            raise exception.EndpointNotFound()
         elif len(matching_endpoints) > 1:
-            raise exceptions.AmbiguousEndpoints(message=matching_endpoints)
+            raise exception.AmbiguousEndpoints(message=matching_endpoints)
         else:
             return matching_endpoints[0][endpoint_type]
 
@@ -109,9 +109,9 @@ class HTTPClient(httplib2.Http):
 
         status_code = self.get_status_code(resp)
         if status_code == 401:
-            raise exceptions.Unauthorized(message=body)
+            raise exception.Unauthorized(message=body)
         elif status_code == 403:
-            raise exceptions.Forbidden(message=body)
+            raise exception.Forbidden(message=body)
         return resp, body
 
     def do_request(self, url, method, **kwargs):
@@ -128,7 +128,7 @@ class HTTPClient(httplib2.Http):
             resp, body = self._cs_request(self.endpoint_url + url, method,
                                           **kwargs)
             return resp, body
-        except exceptions.Unauthorized as ex:
+        except exception.Unauthorized as ex:
             if not self.endpoint_url:
                 self.authenticate()
                 resp, body = self._cs_request(
@@ -146,14 +146,14 @@ class HTTPClient(httplib2.Http):
             self.auth_tenant_id = sc.get('tenant_id')
             self.auth_user_id = sc.get('user_id')
         except KeyError:
-            raise exceptions.Unauthorized()
+            raise exception.Unauthorized()
         self.endpoint_url = self.service_catalog.url_for(
             attr='region', filter_value=self.region_name,
             endpoint_type='adminURL')
 
     def authenticate(self):
         if self.auth_strategy != 'keystone':
-            raise exceptions.Unauthorized(message='unknown auth strategy')
+            raise exception.Unauthorized(message='unknown auth strategy')
         body = {'auth': {'passwordCredentials':
                          {'username': self.username,
                           'password': self.password, },
@@ -172,7 +172,7 @@ class HTTPClient(httplib2.Http):
             self.follow_all_redirects = tmp_follow_all_redirects
         status_code = self.get_status_code(resp)
         if status_code != 200:
-            raise exceptions.Unauthorized(message=body)
+            raise exception.Unauthorized(message=body)
         if body:
             try:
                 body = jsonutils.loads(body)

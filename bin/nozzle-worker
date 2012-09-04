@@ -20,16 +20,10 @@ import os
 import sys
 sys.path.insert(0, os.getcwd())
 
-from nozzle.common import flags
-from nozzle.common import log as logging
-from nozzle.common import utils
-from nozzle import service
+from nozzle.worker import manager
 
 if __name__ == '__main__':
-    utils.default_cfgfile()
-    flags.FLAGS(sys.argv)
-    logging.setup('nozzle')
-
-    service = service.WSGIService("nozzle")
-    service.start()
-    service.wait()
+    worker = manager.WorkerManager()
+    worker.init_host()
+    worker.start()
+    worker.wait()

@@ -16,11 +16,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import json
 import logging
 import zmq
 
-from nozzle.common import flags
 from nozzle import manager
+from nozzle.common import flags
+from nozzle.worker.driver import haproxy
+from nozzle.worker.driver import nginx
+
+FLAGS = flags.FLAGS
 
 
 class WorkerManager(manager.Manager):
@@ -34,90 +39,89 @@ class WorkerManager(manager.Manager):
         Child class should override this method
 
         """
+        logfile = '/var/log/nozzle/worker1.log'
+        logger = logging.getLogger(logfile)
+        logger.setLevel(logging.DEBUG)
+
+        handler = logging.FileHandler(logfile)
+        handler.setLevel(logging.DEBUG)
+
+        formatter = logging.Formatter(
+                "%(asctime)s %(name)s %(levelname)s: %(message)s [-] %(funcName)s"
+                " from (pid=%(process)d) %(filename)s:%(lineno)d")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        self.LOG = logger
+
+    def start(self):
         context = zmq.Context()
         # Socket for control input
         self.broadcast = context.socket(zmq.SUB)
-        self.broadcast.connect("tcp://%s" % zmqSUBAddr)
+        self.broadcast.connect("tcp://%s:%s" % (FLAGS.broadcast_listen,
+                                                FLAGS.broadcast_listen_port))
         self.broadcast.setsockopt(zmq.SUBSCRIBE, "lb")
 
         # Socket to send messages to
         self.feedback = context.socket(zmq.PUSH)
-        self.feedback.connect("tcp://%s" % zmqPUSHAddr)
+        self.feedback.connect("tcp://%s:%s" % (FLAGS.feedback_listen,
+                                               FLAGS.feedback_listen_port))
 
         # Process messages from broadcast
         self.poller = zmq.Poller()
         self.poller.register(self.broadcast, zmq.POLLIN)
 
-        self.ngx_configurer = configure_nginx.NginxProxyConfigurer()
-        self.ha_configurer = configure_haproxy.HaproxyConfigurer()
+        self.ha_configurer = haproxy.HaproxyConfigurer()
+        self.ngx_configurer = nginx.NginxProxyConfigurer()
 
-    def start(self):
-        LOG.debug('Started sws-lb-worker')
+    def wait(self):
+
+        self.LOG.debug('Started sws-lb-worker')
+
         while True:
-            try:
-                socks = dict(self.poller.poll())
-            except zmq.ZMQError:
-                # interrupted
-                break
-
+            socks = dict(self.poller.poll())
             if socks.get(self.broadcast) == zmq.POLLIN:
-                try:
-                    msg_type, msg_id, msg_body = \
-                                        self.broadcast.recv_multipart()
-                except zmq.ZMQError:
-                    # TODO(wenjianhn): feed back Error msg?
+                msg_type, msg_id, msg_body = self.broadcast.recv_multipart()
+                message = json.loads(msg_body)
+                self.LOG.info('Received request: %s', message)
+
+                # check input message
+                if 'cmd' not in message or 'msg' not in message:
+                    self.LOG.warn("Error. 'cmd' or 'msg' not in message")
+                    code = 500
+                    desc = "missing 'cmd' or 'msg' in request"
+
+                    self.feedback.send_multipart([msg_type, msg_id,
+                                    json.dumps({'cmd': 'unknown',
+                                                'msg': {
+                                                    'code': code,
+                                                    'desc': desc}})])
                     break
 
-            try:
-                message = json.loads(msg_body)
-            except ValueError, e:
-                self.LOG.warn("Bad JSON: %s. msg_body: %s", e, msg_body)
-                # TODO(wenjianhn) feedback
-                break
+                code = 200
+                desc = "request was done successfully"
 
-            self.LOG.info('Received request: %s', message)
+                if message['msg']['protocol'] == 'http':
+                    try:
+                        self.ngx_configurer.do_config(message)
+                    except exception.NginxConfigureError, e:
+                        code = 500
+                        desc = str(e)
+                elif message['msg']['protocol'] == 'tcp':
+                    try:
+                        self.ha_configurer.do_config(message)
+                    except exception.HaproxyConfigureError, e:
+                        code = 500
+                        desc = str(e)
+                else:
+                    code = 500
+                    desc = "Error: unsupported protocol"
+                    self.LOG('Error. Unsupported protocol')
 
-            # check input message
-            if 'cmd' not in message or 'msg' not in message:
-                self.LOG.warn("Error. 'cmd' or 'msg' not in message")
-                code = 500
-                desc = "missing 'cmd' or 'msg' in request"
-
+                # Send results to feedback
+                uuid = message['msg']['uuid']
                 self.feedback.send_multipart([msg_type, msg_id,
-                                json.dumps({'cmd': 'unknown',
-                                            'msg': {
-                                                'worker_id': worker_id,
-                                                'code': code,
-                                                'desc': desc}})])
-                break
-
-            code = 200
-            desc = "request was done successfully"
-            uuid = message['msg']['uuid']
-
-            if message['msg']['protocol'] == 'http':
-                try:
-                    self.ngx_configurer.do_config(message)
-                except exception.NginxConfigureError, e:
-                    code = 500
-                    desc = str(e)
-            elif message['msg']['protocol'] == 'tcp':
-                try:
-                    self.ha_configurer.do_config(message)
-                except exception.HaproxyConfigureError, e:
-                    code = 500
-                    desc = str(e)
-            else:
-                code = 500
-                desc = "Error: unsupported protocol"
-                self.LOG('Error. Unsupported protocol')
-
-            # Send results to feedback
-            self.feedback.send_multipart([msg_type, msg_id,
-                                json.dumps({'cmd': message['cmd'],
-                                            'msg': {
-                                                'worker_id': worker_id,
-                                                'code': code,
-                                                'uuid': uuid,
-                                                'desc': desc,
-                                            }})])
+                                    json.dumps({'cmd': message['cmd'],
+                                                'msg': {
+                                                    'code': code,
+                                                    'uuid': uuid,
+                                                    'desc': desc}})])

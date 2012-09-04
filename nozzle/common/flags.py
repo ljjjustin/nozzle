@@ -22,7 +22,7 @@ from nozzle.openstack.common import cfg
 
 default_opts = [
     cfg.StrOpt('auth_strategy',
-               default='noauth',
+               default='keystone',
                help='authorize strategy'),
     cfg.StrOpt('api_paste_config',
                default='api-paste.ini',
@@ -55,6 +55,12 @@ api_opts = [
     cfg.IntOpt('api_listen_port',
                default=5556,
                help='Port for nozzle api to listen.'),
+    cfg.StrOpt('server_listen',
+               default='127.0.0.1',
+               help='IP address for nozzle server to listen.'),
+    cfg.IntOpt('server_listen_port',
+               default=5557,
+               help='Port for nozzle server to listen.'),
     cfg.StrOpt('broadcast_listen',
                default='127.0.0.1',
                help='IP address for nozzle worker to listen.'),

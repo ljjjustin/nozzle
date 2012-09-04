@@ -20,8 +20,8 @@
 from nozzle import db
 from nozzle.common import exception
 from nozzle.common import utils
-from nozzle import protocol
-from nozzle import state
+from nozzle.server import protocol
+from nozzle.server import state
 
 
 def create_load_balancer(context, **kwargs):

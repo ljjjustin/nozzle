@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
 #
 # Copyright 2012 Sina Corporation
 # All Rights Reserved.
@@ -15,21 +15,3 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
-import os
-import sys
-sys.path.insert(0, os.getcwd())
-
-from nozzle.common import flags
-from nozzle.common import log as logging
-from nozzle.common import utils
-from nozzle import service
-
-if __name__ == '__main__':
-    utils.default_cfgfile()
-    flags.FLAGS(sys.argv)
-    logging.setup('nozzle')
-
-    service = service.WSGIService("nozzle")
-    service.start()
-    service.wait()

@@ -3,7 +3,7 @@ import logging
 import unittest
 import sys
 
-from nozzle.common import exceptions
+from nozzle.common import exception
 from nozzle.common.context import get_context
 from nozzle.common import utils
 from nozzle import db
@@ -88,7 +88,7 @@ class DBApiTestCase(unittest.TestCase):
         self.truncate_all_tables()
         db.load_balancer_create(self.context, self.configs)
         db.load_balancer_destroy(self.context, self.load_balancer_id)
-        self.assertRaises(exceptions.LoadBalancerNotFound,
+        self.assertRaises(exception.LoadBalancerNotFound,
                           db.load_balancer_get,
                           self.context, self.load_balancer_id)
 

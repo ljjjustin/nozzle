@@ -32,5 +32,7 @@ setup(
     scripts = [
         'bin/nozzle-api',
         'bin/nozzle-client',
+        'bin/nozzle-server',
+        'bin/nozzle-worker',
     ],
 )

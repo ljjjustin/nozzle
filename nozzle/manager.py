@@ -28,12 +28,3 @@ class Manager(object):
 
         """
         pass
-
-    def periodic_tasks(self, context):
-        """Tasks to be run at a periodic interval."""
-        for task in self._periodic_tasks:
-            try:
-                task(self, context)
-            except Exception as e:
-                pass
-                ##LOG.exception(_("Running periodic task"))

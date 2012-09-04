@@ -20,20 +20,37 @@ import eventlet
 import logging
 import zmq
 
+from nozzle import manager
 from nozzle.common import context
 from nozzle.common import flags
-from nozzle import manager
+from nozzle.common import utils
+from nozzle.server import api
+from nozzle.server import state
 
 FLAGS = flags.FLAGS
-LOG = logging.getLogger(__name__)
+
+
+def setup_logging(logfile):
+    logger = logging.getLogger(logfile)
+    logger.setLevel(logging.DEBUG)
+
+    handler = logging.FileHandler(logfile)
+    handler.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter(
+            "%(asctime)s %(name)s %(levelname)s: %(message)s [-] %(funcName)s"
+            " from (pid=%(process)d) %(filename)s:%(lineno)d")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
 
 
 def client_routine(*args, **kwargs):
     handler = kwargs['handler']
     broadcast = kwargs['broadcast']
     # Setup logging
-    LOG = setup_logging('/var/log/shunt/client.log')
-    LOG.info('shunt client starting...')
+    LOG = setup_logging('/var/log/nozzle/client.log')
+    LOG.info('nozzle client starting...')
 
     poller = zmq.Poller()
     poller.register(handler, zmq.POLLIN)
@@ -78,8 +95,8 @@ def client_routine(*args, **kwargs):
 def worker_routine(*args, **kwargs):
     feedback = kwargs['feedback']
     # Setup logging
-    LOG = setup_logging('/var/log/shunt/worker.log')
-    LOG.info('shunt worker starting...')
+    LOG = setup_logging('/var/log/nozzle/worker.log')
+    LOG.info('nozzle worker starting...')
 
     poller = zmq.Poller()
     poller.register(feedback, zmq.POLLIN)
@@ -103,14 +120,14 @@ def worker_routine(*args, **kwargs):
 def checker_routine(*args, **kwargs):
     broadcast = kwargs['broadcast']
     # Setup logging
-    LOG = setup_logging('/var/log/shunt/checker.log')
-    LOG.info('shunt checker starting...')
+    LOG = setup_logging('/var/log/nozzle/checker.log')
+    LOG.info('nozzle checker starting...')
 
     states = [state.CREATING, state.UPDATING, state.DELETING]
     while True:
         eventlet.sleep(6)
         msg_type = 'lb'
-        msg_uuid = str(uuid.uuid4())
+        msg_uuid = utils.str_uuid()
         try:
             context = get_admin_context()
             all_load_balancers = db.load_balancer_get_all(context)

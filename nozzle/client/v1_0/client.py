@@ -19,7 +19,7 @@
 import httplib
 import urllib
 
-from nozzle.common import exceptions
+from nozzle.common import exception
 from nozzle.client.httpclient import HTTPClient
 from nozzle.client.serializer import Serializer
 
@@ -155,13 +155,13 @@ class Client(object):
             try:
                 return self.do_request(method, action, body=body,
                                        headers=headers, params=params)
-            except exceptions.ConnectionFailed:
+            except exception.ConnectionFailed:
                 # Exception has already been logged by do_request()
                 if i < self.retries:
                     ##_logger.debug(_('Retrying connection to quantum service'))
                     time.sleep(self.retry_interval)
 
-        raise exceptions.ConnectionFailed(reason=_("Maximum attempts reached"))
+        raise exception.ConnectionFailed(reason=_("Maximum attempts reached"))
 
     def delete(self, action, body=None, headers=None, params=None):
         return self.retry_request("DELETE", action, body=body,
