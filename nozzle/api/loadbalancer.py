@@ -24,7 +24,11 @@ from nozzle.openstack.common import jsonutils
 from nozzle.openstack.common import wsgi
 
 from nozzle.api import base
+from nozzle.common import flags
 from nozzle.common import utils
+
+FLAGS = flags.FLAGS
+
 
 class ZmqClient(object):
 
@@ -49,7 +53,8 @@ class ZmqClient(object):
 class Controller(base.Controller):
 
     def __init__(self):
-        self.client = ZmqClient()
+        self.client = ZmqClient(host=FLAGS.server_listen,
+                                port=FLAGS.server_listen_port)
         super(Controller, self).__init__()
 
     def index(self, req):
@@ -113,6 +118,8 @@ class Controller(base.Controller):
                 'uuid': id,
             },
         }
+        loadbalancer = body['loadbalancer']
+        zmq_args['args'].update(loadbalancer)
         result = self.client.call(zmq_args)
         if result['code'] != 200:
             return webob.exc.HTTPError(result['message'])
@@ -120,7 +127,6 @@ class Controller(base.Controller):
             return dict({"message": "successful"})
 
     def delete(self, req, id):
-        import pdb; pdb.set_trace()
         context = req.environ['nozzle.context']
         zmq_args = {
             'method': 'delete_load_balancer',

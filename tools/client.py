@@ -12,6 +12,7 @@ if __name__ == '__main__':
                                   password="nova",
                                   tenant_name="demo",
                                   auth_url="http://localhost:5000/v2.0")
+    import pdb; pdb.set_trace()
     print nozzle_client.list_loadbalancers()
     request_body = {
         'loadbalancer': {

@@ -15,7 +15,7 @@ nginx_opts = [
     cfg.StrOpt('access_log_dir',
                default='/var/log/nginx/',
                help="Where to store nginx access log."),
-    cfg.StrOpt('backup_dir',
+    cfg.StrOpt('configuration_backup_dir',
                default='/tmp/',
                help="Where to backup nginx configuration."),
 ]
@@ -73,7 +73,7 @@ class NginxProxyConfigurer(object):
                             ip_port_list)
         self.listen_field = '\n'.join(_listen_field)
 
-        self.backup_dir = FLAGS.nginx.backup_dir
+        self.backup_dir = FLAGS.nginx.configuration_backup_dir
         self.access_log_dir = FLAGS.nginx.access_log_dir
         if not os.path.exists(self.access_log_dir):
             raise exception.DirNotFound(dir=self.access_log_dir)

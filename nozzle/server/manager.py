@@ -20,6 +20,8 @@ import eventlet
 import logging
 import zmq
 
+from nozzle.openstack.common import jsonutils
+
 from nozzle import manager
 from nozzle.common import context
 from nozzle.common import flags
@@ -63,20 +65,20 @@ def client_routine(*args, **kwargs):
             response = dict()
             cli_msg = {'code': 200, 'message': 'OK'}
             try:
-                msg_body = json.loads(msg_json)
+                msg_body = jsonutils.loads(msg_json)
                 LOG.debug("<<<<<<< client: %s" % msg_body)
                 method = msg_body['method']
                 args = msg_body['args']
-                ctxt = get_context(**args)
+                ctxt = context.get_context(**args)
                 method_func = getattr(api, method)
                 result = method_func(ctxt, **args)
                 if result is not None:
                     response.update(result)
                 # send request to worker
                 try:
-                    msg = api.get_worker_msg(ctxt, method, **args)
+                    msg = api.get_msg_to_worker(ctxt, method, **args)
                     if msg is not None:
-                        request_msg = json.dumps(msg)
+                        request_msg = jsonutils.dumps(msg)
                         LOG.debug(">>>>>>> worker: %s" % request_msg)
                         broadcast.send_multipart([msg_type, msg_uuid,
                                                   request_msg])
@@ -87,7 +89,7 @@ def client_routine(*args, **kwargs):
                 cli_msg['message'] = str(e)
                 LOG.exception(cli_msg['message'])
             response.update(cli_msg)
-            response_msg = json.dumps(response)
+            response_msg = jsonutils.dumps(response)
             LOG.debug(">>>>>>> client: %s" % response_msg)
             handler.send_multipart([msg_type, msg_uuid, response_msg])
 
@@ -129,8 +131,8 @@ def checker_routine(*args, **kwargs):
         msg_type = 'lb'
         msg_uuid = utils.str_uuid()
         try:
-            context = get_admin_context()
-            all_load_balancers = db.load_balancer_get_all(context)
+            ctxt = context.get_admin_context()
+            all_load_balancers = db.load_balancer_get_all(ctxt)
             transient_load_balancers = filter(lambda x: x.state in states,
                                               all_load_balancers)
             for load_balancer_ref in transient_load_balancers:
@@ -177,8 +179,8 @@ class ServerManager(manager.Manager):
 
         # Socket to receive messages on
         handler = zmq_context.socket(zmq.REP)
-        handler.bind("tcp://%s:%s" % (FLAGS.api_listen,
-                                      FLAGS.api_listen_port))
+        handler.bind("tcp://%s:%s" % (FLAGS.server_listen,
+                                      FLAGS.server_listen_port))
 
         # Socket to send messages on
         broadcast = zmq_context.socket(zmq.PUB)

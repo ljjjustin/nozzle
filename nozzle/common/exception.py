@@ -20,11 +20,10 @@
 Shunt base exception handling.
 """
 
-from openstack.common.exception import Error
-from openstack.common.exception import OpenstackException
+from nozzle.openstack.common import exception
 
 
-class ShuntException(OpenstackException):
+class NozzleException(exception.OpenstackException):
     """Base Shunt Exception
 
     To correctly use this class, inherit from it and define
@@ -36,76 +35,76 @@ class ShuntException(OpenstackException):
 
 
 # api exceptions
-class MissingParameter(ShuntException):
+class MissingParameter(NozzleException):
     message = _("missing parameter: %(key)s.")
 
 
-class InvalidParameter(ShuntException):
+class InvalidParameter(NozzleException):
     message = _("invalid parameter: %(msg)s.")
 
 
-class CreateLoadBalancerFailed(ShuntException):
+class CreateLoadBalancerFailed(NozzleException):
     message = _("create load balancer failed: %(msg)s")
 
 
-class DeleteLoadBalancerFailed(ShuntException):
+class DeleteLoadBalancerFailed(NozzleException):
     message = _("delete load balancer failed: %(msg)s")
 
 
-class UpdateLoadBalancerFailed(ShuntException):
+class UpdateLoadBalancerFailed(NozzleException):
     message = _("update load balancer failed: %(msg)s")
 
 
-class GetLoadBalancerFailed(ShuntException):
+class GetLoadBalancerFailed(NozzleException):
     message = _("get load balancer failed: %(msg)s")
 
 
-class GetAllLoadBalancerFailed(ShuntException):
+class GetAllLoadBalancerFailed(NozzleException):
     message = _("get all load balancer failed: %(msg)s")
 
 
-class GetAllHttpServersFailed(ShuntException):
+class GetAllHttpServersFailed(NozzleException):
     message = _("get all http servers failed: %(msg)s")
 
 
 # db exceptions
-class LoadBalancerNotFound(ShuntException):
+class LoadBalancerNotFound(NozzleException):
     message = _("LoadBalancer %(id)s could not be found.")
 
 
 # db exceptions
-##class LoadBalancerNotFound(exception.NotFound):
-##    message = _("LoadBalancer %(load_balancer_id)s could not be found.")
-##
-##
-##class LoadBalancerNotFoundByUUID(exception.NotFound):
-##    message = _("LoadBalancer %(uuid)s could not be found by uuid.")
-##
-##
-##class LoadBalancerNotFoundByName(exception.NotFound):
-##    message = _("LoadBalancer %(load_balancer_name)s could not be "
-##                "found by name.")
-##
-##
-##class LoadBalancerConfigNotFound(exception.NotFound):
-##    message = _("LoadBalancerConfig %(config_id)s could not be found.")
-##
-##
-##class LoadBalancerConfigNotFoundByLoadBalancerId(exception.NotFound):
-##    message = _("LoadBalancerConfig %(load_balancer_id)s could not be found.")
-##
-##
-##class LoadBalancerDomainNotFound(exception.NotFound):
-##    message = _("LoadBalancerDomain %(domain_id)s could not be found.")
-##
-##
-##class LoadBalancerDomainNotFoundByName(exception.NotFound):
-##    message = _("LoadBalancerDomain %(domain_name)s could not be found.")
-##
-##
-##class LoadBalancerInstanceAssociationNotFound(exception.NotFound):
-##    message = _("LoadBalancerInstanceAssociation %(load_balancer_id)s "
-##                "with %(instance_uuid)s could not be found")
+class LoadBalancerNotFound(exception.NotFound):
+    message = _("LoadBalancer %(load_balancer_id)s could not be found.")
+
+
+class LoadBalancerNotFoundByUUID(exception.NotFound):
+    message = _("LoadBalancer %(uuid)s could not be found by uuid.")
+
+
+class LoadBalancerNotFoundByName(exception.NotFound):
+    message = _("LoadBalancer %(load_balancer_name)s could not be "
+                "found by name.")
+
+
+class LoadBalancerConfigNotFound(exception.NotFound):
+    message = _("LoadBalancerConfig %(config_id)s could not be found.")
+
+
+class LoadBalancerConfigNotFoundByLoadBalancerId(exception.NotFound):
+    message = _("LoadBalancerConfig %(load_balancer_id)s could not be found.")
+
+
+class LoadBalancerDomainNotFound(exception.NotFound):
+    message = _("LoadBalancerDomain %(domain_id)s could not be found.")
+
+
+class LoadBalancerDomainNotFoundByName(exception.NotFound):
+    message = _("LoadBalancerDomain %(domain_name)s could not be found.")
+
+
+class LoadBalancerInstanceAssociationNotFound(exception.NotFound):
+    message = _("LoadBalancerInstanceAssociation %(load_balancer_id)s "
+                "with %(instance_uuid)s could not be found")
 
 
 class CommandError(Exception):

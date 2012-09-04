@@ -2,10 +2,23 @@
 verbose=True
 api_paste_config = api-paste.ini
 auth_strategy = keystone
-api_listen=0.0.0.0
-api_listen_port=5556
-broadcast_listen=127.0.0.1
-broadcast_listen_port=5558
-feedback_listen=127.0.0.1
-feedback_listen_port=5559
+api_listen = 0.0.0.0
+api_listen_port = 5556
+server_listen = 0.0.0.0
+server_listen_port = 5557
+broadcast_listen = 127.0.0.1
+broadcast_listen_port = 5558
+feedback_listen = 127.0.0.1
+feedback_listen_port = 5559
 sql_connection=mysql://root:nova@127.0.0.1:3306/nozzle
+
+[nginx]
+listen = 127.0.0.1:80
+access_log_dir = /var/log/nginx
+configuration_backup_dir = /tmp/
+
+
+[haproxy]
+listen = 127.0.0.1
+listen_port_range = 10000,61000
+configuration_backup_dir = /tmp/

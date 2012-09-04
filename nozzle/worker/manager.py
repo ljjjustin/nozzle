@@ -115,7 +115,7 @@ class WorkerManager(manager.Manager):
                 else:
                     code = 500
                     desc = "Error: unsupported protocol"
-                    self.LOG('Error. Unsupported protocol')
+                    self.LOG.error('Error. Unsupported protocol')
 
                 # Send results to feedback
                 uuid = message['msg']['uuid']
