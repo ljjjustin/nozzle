@@ -178,7 +178,7 @@ def get_msg_to_worker(context, method, **kwargs):
         message = format_msg_to_worker(load_balancer_ref)
     else:
         return None
-    result['msg'] = message
+    result['args'] = message
     return result
 
 
@@ -203,7 +203,7 @@ def update_load_balancer_state(context, **kwargs):
     try:
         load_balancer_ref = db.load_balancer_get_by_uuid(context, uuid)
     except Exception, exp:
-        raise exception.DeleteLoadBalancerFailed(msg=str(exp))
+        raise exception.UpdateLoadBalancerFailed(msg=str(exp))
 
     if code == 200:
         if load_balancer_ref.state == state.DELETING:

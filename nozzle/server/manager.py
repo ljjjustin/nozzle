@@ -112,8 +112,8 @@ def worker_routine(*args, **kwargs):
             LOG.debug("<<<<<<< worker: %s" % msg_body)
             # update load balancer's state
             try:
-                ctxt = get_admin_context()
                 args = msg_body['msg']
+                ctxt = context.get_admin_context()
                 api.update_load_balancer_state(ctxt, **args)
             except Exception, exp:
                 continue

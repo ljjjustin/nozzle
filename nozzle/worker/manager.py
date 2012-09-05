@@ -84,44 +84,36 @@ class WorkerManager(manager.Manager):
                 message = json.loads(msg_body)
                 self.LOG.info('Received request: %s', message)
 
+                response_msg = {'code': 200, 'message': 'OK'}
                 # check input message
-                if 'cmd' not in message or 'msg' not in message:
-                    self.LOG.warn("Error. 'cmd' or 'msg' not in message")
-                    code = 500
-                    desc = "missing 'cmd' or 'msg' in request"
+                if 'cmd' not in message or 'args' not in message:
+                    self.LOG.warn("Error. 'cmd' or 'args' not in message")
+                    request_msg['code'] = 500
+                    request_msg['message'] = "missing 'cmd' or 'args' field"
 
                     self.feedback.send_multipart([msg_type, msg_id,
-                                    json.dumps({'cmd': 'unknown',
-                                                'msg': {
-                                                    'code': code,
-                                                    'desc': desc}})])
+                                                  json.dumps(response_msg)])
                     break
 
-                code = 200
-                desc = "request was done successfully"
-
-                if message['msg']['protocol'] == 'http':
+                if message['args']['protocol'] == 'http':
                     try:
                         self.ngx_configurer.do_config(message)
                     except exception.NginxConfigureError, e:
-                        code = 500
-                        desc = str(e)
-                elif message['msg']['protocol'] == 'tcp':
+                        request_msg['code'] = 500
+                        request_msg['code'] = str(e)
+                elif message['args']['protocol'] == 'tcp':
                     try:
                         self.ha_configurer.do_config(message)
                     except exception.HaproxyConfigureError, e:
-                        code = 500
-                        desc = str(e)
+                        request_msg['code'] = 500
+                        request_msg['code'] = str(e)
                 else:
-                    code = 500
-                    desc = "Error: unsupported protocol"
-                    self.LOG.error('Error. Unsupported protocol')
+                    self.LOG.exception('Error. Unsupported protocol')
+                    request_msg['code'] = 500
+                    request_msg['message'] = "Error: unsupported protocol"
 
                 # Send results to feedback
-                uuid = message['msg']['uuid']
+                response_msg['cmd'] = message['cmd']
+                response_msg['uuid'] = message['args']['uuid']
                 self.feedback.send_multipart([msg_type, msg_id,
-                                    json.dumps({'cmd': message['cmd'],
-                                                'msg': {
-                                                    'code': code,
-                                                    'uuid': uuid,
-                                                    'desc': desc}})])
+                                              json.dumps(response_msg)])
