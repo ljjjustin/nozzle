@@ -21,11 +21,27 @@ import logging
 import zmq
 
 from nozzle import manager
+from nozzle.common import exception
 from nozzle.common import flags
 from nozzle.worker.driver import haproxy
 from nozzle.worker.driver import nginx
 
 FLAGS = flags.FLAGS
+
+
+def setup_logging(logfile):
+    logger = logging.getLogger(logfile)
+    logger.setLevel(logging.DEBUG)
+
+    handler = logging.FileHandler(logfile)
+    handler.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter(
+            "%(asctime)s %(name)s %(levelname)s: %(message)s [-] %(funcName)s"
+            " from (pid=%(process)d) %(filename)s:%(lineno)d")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
 
 
 class WorkerManager(manager.Manager):
@@ -39,19 +55,7 @@ class WorkerManager(manager.Manager):
         Child class should override this method
 
         """
-        logfile = '/var/log/nozzle/worker1.log'
-        logger = logging.getLogger(logfile)
-        logger.setLevel(logging.DEBUG)
-
-        handler = logging.FileHandler(logfile)
-        handler.setLevel(logging.DEBUG)
-
-        formatter = logging.Formatter(
-                "%(asctime)s %(name)s %(levelname)s: %(message)s [-] %(funcName)s"
-                " from (pid=%(process)d) %(filename)s:%(lineno)d")
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        self.LOG = logger
+        self.LOG = setup_logging('/var/log/nozzle/worker.log')
 
     def start(self):
         context = zmq.Context()
@@ -75,7 +79,7 @@ class WorkerManager(manager.Manager):
 
     def wait(self):
 
-        self.LOG.debug('Started sws-lb-worker')
+        self.LOG.debug('nozzle worker starting...')
 
         while True:
             socks = dict(self.poller.poll())
@@ -88,8 +92,8 @@ class WorkerManager(manager.Manager):
                 # check input message
                 if 'cmd' not in message or 'args' not in message:
                     self.LOG.warn("Error. 'cmd' or 'args' not in message")
-                    request_msg['code'] = 500
-                    request_msg['message'] = "missing 'cmd' or 'args' field"
+                    response_msg['code'] = 500
+                    response_msg['message'] = "missing 'cmd' or 'args' field"
 
                     self.feedback.send_multipart([msg_type, msg_id,
                                                   json.dumps(response_msg)])
@@ -99,18 +103,18 @@ class WorkerManager(manager.Manager):
                     try:
                         self.ngx_configurer.do_config(message)
                     except exception.NginxConfigureError, e:
-                        request_msg['code'] = 500
-                        request_msg['code'] = str(e)
+                        response_msg['code'] = 500
+                        response_msg['message'] = str(e)
                 elif message['args']['protocol'] == 'tcp':
                     try:
                         self.ha_configurer.do_config(message)
                     except exception.HaproxyConfigureError, e:
-                        request_msg['code'] = 500
-                        request_msg['code'] = str(e)
+                        response_msg['code'] = 500
+                        response_msg['message'] = str(e)
                 else:
                     self.LOG.exception('Error. Unsupported protocol')
-                    request_msg['code'] = 500
-                    request_msg['message'] = "Error: unsupported protocol"
+                    response_msg['code'] = 500
+                    response_msg['message'] = "Error: unsupported protocol"
 
                 # Send results to feedback
                 response_msg['cmd'] = message['cmd']

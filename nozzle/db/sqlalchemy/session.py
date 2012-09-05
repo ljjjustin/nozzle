@@ -17,7 +17,7 @@
 #    under the License.
 
 """
-SQLAlchemy models for shunt data.
+SQLAlchemy models for nozzle data.
 """
 import time
 
@@ -27,7 +27,7 @@ from sqlalchemy.exc import DisconnectionError
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import sessionmaker
 
-from shunt import flags
+from nozzle.common import flags
 
 _MAKER = None
 _ENGINE = None

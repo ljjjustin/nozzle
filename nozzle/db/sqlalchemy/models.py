@@ -17,7 +17,7 @@
 #    under the License.
 
 """
-SQLAlchemy models for shunt data.
+SQLAlchemy models for nozzle data.
 """
 import datetime
 

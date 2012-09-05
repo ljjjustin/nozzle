@@ -87,7 +87,7 @@ class NginxProxyConfigurer(object):
             raise exception.NginxConfigureError(explanation=str(e))
 
         cmd = request['cmd']
-        msg = request['msg']
+        msg = request['args']
 
         if cmd == 'create_lb':
             try:

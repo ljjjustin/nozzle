@@ -2,8 +2,7 @@ import re
 import socket
 import uuid
 
-import utils
-import exception
+from nozzle.common import exception
 
 
 def _is_uuid_like(val):
@@ -92,27 +91,27 @@ def _check_create_or_update_lb(request):
                  'dns_names']
 
     for key in required_keys:
-        if key not in request['msg']:
+        if key not in request['args']:
             msg = "No %s in request" % key
             raise exception.BadRequest(explanation=msg)
 
     # TODO (wenjianhn): UTF-8 support. discuss with lzy & cy
     for key in ['tenant_id', 'uuid']:
-        if re.search(r"[^a-zA-Z0-9_\-]", request['msg'][key]):
+        if re.search(r"[^a-zA-Z0-9_\-]", request['args'][key]):
             msg = "Invalid character '%s': %s" % \
-                  (key, request['msg'][key])
+                  (key, request['args'][key])
             raise exception.BadRequest(explanation=msg)
 
-    msg = request['msg']
-    if msg['balancing_method'] not in ['source_binding',
+    args = request['args']
+    if args['balancing_method'] not in ['source_binding',
                                        'round_robin']:
-        msg = "Invalid balancing_method: %s" % msg['balancing_method']
+        msg = "Invalid balancing_method: %s" % args['balancing_method']
         raise exception.BadRequest(explanation=msg)
 
-    instance_ips = msg['instance_ips']
+    instance_ips = args['instance_ips']
     _is_ipv4_list(instance_ips)
 
-    port = msg['instance_port']
+    port = args['instance_port']
     if not isinstance(port, int):
         msg = 'Valid instance_port should be an integer'
         raise exception.BadRequest(explanation=msg)
@@ -124,14 +123,14 @@ def _check_create_or_update_lb(request):
 def _check_delete_lb(request):
     required_keys = ['user_id', 'tenant_id', 'uuid']
     for key in required_keys:
-        if key not in request['msg']:
+        if key not in request['args']:
             msg = "No %s in request" % key
             raise exception.BadRequest(explanation=msg)
 
     for key in ['tenant_id', 'uuid']:
-        if re.search(r"[^a-zA-Z0-9_\-]", request['msg'][key]):
+        if re.search(r"[^a-zA-Z0-9_\-]", request['args'][key]):
             msg = "Invalid character in request: '%s': %s" % \
-                  (key, request['msg'][key])
+                  (key, request['args'][key])
             raise exception.BadRequest(explanation=msg)
 
 
@@ -144,8 +143,8 @@ def _do_basic_check(request):
         msg = 'No cmd in request'
         raise exception.BadRequest(explanation=msg)
 
-    if 'msg' not in request:
-        msg = 'No msg in request'
+    if 'args' not in request:
+        msg = 'No args in request'
         raise exception.BadRequest(explanation=msg)
 
     cmd = request['cmd']
@@ -168,11 +167,11 @@ def check_http_request(request):
         return
 
     for key in ['http_server_names', 'health_check_target_path']:
-        if key not in request['msg']:
+        if key not in request['args']:
             msg = "No %s in request" % key
             raise exception.BadRequest(explanation=msg)
 
-    server_names = request['msg']['http_server_names']
+    server_names = request['args']['http_server_names']
     _is_valid_server_names(server_names)
 
     # is_valid_conf_health_check
@@ -186,33 +185,33 @@ def _check_haproxy_health_check_config(request):
                      'health_check_healthy_threshold',
                      'health_check_unhealthy_threshold']
 
-    msg = request['msg']
+    args = request['args']
     for key in required_keys:
-        if key not in msg:
+        if key not in args:
             strerror = "No %s in request" % key
             raise exception.BadRequest(explanation=strerror)
         else:
-            if not isinstance(msg[key], int):
-                strerror = "Error. %s should be an integer" % msg[key]
+            if not isinstance(args[key], int):
+                strerror = "Error. %s should be an integer" % args[key]
                 raise exception.BadRequest(explanation=strerror)
 
-    time_out = msg['health_check_timeout_ms']
+    time_out = args['health_check_timeout_ms']
     if time_out <= 0:
         strerror = "Health check timeout should be an positive integer"
         raise exception.BadRequest(explanation=strerror)
 
-    interval = msg['health_check_interval_ms']
+    interval = args['health_check_interval_ms']
     if interval <= 0:
         strerror = "Health check timeout should be an positive integer"
         raise exception.BadRequest(explanation=strerror)
 
-    healthy_threshold = msg['health_check_healthy_threshold']
+    healthy_threshold = args['health_check_healthy_threshold']
     if healthy_threshold < 1 or healthy_threshold > 10:
         # TODO(wenjianhn): configuable value, check in conf_haproxy.py
         strerror = "healthy_threshold should between 1 and 10"
         raise exception.BadRequest(explanation=strerror)
 
-    unhealthy_threshold = msg['health_check_unhealthy_threshold']
+    unhealthy_threshold = args['health_check_unhealthy_threshold']
     if unhealthy_threshold < 1 or unhealthy_threshold > 10:
         # TODO(wenjianhn): configuable value, check in conf_haproxy.py
         strerror = "unhealthy_threshold should between 1 and 10"
@@ -220,8 +219,8 @@ def _check_haproxy_health_check_config(request):
 
 
 def _check_haproxy_instance_uuid(request):
-    instance_uuids = request['msg']['instance_uuids']
-    instance_ips = request['msg']['instance_ips']
+    instance_uuids = request['args']['instance_uuids']
+    instance_ips = request['args']['instance_ips']
 
     if len(instance_uuids) != len(instance_ips):
         strerror = ("Count of instance_uuids (%s) is "

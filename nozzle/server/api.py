@@ -69,9 +69,9 @@ def update_load_balancer(context, **kwargs):
     for key, value in kwargs.iteritems():
         if key == 'config':
             update_load_balancer_config(context, **kwargs)
-        elif key == 'domains':
+        elif key == 'http_server_names':
             update_load_balancer_http_servers(context, **kwargs)
-        elif key == 'instances':
+        elif key == 'instance_uuids':
             update_load_balancer_instances(context, **kwargs)
 
 
@@ -127,7 +127,6 @@ def get_all_load_balancers(context, **kwargs):
 
     result = []
     try:
-        import pdb; pdb.set_trace()
         filters = {'project_id': kwargs['tenant_id']}
         context = context.elevated(read_deleted='no')
         all_load_balancers = db.load_balancer_get_all(context, filters=filters)

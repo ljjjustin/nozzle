@@ -3,8 +3,8 @@ import logging
 import unittest
 import sys
 
+from nozzle.common import context
 from nozzle.common import exception
-from nozzle.common.context import get_context
 from nozzle.common import utils
 from nozzle import db
 from nozzle.db import models
@@ -55,7 +55,7 @@ class DBApiTestCase(unittest.TestCase):
                 'instance_ip': '192.168.1.1',
         }
         self.configs['associations'] = [self.association]
-        self.context = get_context(self.user_id, self.tenant_id)
+        self.context = context.get_context(self.user_id, self.tenant_id)
 
     def tearDown(self):
         pass

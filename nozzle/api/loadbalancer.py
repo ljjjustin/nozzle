@@ -17,13 +17,11 @@
 #    under the License.
 
 import webob.exc
-import logging
 import zmq
 
 from nozzle.openstack.common import jsonutils
 from nozzle.openstack.common import wsgi
 
-from nozzle.api import base
 from nozzle.common import flags
 from nozzle.common import utils
 
@@ -50,7 +48,7 @@ class ZmqClient(object):
         return jsonutils.loads(msg_body)
 
 
-class Controller(base.Controller):
+class Controller(object):
 
     def __init__(self):
         self.client = ZmqClient(host=FLAGS.server_listen,

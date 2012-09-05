@@ -64,7 +64,7 @@ class HaproxyConfigurer(object):
             raise exception.HaproxyConfigureError(explanation=str(e))
 
         cmd = request['cmd']
-        msg = request['msg']
+        msg = request['args']
 
         if cmd == 'create_lb':
             try:

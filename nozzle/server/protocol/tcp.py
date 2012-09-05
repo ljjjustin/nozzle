@@ -230,3 +230,7 @@ def update_load_balancer_instances(context, **kwargs):
         raise exception.UpdateLoadBalancerFailed(msg=str(exp))
 
     return None
+
+
+def update_load_balancer_http_servers(context, **kwargs):
+    return None

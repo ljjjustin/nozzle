@@ -81,7 +81,7 @@ sql_opts = [
                default='mysql://root:nova@127.0.0.1:3306/nozzle',
                help='Database connection'),
     cfg.IntOpt('sql_connection_debug',
-               default=50,
+               default=0,
                help='Verbosity of SQL debugging info, 0=None, 100=all'),
     cfg.IntOpt('sql_max_retries',
                default=3,

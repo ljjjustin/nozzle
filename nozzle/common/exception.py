@@ -34,6 +34,21 @@ class NozzleException(exception.OpenstackException):
     message = _("An unknown exception occurred.")
 
 
+class Unauthorized(NozzleException):
+    """
+    HTTP 401 - Unauthorized: bad credentials.
+    """
+    pass
+
+
+class Forbidden(NozzleException):
+    """
+    HTTP 403 - Forbidden: your credentials don't give you access to this
+    resource.
+    """
+    pass
+
+
 # api exceptions
 class MissingParameter(NozzleException):
     message = _("missing parameter: %(key)s.")
@@ -69,40 +84,35 @@ class GetAllHttpServersFailed(NozzleException):
 
 # db exceptions
 class LoadBalancerNotFound(NozzleException):
-    message = _("LoadBalancer %(id)s could not be found.")
-
-
-# db exceptions
-class LoadBalancerNotFound(exception.NotFound):
     message = _("LoadBalancer %(load_balancer_id)s could not be found.")
 
 
-class LoadBalancerNotFoundByUUID(exception.NotFound):
+class LoadBalancerNotFoundByUUID(NozzleException):
     message = _("LoadBalancer %(uuid)s could not be found by uuid.")
 
 
-class LoadBalancerNotFoundByName(exception.NotFound):
+class LoadBalancerNotFoundByName(NozzleException):
     message = _("LoadBalancer %(load_balancer_name)s could not be "
                 "found by name.")
 
 
-class LoadBalancerConfigNotFound(exception.NotFound):
+class LoadBalancerConfigNotFound(NozzleException):
     message = _("LoadBalancerConfig %(config_id)s could not be found.")
 
 
-class LoadBalancerConfigNotFoundByLoadBalancerId(exception.NotFound):
+class LoadBalancerConfigNotFoundByLoadBalancerId(NozzleException):
     message = _("LoadBalancerConfig %(load_balancer_id)s could not be found.")
 
 
-class LoadBalancerDomainNotFound(exception.NotFound):
+class LoadBalancerDomainNotFound(NozzleException):
     message = _("LoadBalancerDomain %(domain_id)s could not be found.")
 
 
-class LoadBalancerDomainNotFoundByName(exception.NotFound):
+class LoadBalancerDomainNotFoundByName(NozzleException):
     message = _("LoadBalancerDomain %(domain_name)s could not be found.")
 
 
-class LoadBalancerInstanceAssociationNotFound(exception.NotFound):
+class LoadBalancerInstanceAssociationNotFound(NozzleException):
     message = _("LoadBalancerInstanceAssociation %(load_balancer_id)s "
                 "with %(instance_uuid)s could not be found")
 

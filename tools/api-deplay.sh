@@ -28,7 +28,8 @@ cp $TOPDIR/etc/nozzle/nozzle.conf.sample /etc/nozzle/nozzle.conf
 PASSWORD="nova"
 DATABASE="nozzle"
 MYSQL="mysql -uroot -p${PASSWORD}"
-$MYSQL -e "CREATE DATABASE IF NOT EXISTS $DATABASE"
+$MYSQL -e "DROP DATABASE IF EXISTS $DATABASE;"
+$MYSQL -e "CREATE DATABASE $DATABASE CHARACTER SET utf8;"
 $MYSQL $DATABASE < $PWD/schema.sql
 
 ## create keystone user

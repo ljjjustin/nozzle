@@ -57,7 +57,6 @@ class Client(object):
 
     def show_loadbalancer(self, loadbalancer):
         """Fetches information of a certain router."""
-        import pdb; pdb.set_trace()
         return self.get(self.loadbalancer_path % (loadbalancer))
 
     def __init__(self, **kwargs):
@@ -70,47 +69,14 @@ class Client(object):
         self.retries = 0
         self.retry_interval = 1
 
-    def _handle_fault_response(self, status_code, response_body):
-        # Create exception with HTTP status code and message
-        error_message = response_body
-        ##_logger.debug("Error message: %s", error_message)
-        # Add deserialized error message to exception arguments
-        try:
-            des_error_body = Serializer().deserialize(error_message,
-                                                      self.content_type())
-        except:
-            des_error_body = {'message': error_message}
-        # Raise the appropriate exception
-        ##exception_handler_v20(status_code, des_error_body)
-        raise Exception(des_error_body)
-
-    def do_request(self, method, action, body=None, headers=None, params=None):
-        # Add format and tenant_id
-        action = self.action_prefix + action
-        if params:
-            action += '?' + urllib.urlencode(params, doseq=1)
-        if body:
-            body = self.serialize(body)
-        self.httpclient.content_type = self.content_type()
-        resp, replybody = self.httpclient.do_request(action, method, body=body)
-        status_code = self.get_status_code(resp)
-        if status_code in (httplib.OK,
-                           httplib.CREATED,
-                           httplib.ACCEPTED,
-                           httplib.NO_CONTENT):
-            return self.deserialize(replybody, status_code)
-        else:
-            self._handle_fault_response(status_code, replybody)
-
-    def get_status_code(self, response):
+    def content_type(self, format=None):
         """
-        Returns the integer status code from the response, which
-        can be either a Webob.Response (used in testing) or httplib.Response
+        Returns the mime-type for either 'xml' or 'json'.  Defaults to the
+        currently set format
         """
-        if hasattr(response, 'status_int'):
-            return response.status_int
-        else:
-            return response.status
+        if not format:
+            format = self.format
+        return "application/%s" % (format)
 
     def serialize(self, data):
         """
@@ -133,49 +99,58 @@ class Client(object):
             return data
         return Serializer().deserialize(data, self.content_type())
 
-    def content_type(self, format=None):
+    def get_status_code(self, response):
         """
-        Returns the mime-type for either 'xml' or 'json'.  Defaults to the
-        currently set format
+        Returns the integer status code from the response, which
+        can be either a Webob.Response (used in testing) or httplib.Response
         """
-        if not format:
-            format = self.format
-        return "application/%s" % (format)
+        if hasattr(response, 'status_int'):
+            return response.status_int
+        else:
+            return response.status
 
-    def retry_request(self, method, action, body=None,
-                      headers=None, params=None):
-        """
-        Call do_request with the default retry configuration. Only
-        idempotent requests should retry failed connection attempts.
+    def handle_fault_response(self, status_code, response_body):
+        # Create exception with HTTP status code and message
+        error_message = response_body
+        ##_logger.debug("Error message: %s", error_message)
+        # Add deserialized error message to exception arguments
+        try:
+            des_error_body = Serializer().deserialize(error_message,
+                                                      self.content_type())
+        except:
+            des_error_body = {'message': error_message}
+        # Raise the appropriate exception
+        raise Exception(des_error_body)
 
-        :raises: ConnectionFailed if the maximum # of retries is exceeded
-        """
-        max_attempts = self.retries + 1
-        for i in xrange(max_attempts):
-            try:
-                return self.do_request(method, action, body=body,
-                                       headers=headers, params=params)
-            except exception.ConnectionFailed:
-                # Exception has already been logged by do_request()
-                if i < self.retries:
-                    ##_logger.debug(_('Retrying connection to quantum service'))
-                    time.sleep(self.retry_interval)
-
-        raise exception.ConnectionFailed(reason=_("Maximum attempts reached"))
+    def do_request(self, method, action, body=None, headers=None, params=None):
+        action = self.action_prefix + action
+        if params:
+            action += '?' + urllib.urlencode(params, doseq=1)
+        if body:
+            body = self.serialize(body)
+        self.httpclient.content_type = self.content_type()
+        resp, replybody = self.httpclient.do_request(action, method, body=body)
+        status_code = self.get_status_code(resp)
+        if status_code in (httplib.OK,
+                           httplib.CREATED,
+                           httplib.ACCEPTED,
+                           httplib.NO_CONTENT):
+            return self.deserialize(replybody, status_code)
+        else:
+            self.handle_fault_response(status_code, replybody)
 
     def delete(self, action, body=None, headers=None, params=None):
-        return self.retry_request("DELETE", action, body=body,
-                                  headers=headers, params=params)
+        return self.do_request("DELETE", action, body=body,
+                               headers=headers, params=params)
 
     def get(self, action, body=None, headers=None, params=None):
-        return self.retry_request("GET", action, body=body,
-                                  headers=headers, params=params)
+        return self.do_request("GET", action, body=body,
+                               headers=headers, params=params)
 
     def post(self, action, body=None, headers=None, params=None):
-        # Do not retry POST requests to avoid the orphan objects problem.
         return self.do_request("POST", action, body=body,
                                headers=headers, params=params)
 
     def put(self, action, body=None, headers=None, params=None):
-        return self.retry_request("PUT", action, body=body,
-                                  headers=headers, params=params)
+        return self.do_request("PUT", action, body=body,
+                               headers=headers, params=params)

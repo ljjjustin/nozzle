@@ -21,8 +21,8 @@ import datetime
 
 from sqlalchemy.sql.expression import literal_column
 
-from shunt import exception
-from shunt.db.sqlalchemy import models
+from nozzle.common import exception
+from nozzle.db.sqlalchemy import models
 
 
 def utcnow():

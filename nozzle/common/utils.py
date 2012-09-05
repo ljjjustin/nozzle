@@ -21,6 +21,9 @@ import inspect
 import lockfile
 import os
 import random
+import shutil
+import shlex
+import subprocess
 import sys
 import uuid
 
@@ -33,6 +36,7 @@ from nozzle.openstack.common import timeutils
 from nozzle.common import context
 from nozzle.common import flags
 from nozzle.common import log as logging
+from nozzle import db
 
 FLAGS = flags.FLAGS
 nova_client = None
@@ -102,7 +106,6 @@ def str_uuid():
 def utcnow():
     return timeutils.utcnow()
 
-"""
 def delete_if_exists(pathname):
     try:
         os.unlink(pathname)
@@ -123,14 +126,11 @@ def backup_config(filepath, backup_dir):
         shutil.move(filepath, dst)
     except OSError as (errno, strerror):
         LOG.error('shutil.move(%s, %s) fail: %s' % (filepath, dst, strerror))
-        utils.delete_if_exists(filepath)
+        delete_if_exists(filepath)
         raise
-"""
 
 
-"""
 def execute(cmd):
-    # TODO(wenjianhn) try?
     # NOTE(wenjianhn): shlex supports ascii only
     cmd = cmd.encode('ascii')
 
@@ -143,7 +143,7 @@ def execute(cmd):
             exit_code=e.returncode,
             output=e.output,
             cmd=cmd)
-"""
+
 
 def synchronized(name):
     def wrap(f):

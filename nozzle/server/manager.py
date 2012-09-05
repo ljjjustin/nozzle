@@ -22,6 +22,7 @@ import zmq
 
 from nozzle.openstack.common import jsonutils
 
+from nozzle import db
 from nozzle import manager
 from nozzle.common import context
 from nozzle.common import flags
@@ -108,14 +109,15 @@ def worker_routine(*args, **kwargs):
         socks = dict(poller.poll(100))
         if socks.get(feedback) == zmq.POLLIN:
             msg_type, msg_uuid, msg_json = feedback.recv_multipart()
-            msg_body = json.loads(msg_json)
+            msg_body = jsonutils.loads(msg_json)
             LOG.debug("<<<<<<< worker: %s" % msg_body)
             # update load balancer's state
             try:
-                args = msg_body['msg']
+                args = msg_body
                 ctxt = context.get_admin_context()
                 api.update_load_balancer_state(ctxt, **args)
             except Exception, exp:
+                print str(exp)
                 continue
 
 
@@ -148,16 +150,18 @@ def checker_routine(*args, **kwargs):
                     elif load_balancer_ref.state == state.DELETING:
                         message['cmd'] = 'delete_lb'
                         result['user_id'] = load_balancer_ref['user_id']
-                        result['tenant_id'] = load_balancer_ref['tenant_id']
+                        result['tenant_id'] = load_balancer_ref['project_id']
                         result['uuid'] = load_balancer_ref['uuid']
                         result['protocol'] = load_balancer_ref['protocol']
-                    message['msg'] = result
-                    request_msg = json.dumps(message)
+                    message['args'] = result
+                    request_msg = jsonutils.dumps(message)
                     LOG.debug(">>>>>>> worker: %s" % request_msg)
                     broadcast.send_multipart([msg_type, msg_uuid, request_msg])
                 except Exception, exp:
+                    print str(exp)
                     continue
         except Exception:
+            print str(exp)
             continue
 
 

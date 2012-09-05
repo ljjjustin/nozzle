@@ -16,10 +16,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import json
 import webob.dec
 import webob.exc
 
+from nozzle.openstack.common import jsonutils
 from nozzle.openstack.common import wsgi
 
 
@@ -43,7 +43,7 @@ class Versions(object):
 
         reponse = dict(versions=version_objs)
 
-        body = json.dumps(reponse)
+        body = jsonutils.dumps(reponse)
 
         reponse = webob.Response()
         reponse.body = body

@@ -11,6 +11,14 @@ broadcast_listen_port = 5558
 feedback_listen = 127.0.0.1
 feedback_listen_port = 5559
 sql_connection=mysql://root:nova@127.0.0.1:3306/nozzle
+keystone_username=demo
+keystone_password=demo
+keystone_tenant_name=demo
+keystone_auth_url=http://localhost:5000/v2.0
+rabbit_userid=guest
+rabbit_password=nova
+notification_driver=openstack.common.notifier.rabbit_notifier
+notification_topics=loadbalancer
 
 [nginx]
 listen = 127.0.0.1:80
