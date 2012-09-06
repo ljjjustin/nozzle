@@ -16,12 +16,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import logging
 import webob.dec
 import webob.exc
 
 from nozzle.openstack.common import cfg
 from nozzle.openstack.common import wsgi
+from nozzle.openstack.common import log as logging
 
 from nozzle.common import context
 

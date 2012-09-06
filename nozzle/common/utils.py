@@ -33,9 +33,9 @@ from novaclient.v1_1 import client
 
 from nozzle.openstack.common import cfg
 from nozzle.openstack.common import timeutils
+from nozzle.openstack.common import log as logging
 from nozzle.common import context
 from nozzle.common import flags
-from nozzle.common import log as logging
 from nozzle import db
 
 FLAGS = flags.FLAGS

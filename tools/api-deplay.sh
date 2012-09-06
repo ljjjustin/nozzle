@@ -32,6 +32,11 @@ $MYSQL -e "DROP DATABASE IF EXISTS $DATABASE;"
 $MYSQL -e "CREATE DATABASE $DATABASE CHARACTER SET utf8;"
 $MYSQL $DATABASE < $PWD/schema.sql
 
+##catalog.RegionOne.loadbalance.publicURL = http://10.217.12.175:5556
+##catalog.RegionOne.loadbalance.adminURL = http://10.217.12.175:5556
+##catalog.RegionOne.loadbalance.internalURL = http://10.217.12.175:5556
+##catalog.RegionOne.loadbalance.name = Load Balance Service
+
 ## create keystone user
 export OS_USERNAME=admin
 export OS_PASSWORD=nova

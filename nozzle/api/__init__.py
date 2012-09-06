@@ -16,14 +16,17 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import logging
 import routes
 import webob.dec
 import webob.exc
 
 from nozzle.openstack.common import wsgi
+from nozzle.openstack.common import log as logging
 
 from nozzle.api import loadbalancer
+
+
+LOG = logging.getLogger(__name__)
 
 
 class FaultWrapper(wsgi.Middleware):

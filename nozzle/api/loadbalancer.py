@@ -20,12 +20,14 @@ import webob.exc
 import zmq
 
 from nozzle.openstack.common import jsonutils
+from nozzle.openstack.common import log as logging
 from nozzle.openstack.common import wsgi
 
 from nozzle.common import flags
 from nozzle.common import utils
 
 FLAGS = flags.FLAGS
+LOG = logging.getLogger(__name__)
 
 
 class ZmqClient(object):

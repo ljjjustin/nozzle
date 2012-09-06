@@ -20,6 +20,8 @@ import os
 import sys
 sys.path.insert(0, os.getcwd())
 
+from nozzle.openstack.common import log as logging
+
 from nozzle.common import flags
 from nozzle.common import utils
 from nozzle.server import manager
@@ -27,6 +29,7 @@ from nozzle.server import manager
 if __name__ == '__main__':
     utils.default_cfgfile()
     flags.FLAGS(sys.argv)
+    logging.setup('nozzle')
 
     server = manager.ServerManager()
     server.init_host()

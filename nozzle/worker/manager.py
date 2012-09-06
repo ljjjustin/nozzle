@@ -16,9 +16,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import json
-import logging
 import zmq
+
+from nozzle.openstack.common import jsonutils
+from nozzle.openstack.common import log as logging
 
 from nozzle import manager
 from nozzle.common import exception
@@ -27,21 +28,7 @@ from nozzle.worker.driver import haproxy
 from nozzle.worker.driver import nginx
 
 FLAGS = flags.FLAGS
-
-
-def setup_logging(logfile):
-    logger = logging.getLogger(logfile)
-    logger.setLevel(logging.DEBUG)
-
-    handler = logging.FileHandler(logfile)
-    handler.setLevel(logging.DEBUG)
-
-    formatter = logging.Formatter(
-            "%(asctime)s %(name)s %(levelname)s: %(message)s [-] %(funcName)s"
-            " from (pid=%(process)d) %(filename)s:%(lineno)d")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    return logger
+LOG = logging.getLogger(__name__)
 
 
 class WorkerManager(manager.Manager):
@@ -55,7 +42,7 @@ class WorkerManager(manager.Manager):
         Child class should override this method
 
         """
-        self.LOG = setup_logging('/var/log/nozzle/worker.log')
+        pass
 
     def start(self):
         context = zmq.Context()
@@ -79,24 +66,24 @@ class WorkerManager(manager.Manager):
 
     def wait(self):
 
-        self.LOG.debug('nozzle worker starting...')
+        LOG.info('nozzle worker starting...')
 
         while True:
             socks = dict(self.poller.poll())
             if socks.get(self.broadcast) == zmq.POLLIN:
                 msg_type, msg_id, msg_body = self.broadcast.recv_multipart()
-                message = json.loads(msg_body)
-                self.LOG.info('Received request: %s', message)
+                message = jsonutils.loads(msg_body)
+                LOG.info('Received request: %s', message)
 
                 response_msg = {'code': 200, 'message': 'OK'}
                 # check input message
                 if 'cmd' not in message or 'args' not in message:
-                    self.LOG.warn("Error. 'cmd' or 'args' not in message")
+                    LOG.warn("Error. 'cmd' or 'args' not in message")
                     response_msg['code'] = 500
                     response_msg['message'] = "missing 'cmd' or 'args' field"
 
                     self.feedback.send_multipart([msg_type, msg_id,
-                                                  json.dumps(response_msg)])
+                                                  jsonutils.dumps(response_msg)])
                     break
 
                 if message['args']['protocol'] == 'http':
@@ -112,7 +99,7 @@ class WorkerManager(manager.Manager):
                         response_msg['code'] = 500
                         response_msg['message'] = str(e)
                 else:
-                    self.LOG.exception('Error. Unsupported protocol')
+                    LOG.exception('Error. Unsupported protocol')
                     response_msg['code'] = 500
                     response_msg['message'] = "Error: unsupported protocol"
 
@@ -120,4 +107,4 @@ class WorkerManager(manager.Manager):
                 response_msg['cmd'] = message['cmd']
                 response_msg['uuid'] = message['args']['uuid']
                 self.feedback.send_multipart([msg_type, msg_id,
-                                              json.dumps(response_msg)])
+                                              jsonutils.dumps(response_msg)])

@@ -17,10 +17,10 @@
 #    under the License.
 
 import eventlet
-import logging
 import zmq
 
 from nozzle.openstack.common import jsonutils
+from nozzle.openstack.common import log as logging
 
 from nozzle import db
 from nozzle import manager
@@ -31,30 +31,14 @@ from nozzle.server import api
 from nozzle.server import state
 
 FLAGS = flags.FLAGS
-
-
-def setup_logging(logfile):
-    logger = logging.getLogger(logfile)
-    logger.setLevel(logging.DEBUG)
-
-    handler = logging.FileHandler(logfile)
-    handler.setLevel(logging.DEBUG)
-
-    formatter = logging.Formatter(
-            "%(asctime)s %(name)s %(levelname)s: %(message)s [-] %(funcName)s"
-            " from (pid=%(process)d) %(filename)s:%(lineno)d")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    return logger
+LOG = logging.getLogger(__name__)
 
 
 def client_routine(*args, **kwargs):
-    handler = kwargs['handler']
-    broadcast = kwargs['broadcast']
-    # Setup logging
-    LOG = setup_logging('/var/log/nozzle/client.log')
     LOG.info('nozzle client starting...')
 
+    handler = kwargs['handler']
+    broadcast = kwargs['broadcast']
     poller = zmq.Poller()
     poller.register(handler, zmq.POLLIN)
 
@@ -96,11 +80,9 @@ def client_routine(*args, **kwargs):
 
 
 def worker_routine(*args, **kwargs):
-    feedback = kwargs['feedback']
-    # Setup logging
-    LOG = setup_logging('/var/log/nozzle/worker.log')
     LOG.info('nozzle worker starting...')
 
+    feedback = kwargs['feedback']
     poller = zmq.Poller()
     poller.register(feedback, zmq.POLLIN)
 
@@ -122,11 +104,9 @@ def worker_routine(*args, **kwargs):
 
 
 def checker_routine(*args, **kwargs):
-    broadcast = kwargs['broadcast']
-    # Setup logging
-    LOG = setup_logging('/var/log/nozzle/checker.log')
     LOG.info('nozzle checker starting...')
 
+    broadcast = kwargs['broadcast']
     states = [state.CREATING, state.UPDATING, state.DELETING]
     while True:
         eventlet.sleep(6)

@@ -1,8 +1,9 @@
-import logging
 import validate
 import os
 
 from nozzle.openstack.common import cfg
+from nozzle.openstack.common import log as logging
+
 from nozzle.common import flags
 from nozzle.common import exception
 from nozzle.common import validate
