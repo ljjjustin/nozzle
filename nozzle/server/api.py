@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from openstack.common.notifier import api as notifier
+
 """nozzle api."""
 from nozzle import db
 from nozzle.common import exception
@@ -25,6 +27,123 @@ from nozzle.server import protocol
 from nozzle.server import state
 
 FLAGS = flags.FLAGS
+
+
+def format_msg_to_client(load_balancer_ref):
+    result = dict()
+    expect_keys = [
+        'uuid', 'name', 'protocol', 'instance_port',
+        'free', 'listen_port', 'state',
+    ]
+    for key in expect_keys:
+        result[key] = getattr(load_balancer_ref, key)
+    expect_configs = [
+        'balancing_method',
+        'health_check_timeout_ms',
+        'health_check_interval_ms',
+        'health_check_target_path',
+        'health_check_healthy_threshold',
+        'health_check_unhealthy_threshold',
+    ]
+    config = dict()
+    for key in expect_configs:
+        config[key] = getattr(load_balancer_ref.config, key)
+
+    instance_uuids = map(lambda x: x['instance_uuid'],
+                         load_balancer_ref.instances)
+    http_server_names = map(lambda x: x['name'],
+                         load_balancer_ref.domains)
+    dns_names = []
+    protocol = load_balancer_ref.protocol
+    prefix = load_balancer_ref.dns_prefix
+    postfixs = []
+    if protocol == 'http':
+        postfixs = FLAGS.http_postfixs
+    elif protocol == 'tcp':
+        postfixs = FLAGS.tcp_postfixs
+    for postfix in postfixs:
+        dns_name = '%s%s' % (prefix, postfix)
+        dns_names.append(dns_name)
+
+    result['config'] = config
+    result['dns_names'] = dns_names
+    result['instance_uuids'] = instance_uuids
+    result['http_server_names'] = http_server_names
+    return result
+
+
+def format_msg_to_worker(load_balancer_ref):
+    result = dict()
+    result['user_id'] = load_balancer_ref.user_id
+    result['tenant_id'] = load_balancer_ref.project_id
+    result['uuid'] = load_balancer_ref.uuid
+    result['protocol'] = load_balancer_ref.protocol
+    expect_keys = [
+        'dns_prefix', 'instance_port', 'listen_port',
+    ]
+    for key in expect_keys:
+        result[key] = getattr(load_balancer_ref, key)
+    expect_configs = [
+        'balancing_method',
+        'health_check_timeout_ms',
+        'health_check_interval_ms',
+        'health_check_target_path',
+        'health_check_healthy_threshold',
+        'health_check_unhealthy_threshold',
+    ]
+    for key in expect_configs:
+        result[key] = getattr(load_balancer_ref.config, key)
+
+    instance_uuids = map(lambda x: x['instance_uuid'],
+                         load_balancer_ref.instances)
+    http_server_names = map(lambda x: x['name'],
+                         load_balancer_ref.domains)
+    dns_names = []
+    protocol = load_balancer_ref.protocol
+    prefix = load_balancer_ref.dns_prefix
+    postfixs = []
+    if protocol == 'http':
+        postfixs = FLAGS.http_postfixs
+    elif protocol == 'tcp':
+        postfixs = FLAGS.tcp_postfixs
+    for postfix in postfixs:
+        dns_name = '%s%s' % (prefix, postfix)
+        dns_names.append(dns_name)
+    instance_ips = []
+    for uuid in instance_uuids:
+        instance_ips.append(utils.get_fixed_ip_by_instance_uuid(uuid))
+
+    result['dns_names'] = dns_names
+    result['instance_ips'] = instance_ips
+    result['instance_uuids'] = instance_uuids
+    result['http_server_names'] = http_server_names
+    return result
+
+
+def get_msg_to_worker(context, method, **kwargs):
+    result = dict()
+    message = dict()
+    load_balancer_ref = None
+    if method == 'delete_load_balancer':
+        result['cmd'] = 'delete_lb'
+        message['user_id'] = kwargs['user_id']
+        message['tenant_id'] = kwargs['tenant_id']
+        message['uuid'] = kwargs['uuid']
+        message['protocol'] = kwargs['protocol']
+    elif method == 'create_load_balancer':
+        result['cmd'] = 'create_lb'
+        load_balancer_ref = db.load_balancer_get_by_name(context,
+                kwargs['name'])
+        message = format_msg_to_worker(load_balancer_ref)
+    elif method.startswith('update_load_balancer'):
+        result['cmd'] = 'update_lb'
+        load_balancer_ref = db.load_balancer_get_by_uuid(context,
+                kwargs['uuid'])
+        message = format_msg_to_worker(load_balancer_ref)
+    else:
+        return None
+    result['args'] = message
+    return result
 
 
 def create_load_balancer(context, **kwargs):
@@ -155,32 +274,6 @@ def get_all_http_servers(context, **kwargs):
     return {'data': result}
 
 
-def get_msg_to_worker(context, method, **kwargs):
-    result = dict()
-    message = dict()
-    load_balancer_ref = None
-    if method == 'delete_load_balancer':
-        result['cmd'] = 'delete_lb'
-        message['user_id'] = kwargs['user_id']
-        message['tenant_id'] = kwargs['tenant_id']
-        message['uuid'] = kwargs['uuid']
-        message['protocol'] = kwargs['protocol']
-    elif method == 'create_load_balancer':
-        result['cmd'] = 'create_lb'
-        load_balancer_ref = db.load_balancer_get_by_name(context,
-                kwargs['name'])
-        message = format_msg_to_worker(load_balancer_ref)
-    elif method.startswith('update_load_balancer'):
-        result['cmd'] = 'update_lb'
-        load_balancer_ref = db.load_balancer_get_by_uuid(context,
-                kwargs['uuid'])
-        message = format_msg_to_worker(load_balancer_ref)
-    else:
-        return None
-    result['args'] = message
-    return result
-
-
 def delete_load_balancer_hard(context, load_balancer_ref):
     try:
         for association_ref in load_balancer_ref.instances:
@@ -204,104 +297,27 @@ def update_load_balancer_state(context, **kwargs):
     except Exception, exp:
         raise exception.UpdateLoadBalancerFailed(msg=str(exp))
 
+    payload = {
+        'uuid': kwargs['uuid'],
+        'tenant_id': context.tenant_id,
+    }
+
     if code == 200:
         if load_balancer_ref.state == state.DELETING:
             delete_load_balancer_hard(context, load_balancer_ref)
+            notifier.notify(context, 'loadbalancer', 'deleted',
+                            notifier.INFO, payload)
         elif load_balancer_ref.state in [state.CREATING, state.UPDATING]:
             db.load_balancer_update_state(context, uuid, state.ACTIVE)
+            notifier.notify(context, 'loadbalancer', 'created',
+                            notifier.INFO, payload)
         else:
             db.load_balancer_update_state(context, uuid, state.ERROR)
+            notifier.notify(context, 'loadbalancer', 'error',
+                            notifier.INFO, payload)
+
     elif code == 500:
         if load_balancer_ref.state != state.DELETING:
             db.load_balancer_update_state(context, uuid, state.ERROR)
-
-
-def format_msg_to_client(load_balancer_ref):
-    result = dict()
-    expect_keys = [
-        'uuid', 'name', 'protocol', 'instance_port',
-        'free', 'listen_port', 'state',
-    ]
-    for key in expect_keys:
-        result[key] = getattr(load_balancer_ref, key)
-    expect_configs = [
-        'balancing_method',
-        'health_check_timeout_ms',
-        'health_check_interval_ms',
-        'health_check_target_path',
-        'health_check_healthy_threshold',
-        'health_check_unhealthy_threshold',
-    ]
-    config = dict()
-    for key in expect_configs:
-        config[key] = getattr(load_balancer_ref.config, key)
-
-    instance_uuids = map(lambda x: x['instance_uuid'],
-                         load_balancer_ref.instances)
-    http_server_names = map(lambda x: x['name'],
-                         load_balancer_ref.domains)
-    dns_names = []
-    protocol = load_balancer_ref.protocol
-    prefix = load_balancer_ref.dns_prefix
-    postfixs = []
-    if protocol == 'http':
-        postfixs = FLAGS.http_postfixs
-    elif protocol == 'tcp':
-        postfixs = FLAGS.tcp_postfixs
-    for postfix in postfixs:
-        dns_name = '%s%s' % (prefix, postfix)
-        dns_names.append(dns_name)
-
-    result['config'] = config
-    result['dns_names'] = dns_names
-    result['instance_uuids'] = instance_uuids
-    result['http_server_names'] = http_server_names
-    return result
-
-
-def format_msg_to_worker(load_balancer_ref):
-    result = dict()
-    result['user_id'] = load_balancer_ref.user_id
-    result['tenant_id'] = load_balancer_ref.project_id
-    result['uuid'] = load_balancer_ref.uuid
-    result['protocol'] = load_balancer_ref.protocol
-    expect_keys = [
-        'dns_prefix', 'instance_port', 'listen_port',
-    ]
-    for key in expect_keys:
-        result[key] = getattr(load_balancer_ref, key)
-    expect_configs = [
-        'balancing_method',
-        'health_check_timeout_ms',
-        'health_check_interval_ms',
-        'health_check_target_path',
-        'health_check_healthy_threshold',
-        'health_check_unhealthy_threshold',
-    ]
-    for key in expect_configs:
-        result[key] = getattr(load_balancer_ref.config, key)
-
-    instance_uuids = map(lambda x: x['instance_uuid'],
-                         load_balancer_ref.instances)
-    http_server_names = map(lambda x: x['name'],
-                         load_balancer_ref.domains)
-    dns_names = []
-    protocol = load_balancer_ref.protocol
-    prefix = load_balancer_ref.dns_prefix
-    postfixs = []
-    if protocol == 'http':
-        postfixs = FLAGS.http_postfixs
-    elif protocol == 'tcp':
-        postfixs = FLAGS.tcp_postfixs
-    for postfix in postfixs:
-        dns_name = '%s%s' % (prefix, postfix)
-        dns_names.append(dns_name)
-    instance_ips = []
-    for uuid in instance_uuids:
-        instance_ips.append(utils.get_fixed_ip_by_instance_uuid(uuid))
-
-    result['dns_names'] = dns_names
-    result['instance_ips'] = instance_ips
-    result['instance_uuids'] = instance_uuids
-    result['http_server_names'] = http_server_names
-    return result
+            notifier.notify(context, 'loadbalancer', 'error',
+                            notifier.INFO, payload)
