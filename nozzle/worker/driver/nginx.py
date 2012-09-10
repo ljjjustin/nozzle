@@ -1,4 +1,3 @@
-import validate
 import os
 
 from nozzle.openstack.common import cfg
