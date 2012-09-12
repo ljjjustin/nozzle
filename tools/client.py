@@ -1,39 +1,41 @@
 #!/usr/bin/env python
 
 import json
-import sqlalchemy
+import os
 import sys
 import time
 import uuid
 
-from sqlalchemy.ext.sqlsoup import SqlSoup
 
-from nozzle.client.v1_0 import client
-
-
-def str_uuid():
-    return str(uuid.uuid4())
+auth_url = os.environ['OS_AUTH_URL']
+username = os.environ['OS_USERNAME']
+password = os.environ['OS_PASSWORD']
+tenant_name = os.environ['OS_TENANT_NAME']
 
 
-def warning(msg):
-    print msg
-    sys.exit(0)
-
+def get_all_instance_uuids():
+    from novaclient.v1_1 import client
+    nova_client = client.Client(username,
+                                password,
+                                tenant_name,
+                                auth_url=auth_url)
+    nova_client.servers.list()
 
 if __name__ == '__main__':
 
-    db = SqlSoup('mysql://root:nova@localhost/nova')
-    instances = db.instances.filter_by(deleted=False).all()
-    instance_uuids = map(lambda x: x.uuid, instances)
+    from nozzle.client.v1_0 import client
+
+    instance_uuids = get_all_instance_uuids()
     if len(instance_uuids) < 1:
-        warning('there is no instance, exit...')
+        print 'there is no instance, exit...'
+        sys.exit(0)
     first_instance = instance_uuids[0]
     selected_instances = [instance_uuids[i] for i in xrange(2)]
 
-    nozzle_client = client.Client(username="demo",
-                                  password="nova",
-                                  tenant_name="demo",
-                                  auth_url="http://localhost:5000/v2.0")
+    nozzle_client = client.Client(username=username,
+                                  password=password,
+                                  tenant_name=tenant_name,
+                                  auth_url=auth_url)
     load_balancer_config = {
         'balancing_method': 'round_robin',
         'health_check_timeout_ms': 50000,
@@ -78,7 +80,6 @@ if __name__ == '__main__':
     id = result['loadbalancer']['uuid']
     print nozzle_client.show_loadbalancer(id)
 
-    instances = [str_uuid(), str_uuid()]
     request_body['loadbalancer']['instance_uuids'] = selected_instances
     nozzle_client.update_loadbalancer(id, body=request_body)
     print nozzle_client.show_loadbalancer(id)
