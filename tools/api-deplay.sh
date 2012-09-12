@@ -32,17 +32,20 @@ $MYSQL -e "DROP DATABASE IF EXISTS $DATABASE;"
 $MYSQL -e "CREATE DATABASE $DATABASE CHARACTER SET utf8;"
 $MYSQL $DATABASE < $PWD/schema.sql
 
-##catalog.RegionOne.loadbalance.publicURL = http://10.217.12.175:5556
-##catalog.RegionOne.loadbalance.adminURL = http://10.217.12.175:5556
-##catalog.RegionOne.loadbalance.internalURL = http://10.217.12.175:5556
-##catalog.RegionOne.loadbalance.name = Load Balance Service
+## add load balance into service catalog
+source nozzlerc
+sed -i -e '/loadbalance/d' /etc/keystone/default_catalog.templates
+
+(cat <<EOF
+
+catalog.RegionOne.loadbalance.publicURL = http://localhost:5556
+catalog.RegionOne.loadbalance.adminURL = http://localhost:5556
+catalog.RegionOne.loadbalance.internalURL = http://localhost:5556
+catalog.RegionOne.loadbalance.name = Load Balance Service
+EOF
+) >> /etc/keystone/default_catalog.templates
 
 ## create keystone user
-##export OS_USERNAME=admin
-##export OS_PASSWORD=nova
-##export OS_TENANT_NAME=admin
-##export OS_AUTH_URL=http://127.0.0.1:5000/v2.0
-
 TENANT_ID=$(keystone tenant-list | grep " service " | get_field 1)
 USER_ID=$(keystone user-list | grep " nozzle " | get_field 1)
 
