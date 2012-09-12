@@ -14,13 +14,13 @@ tenant_name = os.environ['OS_TENANT_NAME']
 
 
 def get_all_instance_uuids():
-    import pdb; pdb.set_trace()
     from novaclient.v1_1 import client
     nova_client = client.Client(username,
                                 password,
                                 tenant_name,
                                 auth_url=auth_url)
     instances = nova_client.servers.list()
+    return [instance.id for instance in instances]
 
 if __name__ == '__main__':
 
