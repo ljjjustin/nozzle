@@ -38,15 +38,15 @@ $MYSQL $DATABASE < $PWD/schema.sql
 ##catalog.RegionOne.loadbalance.name = Load Balance Service
 
 ## create keystone user
-export OS_USERNAME=admin
-export OS_PASSWORD=nova
-export OS_TENANT_NAME=admin
-export OS_AUTH_URL=http://127.0.0.1:5000/v2.0
+##export OS_USERNAME=admin
+##export OS_PASSWORD=nova
+##export OS_TENANT_NAME=admin
+##export OS_AUTH_URL=http://127.0.0.1:5000/v2.0
 
 TENANT_ID=$(keystone tenant-list | grep " service " | get_field 1)
 USER_ID=$(keystone user-list | grep " nozzle " | get_field 1)
 
-if [ $USER_ID != "" ]
+if [ "$USER_ID" != "" ]
 then
     keystone user-delete $USER_ID 
 fi
