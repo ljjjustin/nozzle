@@ -58,7 +58,7 @@ class Controller(object):
         super(Controller, self).__init__()
 
     def index(self, req):
-        LOG.info(req)
+        LOG.info(req.environ['nozzle.context'])
         context = req.environ['nozzle.context']
         zmq_args = {
             'method': 'get_all_load_balancers',
@@ -67,6 +67,7 @@ class Controller(object):
                 'tenant_id': context.tenant_id,
             },
         }
+        LOG.debug(zmq_args)
         result = self.client.call(zmq_args)
         if result['code'] != 200:
             LOG.error('get_all_load_balancers failed.')
@@ -78,7 +79,7 @@ class Controller(object):
         return self.index(req)
 
     def create(self, req, body=None):
-        LOG.info(req)
+        LOG.info(req.environ['nozzle.context'])
         context = req.environ['nozzle.context']
         zmq_args = {
             'method': 'create_load_balancer',
@@ -89,6 +90,7 @@ class Controller(object):
         }
         loadbalancer = body['loadbalancer']
         zmq_args['args'].update(loadbalancer)
+        LOG.debug(zmq_args)
         result = self.client.call(zmq_args)
         if result['code'] != 200:
             LOG.error('create_load_balancer failed.')
@@ -97,7 +99,7 @@ class Controller(object):
             return dict({"loadbalancer": result['data']})
 
     def show(self, req, id):
-        LOG.info(req)
+        LOG.info(req.environ['nozzle.context'])
         context = req.environ['nozzle.context']
         zmq_args = {
             'method': 'get_load_balancer',
@@ -107,6 +109,7 @@ class Controller(object):
                 'uuid': id,
             },
         }
+        LOG.debug(zmq_args)
         result = self.client.call(zmq_args)
         if result['code'] != 200:
             LOG.error('get_load_balancer failed.')
@@ -115,7 +118,7 @@ class Controller(object):
             return dict({"loadbalancer": result['data']})
 
     def update(self, req, id, body=None):
-        LOG.info(req)
+        LOG.info(req.environ['nozzle.context'])
         context = req.environ['nozzle.context']
         zmq_args = {
             'method': 'update_load_balancer',
@@ -127,6 +130,7 @@ class Controller(object):
         }
         loadbalancer = body['loadbalancer']
         zmq_args['args'].update(loadbalancer)
+        LOG.debug(zmq_args)
         result = self.client.call(zmq_args)
         if result['code'] != 200:
             LOG.error('update_load_balancer failed.')
@@ -135,7 +139,7 @@ class Controller(object):
             return dict({"message": "successful"})
 
     def delete(self, req, id):
-        LOG.info(req)
+        LOG.info(req.environ['nozzle.context'])
         context = req.environ['nozzle.context']
         zmq_args = {
             'method': 'delete_load_balancer',
@@ -145,6 +149,7 @@ class Controller(object):
                 'uuid': id,
             },
         }
+        LOG.debug(zmq_args)
         result = self.client.call(zmq_args)
         if result['code'] != 200:
             LOG.error('delete_load_balancer failed.')
