@@ -69,11 +69,7 @@ class Controller(object):
         }
         LOG.debug(zmq_args)
         result = self.client.call(zmq_args)
-        if result['code'] != 200:
-            LOG.error('get_all_load_balancers failed.')
-            return webob.exc.HTTPError(result['message'])
-        else:
-            return dict({"loadbalancers": result['data']})
+        return result
 
     def detail(self, req):
         return self.index(req)
@@ -92,11 +88,7 @@ class Controller(object):
         zmq_args['args'].update(loadbalancer)
         LOG.debug(zmq_args)
         result = self.client.call(zmq_args)
-        if result['code'] != 200:
-            LOG.error('create_load_balancer failed.')
-            return webob.exc.HTTPError(result['message'])
-        else:
-            return dict({"loadbalancer": result['data']})
+        return result
 
     def show(self, req, id):
         LOG.info(req.environ['nozzle.context'])
@@ -111,11 +103,7 @@ class Controller(object):
         }
         LOG.debug(zmq_args)
         result = self.client.call(zmq_args)
-        if result['code'] != 200:
-            LOG.error('get_load_balancer failed.')
-            return webob.exc.HTTPError(result['message'])
-        else:
-            return dict({"loadbalancer": result['data']})
+        return result
 
     def update(self, req, id, body=None):
         LOG.info(req.environ['nozzle.context'])
@@ -132,11 +120,7 @@ class Controller(object):
         zmq_args['args'].update(loadbalancer)
         LOG.debug(zmq_args)
         result = self.client.call(zmq_args)
-        if result['code'] != 200:
-            LOG.error('update_load_balancer failed.')
-            return webob.exc.HTTPError(result['message'])
-        else:
-            return dict({"message": "successful"})
+        return result
 
     def delete(self, req, id):
         LOG.info(req.environ['nozzle.context'])
@@ -151,11 +135,7 @@ class Controller(object):
         }
         LOG.debug(zmq_args)
         result = self.client.call(zmq_args)
-        if result['code'] != 200:
-            LOG.error('delete_load_balancer failed.')
-            return webob.exc.HTTPError(result['message'])
-        else:
-            return dict({"message": "successful"})
+        return result
 
 
 def create_resource():

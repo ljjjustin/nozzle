@@ -56,7 +56,7 @@ if __name__ == '__main__':
         }
     }
     result = nozzle_client.create_loadbalancer(body=request_body)
-    id = result['loadbalancer']['uuid']
+    id = result['data']['uuid']
     print nozzle_client.show_loadbalancer(id)
 
     domains = ['www.111.com', 'www.222.com']
@@ -78,7 +78,7 @@ if __name__ == '__main__':
         }
     }
     result = nozzle_client.create_loadbalancer(body=request_body)
-    id = result['loadbalancer']['uuid']
+    id = result['data']['uuid']
     print nozzle_client.show_loadbalancer(id)
 
     request_body['loadbalancer']['instance_uuids'] = selected_instances
