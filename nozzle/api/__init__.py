@@ -67,6 +67,8 @@ class APIRouter(wsgi.Router):
                         action='index', conditions=dict(method=['GET']))
         mapper.connect('/loadbalancers/detail', controller=lb_resource,
                         action='detail', conditions=dict(method=['GET']))
+        mapper.connect('/loadbalancers/domains', controller=lb_resource,
+                        action='domains', conditions=dict(method=['GET']))
         mapper.connect('/loadbalancers', controller=lb_resource,
                         action='create', conditions=dict(method=['POST']))
         mapper.connect('/loadbalancers/{id}', controller=lb_resource,

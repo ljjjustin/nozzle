@@ -16,7 +16,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import webob.exc
 import zmq
 
 from nozzle.openstack.common import jsonutils
@@ -73,6 +72,20 @@ class Controller(object):
 
     def detail(self, req):
         return self.index(req)
+
+    def domains(self, req):
+        LOG.info(req.environ['nozzle.context'])
+        context = req.environ['nozzle.context']
+        zmq_args = {
+            'method': 'get_all_http_servers',
+            'args': {
+                'user_id': context.user_id,
+                'tenant_id': context.tenant_id,
+            },
+        }
+        LOG.debug(zmq_args)
+        result = self.client.call(zmq_args)
+        return result
 
     def create(self, req, body=None):
         LOG.info(req.environ['nozzle.context'])

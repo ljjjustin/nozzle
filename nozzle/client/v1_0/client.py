@@ -55,6 +55,10 @@ class Client(object):
         """Fetches a list of loadbalancers for a tenant."""
         return self.get(self.loadbalancers_path, params=_params)
 
+    def list_loadbalancer_domains(self, **_params)
+        """Fetches all domains binding to load balancers."""
+        return self.get(self.loadbalancer_path % ('domains'), params=_params)
+
     def show_loadbalancer(self, loadbalancer):
         """Fetches information of a certain router."""
         return self.get(self.loadbalancer_path % (loadbalancer))
