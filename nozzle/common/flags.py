@@ -20,6 +20,7 @@
 
 from nozzle.openstack.common import cfg
 
+
 default_opts = [
     cfg.StrOpt('auth_strategy',
                default='keystone',

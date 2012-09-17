@@ -58,12 +58,14 @@ if __name__ == '__main__':
     result = nozzle_client.create_loadbalancer(body=request_body)
     id = result['data']['uuid']
     print nozzle_client.show_loadbalancer(id)
+    print nozzle_client.list_loadbalancer_domains()
 
     domains = ['www.111.com', 'www.222.com']
     request_body['loadbalancer']['instance_uuids'] = selected_instances
     request_body['loadbalancer']['http_server_names'] = domains
     nozzle_client.update_loadbalancer(id, body=request_body)
     print nozzle_client.show_loadbalancer(id)
+    print nozzle_client.list_loadbalancer_domains()
 
     nozzle_client.delete_loadbalancer(id)
 
@@ -80,6 +82,7 @@ if __name__ == '__main__':
     result = nozzle_client.create_loadbalancer(body=request_body)
     id = result['data']['uuid']
     print nozzle_client.show_loadbalancer(id)
+    print nozzle_client.list_loadbalancer_domains()
 
     request_body['loadbalancer']['instance_uuids'] = selected_instances
     nozzle_client.update_loadbalancer(id, body=request_body)
