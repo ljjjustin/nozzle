@@ -96,6 +96,11 @@ class LoadBalancerNotFoundByName(NozzleException):
                 "found by name.")
 
 
+class LoadBalancerNotFoundByInstanceUUID(NozzleException):
+    message = _("LoadBalancer %(instance_uuid)s could not be "
+                "found by name.")
+
+
 class LoadBalancerConfigNotFound(NozzleException):
     message = _("LoadBalancerConfig %(config_id)s could not be found.")
 

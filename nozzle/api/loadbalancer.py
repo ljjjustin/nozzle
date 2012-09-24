@@ -150,6 +150,21 @@ class Controller(object):
         result = self.client.call(zmq_args)
         return result
 
+    def get_by_instance_uuid(self, req, id):
+        LOG.info(req.environ['nozzle.context'])
+        context = req.environ['nozzle.context']
+        zmq_args = {
+            'method': 'get_load_balancer_by_instance_uuid',
+            'args': {
+                'user_id': context.user_id,
+                'tenant_id': context.tenant_id,
+                'instance_uuid': id,
+            },
+        }
+        LOG.debug(zmq_args)
+        result = self.client.call(zmq_args)
+        return result
+
 
 def create_resource():
     controller = Controller()

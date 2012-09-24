@@ -294,3 +294,18 @@ def load_balancer_instance_association_destroy(context,
                 filter_by(instance_uuid=instance_uuid).\
                 delete()
         context.session.flush()
+
+
+def load_balancer_get_by_instance_uuid(context, instance_uuid):
+    result = model_query(context, models.LoadBalancerInstanceAssociation).\
+                        filter_by(instance_uuid=instance_uuid).\
+                        all()
+    if not result:
+        raise exception.LoadBalancerNotFoundByInstanceUUID(
+                                instance_uuid=instance_uuid)
+
+    for association_ref in result:
+        load_balancer_ref = load_balancer_get(context,
+                                              association_ref.load_balancer_id)
+        if load_balancer_ref.free:
+            return load_balancer_ref
