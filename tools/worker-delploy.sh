@@ -38,6 +38,7 @@ defaults
     contimeout 6000
     clitimeout 600000
     srvtimeout 600000
+
 listen admin_stats 0.0.0.0:1024
     mode http
     option httpchk
