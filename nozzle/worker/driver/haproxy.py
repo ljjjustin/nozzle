@@ -185,8 +185,8 @@ class HaproxyConfigurer(object):
 
     def _get_lb_name(self, msg):
         # TODO(wenjianhn): utf-8 support, base64
-        return "%s_%s" % (msg['tenant_id'],
-                          msg['uuid'])
+        ##return "%s_%s" % (msg['tenant_id'],
+        return "%s" % msg['uuid']
 
     def _create_haproxy_lb_server_directive(self, msg):
         servers = []

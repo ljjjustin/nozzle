@@ -64,19 +64,23 @@ class APIRouter(wsgi.Router):
         lb_resource = loadbalancer.create_resource()
 
         mapper.connect('/loadbalancers', controller=lb_resource,
-                        action='index', conditions=dict(method=['GET']))
+                       action='index', conditions=dict(method=['GET']))
         mapper.connect('/loadbalancers/detail', controller=lb_resource,
-                        action='detail', conditions=dict(method=['GET']))
+                       action='detail', conditions=dict(method=['GET']))
         mapper.connect('/loadbalancers/domains', controller=lb_resource,
-                        action='domains', conditions=dict(method=['GET']))
+                       action='domains', conditions=dict(method=['GET']))
         mapper.connect('/loadbalancers', controller=lb_resource,
-                        action='create', conditions=dict(method=['POST']))
+                       action='create', conditions=dict(method=['POST']))
         mapper.connect('/loadbalancers/{id}', controller=lb_resource,
-                        action='show', conditions=dict(method=['GET']))
+                       action='show', conditions=dict(method=['GET']))
         mapper.connect('/loadbalancers/{id}', controller=lb_resource,
-                        action='update', conditions=dict(method=['PUT']))
+                       action='update', conditions=dict(method=['PUT']))
         mapper.connect('/loadbalancers/{id}', controller=lb_resource,
-                        action='delete', conditions=dict(method=['DELETE']))
+                       action='delete', conditions=dict(method=['DELETE']))
+        mapper.connect('/loadbalancers/get_by_instance_uuid/{id}',
+                       controller=lb_resource,
+                       action='get_by_instance_uuid',
+                       conditions=dict(method=['GET']))
 
 
 class APIRouterV10(APIRouter):

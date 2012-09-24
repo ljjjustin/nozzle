@@ -60,15 +60,20 @@ class Client(object):
         return self.get(self.loadbalancer_path % ('domains'), params=_params)
 
     def show_loadbalancer(self, loadbalancer):
-        """Fetches information of a certain router."""
+        """Fetches information of a certain load balancer."""
         return self.get(self.loadbalancer_path % (loadbalancer))
+
+    def get_by_instance_uuid(self, instance_uuid):
+        """get info of load balancer by instance."""
+        return self.get("/%s/get_by_instance_uuid/%s" %
+                        (self.loadbalancers_path, instance_uuid))
 
     def __init__(self, **kwargs):
         """Initialize a new client for the Nozzle v1.0 API."""
         super(Client, self).__init__()
         self.httpclient = HTTPClient(**kwargs)
-        self.version = '1.0'
-        self.action_prefix = "/v%s" % self.version
+        ##self.version = '1.0'
+        ##self.action_prefix = "/v%s" % self.version
         self.format = 'json'
         self.retries = 0
         self.retry_interval = 1
@@ -127,7 +132,7 @@ class Client(object):
         raise Exception(des_error_body)
 
     def do_request(self, method, action, body=None, headers=None, params=None):
-        action = self.action_prefix + action
+        ##action = self.action_prefix + action
         if params:
             action += '?' + urllib.urlencode(params, doseq=1)
         if body:

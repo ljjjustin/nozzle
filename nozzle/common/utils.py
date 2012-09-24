@@ -36,6 +36,7 @@ from nozzle.openstack.common import cfg
 from nozzle.openstack.common import timeutils
 from nozzle.openstack.common import log as logging
 from nozzle.common import context
+from nozzle.common import exception
 from nozzle.common import flags
 from nozzle import db
 

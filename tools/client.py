@@ -89,3 +89,20 @@ if __name__ == '__main__':
     print nozzle_client.show_loadbalancer(id)
 
     nozzle_client.delete_loadbalancer(id)
+
+    request_body = {
+        'loadbalancer': {
+            'free': True,
+            'name': 'ssh1',
+            'protocol': 'tcp',
+            'instance_port': 22,
+            'instance_uuids': [first_instance],
+            'http_server_names': [],
+            'config': load_balancer_config,
+        }
+    }
+    result = nozzle_client.create_loadbalancer(body=request_body)
+    id = result['data']['uuid']
+    result = nozzle_client.get_by_instance_uuid(first_instance)
+    print result
+    nozzle_client.delete_loadbalancer(id)

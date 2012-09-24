@@ -238,6 +238,23 @@ def get_load_balancer(context, **kwargs):
     return {'data': result}
 
 
+def get_load_balancer_by_instance_uuid(context, **kwargs):
+    expect_keys = [
+        'tenant_id', 'instance_uuid',
+    ]
+    utils.check_input_parameters(expect_keys, **kwargs)
+    result = None
+    uuid = kwargs['instance_uuid']
+    try:
+        load_balancer_ref = db.load_balancer_get_by_instance_uuid(context,
+                                                                  uuid)
+        result = format_msg_to_client(load_balancer_ref)
+    except Exception, exp:
+        raise exception.GetLoadBalancerFailed(msg=str(exp))
+
+    return {'data': result}
+
+
 def get_all_load_balancers(context, **kwargs):
     expect_keys = [
         'user_id', 'tenant_id',
