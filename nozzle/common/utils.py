@@ -233,10 +233,11 @@ def get_all_load_balancers(filters=None):
 def get_fixed_ip_by_instance_uuid(uuid):
     global nova_client
     if nova_client is None:
-        nova_client = client.Client(FLAGS.keystone_username,
-                                    FLAGS.keystone_password,
-                                    FLAGS.keystone_tenant_name,
-                                    FLAGS.keystone_auth_url,
+        nova_client = client.Client(FLAGS.nova_admin_username,
+                                    FLAGS.nova_admin_password,
+                                    FLAGS.nova_admin_tenant_name,
+                                    FLAGS.nova_admin_auth_url,
+                                    region_name=FLAGS.nova_region_name,
                                     service_type="compute")
     instance = nova_client.servers.get(uuid)
     for ip_group, addresses in instance.addresses.items():
