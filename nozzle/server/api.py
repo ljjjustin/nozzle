@@ -16,8 +16,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from openstack.common.notifier import api as notifier
-
 """nozzle api."""
 from nozzle import db
 from nozzle.common import exception
@@ -25,6 +23,7 @@ from nozzle.common import flags
 from nozzle.common import utils
 from nozzle.server import protocol
 from nozzle.server import state
+from nozzle.openstack.common.notifier import api as notifier
 
 FLAGS = flags.FLAGS
 
