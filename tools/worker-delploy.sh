@@ -3,9 +3,9 @@
 # config nginx
 touch /etc/nginx/conf.d/sws-log-format.conf
 (cat <<EOF
-log_format sws_proxy_log_fmt '$remote_addr - $remote_user [$time_local] '
-                             '"$request" $status $body_bytes_sent '
-                             '"$http_referer" "$http_user_agent" "$request_time"';
+log_format sws_proxy_log_fmt '\$remote_addr - \$remote_user [\$time_local] '
+                             '"\$request" \$status \$body_bytes_sent '
+                             '"\$http_referer" "\$http_user_agent" "\$request_time"';
 EOF
 ) > /etc/nginx/conf.d/sws-log-format.conf
 # restart nginx
