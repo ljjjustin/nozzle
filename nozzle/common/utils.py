@@ -238,7 +238,8 @@ def get_fixed_ip_by_instance_uuid(uuid):
                                     FLAGS.nova_admin_tenant_name,
                                     FLAGS.nova_admin_auth_url,
                                     region_name=FLAGS.nova_region_name,
-                                    service_type="compute")
+                                    service_type="compute",
+                                    no_cache=True)
     instance = nova_client.servers.get(uuid)
     for ip_group, addresses in instance.addresses.items():
         for address in addresses:
