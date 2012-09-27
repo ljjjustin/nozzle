@@ -149,6 +149,7 @@ def notify(context, load_balancer_ref, event):
     payload = {
         'tenant_id': load_balancer_ref.project_id,
         'uuid': load_balancer_ref.uuid,
+        'name': load_balancer_ref.name,
         'free': load_balancer_ref.free,
     }
     notifier.notify(context, 'loadbalancer', event, notifier.INFO, payload)
