@@ -145,13 +145,26 @@ def get_msg_to_worker(context, method, **kwargs):
     return result
 
 
+def notify(context, load_balancer_ref, event):
+    payload = {
+        'tenant_id': load_balancer_ref.project_id,
+        'uuid': load_balancer_ref.uuid,
+        'free': load_balancer_ref.free,
+    }
+    notifier.notify(context, 'loadbalancer', event, notifier.INFO, payload)
+
+
 def create_load_balancer(context, **kwargs):
     try:
         module = protocol.get_protocol_module(kwargs['protocol'])
         module_func = getattr(module, 'create_load_balancer')
+        result = module_func(context, **kwargs)
+        uuid = result['data']['uuid']
+        load_balancer_ref = db.load_balancer_get_by_uuid(context, uuid)
+        notify(context, load_balancer_ref, 'loadbalancer.create.start')
+        return result
     except Exception, exp:
         raise exception.CreateLoadBalancerFailed(msg=str(exp))
-    return module_func(context, **kwargs)
 
 
 def delete_load_balancer(context, **kwargs):
@@ -164,6 +177,7 @@ def delete_load_balancer(context, **kwargs):
     try:
         load_balancer_ref = db.load_balancer_get_by_uuid(context, uuid)
         db.load_balancer_update_state(context, uuid, state.DELETING)
+        notify(context, load_balancer_ref, 'loadbalancer.delete.start')
     except Exception, exp:
         raise exception.DeleteLoadBalancerFailed(msg=str(exp))
 
@@ -191,6 +205,7 @@ def update_load_balancer(context, **kwargs):
             update_load_balancer_http_servers(context, **kwargs)
         elif key == 'instance_uuids':
             update_load_balancer_instances(context, **kwargs)
+    notify(context, load_balancer_ref, 'loadbalancer.update.start')
 
 
 def update_load_balancer_config(context, **kwargs):
@@ -313,27 +328,20 @@ def update_load_balancer_state(context, **kwargs):
     except Exception, exp:
         raise exception.UpdateLoadBalancerFailed(msg=str(exp))
 
-    payload = {
-        'uuid': kwargs['uuid'],
-        'tenant_id': context.tenant_id,
-    }
-
     if code == 200:
         if load_balancer_ref.state == state.DELETING:
             delete_load_balancer_hard(context, load_balancer_ref)
-            notifier.notify(context, 'loadbalancer', 'deleted',
-                            notifier.INFO, payload)
-        elif load_balancer_ref.state in [state.CREATING, state.UPDATING]:
+            notify(context, load_balancer_ref, 'loadbalancer.delete.end')
+        elif load_balancer_ref.state == state.CREATING:
             db.load_balancer_update_state(context, uuid, state.ACTIVE)
-            notifier.notify(context, 'loadbalancer', 'created',
-                            notifier.INFO, payload)
-        else:
-            db.load_balancer_update_state(context, uuid, state.ERROR)
-            notifier.notify(context, 'loadbalancer', 'error',
-                            notifier.INFO, payload)
-
+            notify(context, load_balancer_ref, 'loadbalancer.create.end')
+        elif load_balancer_ref.state == state.UPDATING:
+            db.load_balancer_update_state(context, uuid, state.ACTIVE)
+            notify(context, load_balancer_ref, 'loadbalancer.update.end')
     elif code == 500:
-        if load_balancer_ref.state != state.DELETING:
+        if load_balancer_ref.state == state.CREATING:
             db.load_balancer_update_state(context, uuid, state.ERROR)
-            notifier.notify(context, 'loadbalancer', 'error',
-                            notifier.INFO, payload)
+            notify(context, load_balancer_ref, 'loadbalancer.create.error')
+        elif load_balancer_ref.state == state.UPDATING:
+            db.load_balancer_update_state(context, uuid, state.ERROR)
+            notify(context, load_balancer_ref, 'loadbalancer.update.error')
