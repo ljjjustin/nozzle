@@ -38,7 +38,7 @@ class Unauthorized(NozzleException):
     """
     HTTP 401 - Unauthorized: bad credentials.
     """
-    pass
+    message = _("Unauthorized: bad credentials.")
 
 
 class Forbidden(NozzleException):
@@ -46,7 +46,8 @@ class Forbidden(NozzleException):
     HTTP 403 - Forbidden: your credentials don't give you access to this
     resource.
     """
-    pass
+    message = _("Forbidden: your credentials don't give you "
+                "access to this resource")
 
 
 # api exceptions

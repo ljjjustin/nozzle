@@ -74,7 +74,7 @@ def create_load_balancer(context, **kwargs):
     except Exception, exp:
         raise exception.CreateLoadBalancerFailed(msg=str(exp))
     else:
-        raise exception.CreateLoadBalancerFailed(msg='unknown error!')
+        raise exception.CreateLoadBalancerFailed(msg='already exists!')
 
     # create load balancer
     config_ref = None
