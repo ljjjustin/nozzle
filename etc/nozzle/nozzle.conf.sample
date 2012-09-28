@@ -20,6 +20,7 @@ rabbit_userid=guest
 rabbit_password=nova
 notification_driver=nozzle.openstack.common.notifier.rabbit_notifier
 notification_topics=loadbalancer
+control_exchange=nova
 
 [nginx]
 listen = 127.0.0.1:80

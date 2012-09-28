@@ -95,6 +95,12 @@ sql_opts = [
                help='Retry interval when database connection error occur'),
     ]
 
+rpc_opts = [
+    cfg.StrOpt('control_exchange',
+               default='nova',
+               help='AMQP exchange to connect to if using RabbitMQ'),
+]
+
 protocol_opts = [
     cfg.ListOpt('tcp_postfixs',
                 default=['.elb4.sinasws.com', '.internal.elb4.sinasws.com'],
@@ -108,4 +114,5 @@ FLAGS = cfg.CONF
 FLAGS.register_opts(default_opts)
 FLAGS.register_opts(api_opts)
 FLAGS.register_opts(sql_opts)
+FLAGS.register_opts(rpc_opts)
 FLAGS.register_opts(protocol_opts)
