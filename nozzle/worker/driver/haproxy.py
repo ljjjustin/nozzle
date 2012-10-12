@@ -283,8 +283,8 @@ class HaproxyConfigurer(object):
         bind_directive = ','.join(map(lambda ip: "%s:%s" % (ip, listen_port),
                                       self._bind_ip))
 
-        _HAPROXY_LB_FMT = \
-            '\nlisten\t%s\n\tmode tcp\n\tbind %s\n\tbalance %s\n\ttimeout check %sms\n%s'
+        _HAPROXY_LB_FMT = ('\nlisten\t%s\n\tmode tcp\n\tbind %s\n\t'
+                           'balance %s\n\ttimeout check %sms\n%s')
 
         config = _HAPROXY_LB_FMT % (lb_name,
                                     bind_directive,

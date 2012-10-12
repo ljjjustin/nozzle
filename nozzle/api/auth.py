@@ -67,7 +67,7 @@ def pipeline_factory(loader, global_config, **local_config):
     pipeline = pipeline.split()
     filters = [loader.get_filter(n) for n in pipeline[:-1]]
     app = loader.get_app(pipeline[-1])
-    filters.reverse() # apply in reverse order!
+    filters.reverse()  # apply in reverse order!
     for filter in filters:
         app = filter(app)
     return app

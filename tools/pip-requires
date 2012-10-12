@@ -1,0 +1,8 @@
+Paste
+PasteDeploy==1.5.0
+eventlet>=0.9.17
+greenlet>=0.3.1
+httplib2
+pyzmq
+sqlalchemy>0.6.4
+webob==1.0.8

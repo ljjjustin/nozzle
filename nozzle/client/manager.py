@@ -18,6 +18,7 @@
 
 from nozzle.client.v1_0 import client
 
+
 class ClientManager(object):
     """Manages access to API clients, including authentication."""
 

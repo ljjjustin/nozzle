@@ -83,7 +83,8 @@ class WorkerManager(manager.Manager):
                     response_msg['message'] = "missing 'cmd' or 'args' field"
 
                     self.feedback.send_multipart([msg_type, msg_id,
-                                                  jsonutils.dumps(response_msg)])
+                                                  jsonutils.dumps(
+                                                      response_msg)])
                     break
 
                 if message['args']['protocol'] == 'http':

@@ -108,6 +108,7 @@ def str_uuid():
 def utcnow():
     return timeutils.utcnow()
 
+
 def delete_if_exists(pathname):
     try:
         os.unlink(pathname)

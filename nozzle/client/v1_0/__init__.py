@@ -124,7 +124,7 @@ class ListCommand(NozzleCommand, Lister):
         collection = self.resource + 's'
         if collection in data:
             info = data[collection]
-        columns =  len(info) > 0 and sorted(info[0].keys()) or []
+        columns = len(info) > 0 and sorted(info[0].keys()) or []
         rows = []
         for i in info:
             row = []

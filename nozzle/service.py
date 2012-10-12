@@ -53,7 +53,7 @@ class WSGIService(object):
     def __init__(self, name, loader=None):
         """Initialize, but do not start the WSGI server."""
         self.name = name
-        self.app =  utils.load_paste_app(name)
+        self.app = utils.load_paste_app(name)
         ##self.manager = self._get_manager()
         self.server = wsgi.Server()
 
