@@ -97,7 +97,7 @@ function run_pep8 {
   echo "Running pep8 ..."
 
   PEP8_EXCLUDE="*.pyc,.venv,.tox,dist,doc,openstack,*egg"
-  PEP8_OPTIONS="--exclude=$PEP8_EXCLUDE --ignore=E125 --repeat --show-source"
+  PEP8_OPTIONS="--exclude=$PEP8_EXCLUDE --ignore=E125,E127 --repeat --show-source"
   PEP8_INCLUDE="bin/* nozzle setup*.py"
   ${wrapper} pep8 $PEP8_OPTIONS $PEP8_INCLUDE
 }

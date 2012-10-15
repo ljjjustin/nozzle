@@ -156,8 +156,8 @@ class HaproxyConfigurer(object):
             raise exception.HaproxyUpdateError(explanation=str(e))
 
         try:
-            new_cfg_path = self._create_lb_haproxy_cfg(msg,
-                                        base_cfg_path=lb_deleted_cfg_path)
+            new_cfg_path = self._create_lb_haproxy_cfg(
+                msg, base_cfg_path=lb_deleted_cfg_path)
         except exception.HaproxyCreateCfgError as e:
             raise exception.HaproxyUpdateError(explanation=str(e))
 
@@ -191,8 +191,8 @@ class HaproxyConfigurer(object):
     def _create_haproxy_lb_server_directive(self, msg):
         servers = []
 
-        _HAPROXY_LB_SERVER_FMT = \
-        '\tserver %s %s:%s check inter %sms rise %s fall %s'
+        _HAPROXY_LB_SERVER_FMT = ('\tserver %s %s:%s '
+                                  'check inter %sms rise %s fall %s')
 
         n = len(msg['instance_uuids'])
         for i in range(n):
@@ -234,8 +234,8 @@ class HaproxyConfigurer(object):
     def _create_lb_haproxy_cfg(self, msg,
                                base_cfg_path='/etc/haproxy/haproxy.cfg'):
         try:
-            haproxy_new_proxy_cfg = self._create_haproxy_listen_cfg(msg,
-                                                            base_cfg_path)
+            haproxy_new_proxy_cfg = self._create_haproxy_listen_cfg(
+                msg, base_cfg_path)
         except exception.HaproxyLBExists as e:
             LOG.warn('%s', e)
             raise exception.HaproxyCreateCfgError(explanation=str(e))
@@ -265,8 +265,8 @@ class HaproxyConfigurer(object):
             raise exception.HaproxyLBExists(name=lb_name)
 
         listen_port = int(msg['listen_port'])
-        if listen_port < self.listen_port_min or \
-           listen_port > self.listen_port_max:
+        if (listen_port < self.listen_port_min or
+            listen_port > self.listen_port_max):
             warn_msg = 'Valid listen port(%s) should between %s and %s' % (
                 listen_port, self.listen_port_min, self.listen_port_max)
             LOG.error(warn_msg)
@@ -276,6 +276,7 @@ class HaproxyConfigurer(object):
             balancing_method = 'roundrobin'
         else:
             balancing_method = 'source'
+
         LOG.info("selft._bind_ip = %s" % self._bind_ip)
 
         server_directives = self._create_haproxy_lb_server_directive(msg)
@@ -339,7 +340,7 @@ class HaproxyConfigurer(object):
                               if line.startswith('listen')]
         except IndexError:
             LOG.error("No item was found after listen directive,"
-                         "is the haproxy configuraion file valid?")
+                      "is the haproxy configuraion file valid?")
             raise
 
         return lb_name in in_use_lb_name

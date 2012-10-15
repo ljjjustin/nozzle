@@ -20,7 +20,7 @@ def _is_uuid_like(val):
 def is_ipv4(value):
     if not isinstance(value, basestring):
         raise exception.InvalidType(valid_type='basestring',
-                                     invalid_type=type(value))
+                                    invalid_type=type(value))
 
     if len(value.split('.')) != 4:
         raise exception.InvalidIpv4Address(address=value)
@@ -34,7 +34,7 @@ def is_ipv4(value):
 def is_ipv4_port_list(ip_port_list):
     if not isinstance(ip_port_list, list):
         raise exception.InvalidType(valid_type='list',
-                                     invalid_type=type(ip_port_list))
+                                    invalid_type=type(ip_port_list))
     for ip_port in ip_port_list:
         ip, port = tuple(ip_port.split(":"))
 
@@ -42,8 +42,8 @@ def is_ipv4_port_list(ip_port_list):
 
         if not port.isdigit() or (int(port) < 1 or int(port) > 65535):
             raise exception.InvalidPort(port=port,
-                                         msg="Valid port should"
-                                         " be between 1-65535")
+                                        msg=("Valid port should "
+                                             "be between 1-65535"))
 
     return True
 
@@ -87,8 +87,8 @@ def _is_valid_server_names(server_names):
 
 def _check_create_or_update_lb(request):
     required_keys = ['user_id', 'tenant_id', 'uuid',
-                 'balancing_method', 'instance_ips', 'instance_port',
-                 'dns_names']
+                     'balancing_method', 'instance_ips',
+                     'instance_port', 'dns_names']
 
     for key in required_keys:
         if key not in request['args']:
@@ -104,7 +104,7 @@ def _check_create_or_update_lb(request):
 
     args = request['args']
     if args['balancing_method'] not in ['source_binding',
-                                       'round_robin']:
+                                        'round_robin']:
         msg = "Invalid balancing_method: %s" % args['balancing_method']
         raise exception.BadRequest(explanation=msg)
 

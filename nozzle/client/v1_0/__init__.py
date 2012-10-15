@@ -45,8 +45,8 @@ class CreateCommand(NozzleCommand, ShowOne):
     def get_parser(self, prog_name):
         parser = super(CreateCommand, self).get_parser(prog_name)
         parser.add_argument(
-                '--tenant_id', metavar='tenant_id',
-                help=_('the owner tenant ID'),)
+            '--tenant_id', metavar='tenant_id',
+            help=_('the owner tenant ID'),)
         self.add_known_arguments(parser)
         return parser
 
@@ -74,7 +74,7 @@ class UpdateCommand(NozzleCommand):
     def get_parser(self, prog_name):
         parser = super(UpdateCommand, self).get_parser(prog_name)
         parser.add_argument(
-                'id', metavar='ID or name of %s to update' % self.resource)
+            'id', metavar='ID or name of %s to update' % self.resource)
         return parser
 
     def run(self, parsed_args):
@@ -94,7 +94,7 @@ class DeleteCommand(NozzleCommand):
     def get_parser(self, prog_name):
         parser = super(DeleteCommand, self).get_parser(prog_name)
         parser.add_argument(
-                'id', metavar='ID or name of %s to delete' % self.resource)
+            'id', metavar='ID or name of %s to delete' % self.resource)
         return parser
 
     def run(self, parsed_args):

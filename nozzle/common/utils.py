@@ -153,7 +153,7 @@ def synchronized(name):
         @functools.wraps(f)
         def inner(*args, **kwargs):
             LOG.debug('Attempting to grab file lock "%(lock)s" for '
-                        'method "%(method)s"...' %
+                      'method "%(method)s"...' %
                       {'lock': name, 'method': f.__name__})
 
             lock_file_path = os.path.join('/var/run',
@@ -163,7 +163,7 @@ def synchronized(name):
 
             with lock:
                 LOG.debug('Got file lock "%(lock)s" for '
-                            'method "%(method)s"...' %
+                          'method "%(method)s"...' %
                           {'lock': name, 'method': f.__name__})
                 return f(*args, **kwargs)
 
@@ -186,7 +186,8 @@ def allocate_listen_port():
     deleted_load_balancers = filter(lambda x: x['deleted'], all_lbs)
     allocated_ports = map(lambda x: x['listen_port'], active_load_balancers)
     available_ports = filter(lambda x: x not in allocated_ports,
-            map(lambda y: y['listen_port'], deleted_load_balancers))
+                             map(lambda y: y['listen_port'],
+                                 deleted_load_balancers))
 
     if available_ports:
         return available_ports[0]

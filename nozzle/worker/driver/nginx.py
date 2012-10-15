@@ -32,8 +32,9 @@ upstream %(upstream_name)s {
 }
 '''
 
-_NGX_UPSTREAM_SERVER_FMT = ("\tserver %(ip)s:%(port)s max_fails=%(max_fails)s "
-                             "fail_timeout=%(fail_timeout)ss;")
+_NGX_UPSTREAM_SERVER_FMT = ("\tserver %(ip)s:%(port)s "
+                            "max_fails=%(max_fails)s "
+                            "fail_timeout=%(fail_timeout)ss;")
 
 _NGX_SERVER_FMT = '''
 server {
@@ -238,9 +239,9 @@ class NginxProxyConfigurer(object):
         source_binding = ' '
         round_robin = '#'
 
-        balancing_method = source_binding if \
-                           msg['balancing_method'] == 'source_binding' \
-                           else round_robin
+        balancing_method = source_binding
+        if msg['balancing_method'] != 'source_binding':
+            balancing_method = round_robin
 
         # TODO(wenjinahn): ngx healthy check
 
@@ -248,10 +249,11 @@ class NginxProxyConfigurer(object):
         fail_timeout = 10
         server_list = []
         for ip in msg['instance_ips']:
-            server_list.append(_NGX_UPSTREAM_SERVER_FMT % {'ip': ip,
-                                                'port': msg['instance_port'],
-                                                'max_fails': max_fails,
-                                                'fail_timeout': fail_timeout})
+            server_list.append(_NGX_UPSTREAM_SERVER_FMT %
+                               {'ip': ip,
+                                'port': msg['instance_port'],
+                                'max_fails': max_fails,
+                                'fail_timeout': fail_timeout})
 
         return _NGX_UPSTREAM_FMT % {'upstream_name': upstream_name,
                                     'balancing_method': balancing_method,
@@ -286,8 +288,8 @@ class NginxProxyConfigurer(object):
     def _create_http_ngx_cfg_buffer(self, msg):
         ngx_upstream_name = self._upstream_name(msg)
 
-        ngx_upstream_directive = \
-                self._create_ngx_upstream_directive(ngx_upstream_name, msg)
+        ngx_upstream_directive = self._create_ngx_upstream_directive(
+            ngx_upstream_name, msg)
 
         ngx_server_directive = self._create_ngx_server_directive(
             ngx_upstream_name, msg)

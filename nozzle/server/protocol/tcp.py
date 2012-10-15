@@ -42,22 +42,22 @@ def create_load_balancer(context, **kwargs):
 
     if not 1 <= kwargs['instance_port'] <= 65535:
         raise exception.InvalidParameter(
-                msg='invalid instance port, should between 1~65535')
+            msg='invalid instance port, should between 1~65535')
     if config['balancing_method'] not in ['round_robin', 'source_binding']:
         raise exception.InvalidParameter(
-                msg='invalid balancing method, round_robin or source_binding')
+            msg='invalid balancing method, round_robin or source_binding')
     if not 100 <= config['health_check_timeout_ms']:
         raise exception.InvalidParameter(
-                msg='healthy check timeout out of range, 100ms~120s')
+            msg='healthy check timeout out of range, 100ms~120s')
     if not 100 <= config['health_check_interval_ms']:
         raise exception.InvalidParameter(
-                msg='Healthy check interval out of rage, 100ms~10m')
+            msg='Healthy check interval out of rage, 100ms~10m')
     if not 1 <= config['health_check_healthy_threshold'] <= 10:
         raise exception.InvalidParameter(
-                msg='Healthy check healthy threshold out of rage, 1~10')
+            msg='Healthy check healthy threshold out of rage, 1~10')
     if not 1 <= config['health_check_unhealthy_threshold'] <= 10:
         raise exception.InvalidParameter(
-                msg='Healthy check unhealthy threshold out of rage, 1~10')
+            msg='Healthy check unhealthy threshold out of rage, 1~10')
 
     try:
         free = kwargs['free']
@@ -104,9 +104,9 @@ def create_load_balancer(context, **kwargs):
             'health_check_interval_ms': config['health_check_interval_ms'],
             'health_check_target_path': '',
             'health_check_healthy_threshold':
-                                config['health_check_healthy_threshold'],
+            config['health_check_healthy_threshold'],
             'health_check_unhealthy_threshold':
-                                config['health_check_unhealthy_threshold'],
+            config['health_check_unhealthy_threshold'],
         }
         config_ref = db.load_balancer_config_create(context, config_values)
         # binding instances
@@ -120,8 +120,8 @@ def create_load_balancer(context, **kwargs):
     except Exception, exp:
         if load_balancer_ref:
             for instance_uuid in associated_instances:
-                db.load_balancer_instance_association_destroy(context,
-                        load_balancer_ref.id, instance_uuid)
+                db.load_balancer_instance_association_destroy(
+                    context, load_balancer_ref.id, instance_uuid)
         if config_ref:
             db.load_balancer_config_destroy(context, config_ref.id)
         if load_balancer_ref:
@@ -150,19 +150,19 @@ def update_load_balancer_config(context, **kwargs):
 
     if config['balancing_method'] not in ['round_robin', 'source_binding']:
         raise exception.InvalidParameter(
-                msg='invalid balancing method, round_robin or source_binding')
+            msg='invalid balancing method, round_robin or source_binding')
     if not 100 <= config['health_check_timeout_ms']:
         raise exception.InvalidParameter(
-                msg='healthy check timeout out of range, 100ms~120s')
+            msg='healthy check timeout out of range, 100ms~120s')
     if not 100 <= config['health_check_interval_ms']:
         raise exception.InvalidParameter(
-                msg='Healthy check interval out of rage, 100ms~10m')
+            msg='Healthy check interval out of rage, 100ms~10m')
     if not 1 <= config['health_check_healthy_threshold'] <= 10:
         raise exception.InvalidParameter(
-                msg='Healthy check healthy threshold out of rage, 1~10')
+            msg='Healthy check healthy threshold out of rage, 1~10')
     if not 1 <= config['health_check_unhealthy_threshold'] <= 10:
         raise exception.InvalidParameter(
-                msg='Healthy check unhealthy threshold out of rage, 1~10')
+            msg='Healthy check unhealthy threshold out of rage, 1~10')
 
     uuid = kwargs['uuid']
     try:
@@ -177,9 +177,9 @@ def update_load_balancer_config(context, **kwargs):
         'health_check_interval_ms': config['health_check_interval_ms'],
         'health_check_target_path': '',
         'health_check_healthy_threshold':
-                            config['health_check_healthy_threshold'],
+        config['health_check_healthy_threshold'],
         'health_check_unhealthy_threshold':
-                            config['health_check_unhealthy_threshold'],
+        config['health_check_unhealthy_threshold'],
     }
     try:
         db.load_balancer_config_destroy(context, load_balancer_ref.config.id)
@@ -201,7 +201,7 @@ def update_load_balancer_instances(context, **kwargs):
     new_instance_uuids = kwargs['instance_uuids']
     if not new_instance_uuids:
         raise exception.InvalidParameter(
-                msg='instance_uuids can not be null')
+            msg='instance_uuids can not be null')
 
     uuid = kwargs['uuid']
     try:
@@ -217,12 +217,12 @@ def update_load_balancer_instances(context, **kwargs):
                                     new_instance_uuids)
     try:
         for instance_uuid in need_deleted_instances:
-            db.load_balancer_instance_association_destroy(context,
-                    load_balancer_ref.id, instance_uuid)
+            db.load_balancer_instance_association_destroy(
+                context, load_balancer_ref.id, instance_uuid)
         for instance_uuid in need_created_instances:
             association = {
-                    'load_balancer_id': load_balancer_ref.id,
-                    'instance_uuid': instance_uuid,
+                'load_balancer_id': load_balancer_ref.id,
+                'instance_uuid': instance_uuid,
             }
             db.load_balancer_instance_association_create(context, association)
         db.load_balancer_update_state(context, uuid, state.UPDATING)

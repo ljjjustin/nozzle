@@ -41,19 +41,19 @@ def create_load_balancer(context, **kwargs):
 
     if not 1 <= kwargs['instance_port'] <= 65535:
         raise exception.InvalidParameter(
-                msg='invalid instance port, should between 1~65535')
+            msg='invalid instance port, should between 1~65535')
     if config['balancing_method'] not in ['round_robin', 'source_binding']:
         raise exception.InvalidParameter(
-                msg='invalid balancing method, round_robin or source_binding')
+            msg='invalid balancing method, round_robin or source_binding')
     if not 100 <= config['health_check_timeout_ms']:
         raise exception.InvalidParameter(
-                msg='healthy check timeout out of range, 100ms~120s')
+            msg='healthy check timeout out of range, 100ms~120s')
     if not 100 <= config['health_check_interval_ms']:
         raise exception.InvalidParameter(
-                msg='Healthy check interval out of rage, 100ms~10m')
+            msg='Healthy check interval out of rage, 100ms~10m')
     if not config['health_check_target_path']:
         raise exception.InvalidParameter(
-                msg='health check path could not be null')
+            msg='health check path could not be null')
 
     try:
         free = kwargs['free']
@@ -130,8 +130,8 @@ def create_load_balancer(context, **kwargs):
     except Exception, exp:
         if load_balancer_ref:
             for instance_uuid in associated_instances:
-                db.load_balancer_instance_association_destroy(context,
-                        load_balancer_ref.id, instance_uuid)
+                db.load_balancer_instance_association_destroy(
+                    context, load_balancer_ref.id, instance_uuid)
         for domain_id in inserted_domains:
             db.load_balancer_domain_destroy(context, domain_id)
         if config_ref:
@@ -162,16 +162,16 @@ def update_load_balancer_config(context, **kwargs):
 
     if config['balancing_method'] not in ['round_robin', 'source_binding']:
         raise exception.InvalidParameter(
-                msg='invalid balancing method, round_robin or source_binding')
+            msg='invalid balancing method, round_robin or source_binding')
     if not 100 <= config['health_check_timeout_ms']:
         raise exception.InvalidParameter(
-                msg='healthy check timeout out of range, 100ms~120s')
+            msg='healthy check timeout out of range, 100ms~120s')
     if not 100 <= config['health_check_interval_ms']:
         raise exception.InvalidParameter(
-                msg='Healthy check interval out of rage, 100ms~10m')
+            msg='Healthy check interval out of rage, 100ms~10m')
     if not config['health_check_target_path']:
         raise exception.InvalidParameter(
-                msg='health check path could not be null')
+            msg='health check path could not be null')
 
     uuid = kwargs['uuid']
     try:
@@ -208,7 +208,7 @@ def update_load_balancer_instances(context, **kwargs):
     new_instance_uuids = kwargs['instance_uuids']
     if not new_instance_uuids:
         raise exception.InvalidParameter(
-                msg='instance_uuids can not be null')
+            msg='instance_uuids can not be null')
 
     uuid = kwargs['uuid']
     try:
@@ -224,12 +224,12 @@ def update_load_balancer_instances(context, **kwargs):
                                     new_instance_uuids)
     try:
         for instance_uuid in need_deleted_instances:
-            db.load_balancer_instance_association_destroy(context,
-                    load_balancer_ref.id, instance_uuid)
+            db.load_balancer_instance_association_destroy(
+                context, load_balancer_ref.id, instance_uuid)
         for instance_uuid in need_created_instances:
             association = {
-                    'load_balancer_id': load_balancer_ref.id,
-                    'instance_uuid': instance_uuid,
+                'load_balancer_id': load_balancer_ref.id,
+                'instance_uuid': instance_uuid,
             }
             db.load_balancer_instance_association_create(context, association)
         db.load_balancer_update_state(context, uuid, state.UPDATING)
@@ -273,8 +273,8 @@ def update_load_balancer_http_servers(context, **kwargs):
 
         for domain in need_created_domains:
             domain_values = {
-                    'load_balancer_id': load_balancer_ref.id,
-                    'name': domain,
+                'load_balancer_id': load_balancer_ref.id,
+                'name': domain,
             }
             db.load_balancer_domain_create(context, domain_values)
         db.load_balancer_update_state(context, uuid, state.UPDATING)

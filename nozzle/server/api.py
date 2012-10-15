@@ -51,7 +51,7 @@ def format_msg_to_client(load_balancer_ref):
     instance_uuids = map(lambda x: x['instance_uuid'],
                          load_balancer_ref.instances)
     http_server_names = map(lambda x: x['name'],
-                         load_balancer_ref.domains)
+                            load_balancer_ref.domains)
     dns_names = []
     protocol = load_balancer_ref.protocol
     prefix = load_balancer_ref.dns_prefix
@@ -96,7 +96,7 @@ def format_msg_to_worker(load_balancer_ref):
     instance_uuids = map(lambda x: x['instance_uuid'],
                          load_balancer_ref.instances)
     http_server_names = map(lambda x: x['name'],
-                         load_balancer_ref.domains)
+                            load_balancer_ref.domains)
     dns_names = []
     protocol = load_balancer_ref.protocol
     prefix = load_balancer_ref.dns_prefix
@@ -132,12 +132,12 @@ def get_msg_to_worker(context, method, **kwargs):
     elif method == 'create_load_balancer':
         result['cmd'] = 'create_lb'
         load_balancer_ref = db.load_balancer_get_by_name(context,
-                kwargs['name'])
+                                                         kwargs['name'])
         message = format_msg_to_worker(load_balancer_ref)
     elif method.startswith('update_load_balancer'):
         result['cmd'] = 'update_lb'
         load_balancer_ref = db.load_balancer_get_by_uuid(context,
-                kwargs['uuid'])
+                                                         kwargs['uuid'])
         message = format_msg_to_worker(load_balancer_ref)
     else:
         return None
@@ -309,8 +309,8 @@ def get_all_http_servers(context, **kwargs):
 def delete_load_balancer_hard(context, load_balancer_ref):
     try:
         for association_ref in load_balancer_ref.instances:
-            db.load_balancer_instance_association_destroy(context,
-                    load_balancer_ref.id, association_ref.instance_uuid)
+            db.load_balancer_instance_association_destroy(
+                context, load_balancer_ref.id, association_ref.instance_uuid)
 
         for domain_ref in load_balancer_ref.domains:
             db.load_balancer_domain_destroy(context, domain_ref.id)

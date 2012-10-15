@@ -105,13 +105,14 @@ class LoadBalancerConfig(BASE, ShuntBase):
     health_check_unhealthy_threshold = Column(Integer)
     health_check_healthy_threshold = Column(Integer)
 
-    load_balancer = relationship(LoadBalancer,
-                                 backref=backref('config', uselist=False),
-                                 foreign_keys=load_balancer_id,
-                                 primaryjoin='and_('
-                                     'LoadBalancerConfig.deleted == False,'
-                                     'LoadBalancer.id == '
-                                     'LoadBalancerConfig.load_balancer_id)')
+    load_balancer = relationship(
+        LoadBalancer,
+        backref=backref('config', uselist=False),
+        foreign_keys=load_balancer_id,
+        primaryjoin=('and_('
+                     'LoadBalancerConfig.deleted == False,'
+                     'LoadBalancer.id == LoadBalancerConfig.load_balancer_id)')
+    )
 
 
 class LoadBalancerDomain(BASE, ShuntBase):
@@ -122,13 +123,14 @@ class LoadBalancerDomain(BASE, ShuntBase):
     load_balancer_id = Column(Integer, ForeignKey('load_balancers.id'))
     name = Column(String(255), nullable=False)
 
-    load_balancer = relationship(LoadBalancer,
-                                 backref=backref('domains'),
-                                 foreign_keys=load_balancer_id,
-                                 primaryjoin='and_('
-                                     'LoadBalancerDomain.deleted == False,'
-                                     'LoadBalancer.id == '
-                                     'LoadBalancerDomain.load_balancer_id)')
+    load_balancer = relationship(
+        LoadBalancer,
+        backref=backref('domains'),
+        foreign_keys=load_balancer_id,
+        primaryjoin=('and_('
+                     'LoadBalancerDomain.deleted == False,'
+                     'LoadBalancer.id == LoadBalancerDomain.load_balancer_id)')
+    )
 
 
 class LoadBalancerInstanceAssociation(BASE, ShuntBase):
@@ -136,10 +138,12 @@ class LoadBalancerInstanceAssociation(BASE, ShuntBase):
     load_balancer_id = Column(Integer, primary_key=True)
     instance_uuid = Column(String(36), primary_key=True)
 
-    load_balancer = relationship(LoadBalancer,
-                           backref=backref('instances'),
-                           foreign_keys=load_balancer_id,
-                           primaryjoin='and_('
-                           'LoadBalancerInstanceAssociation.deleted == False,'
-                           'LoadBalancer.id == '
-                           'LoadBalancerInstanceAssociation.load_balancer_id)')
+    load_balancer = relationship(
+        LoadBalancer,
+        backref=backref('instances'),
+        foreign_keys=load_balancer_id,
+        primaryjoin=('and_('
+                     'LoadBalancerInstanceAssociation.deleted == False,'
+                     'LoadBalancer.id == '
+                     'LoadBalancerInstanceAssociation.load_balancer_id)')
+    )

@@ -157,15 +157,15 @@ def load_balancer_config_get_by_load_balancer_id(context, load_balancer_id):
                         first()
     if not result:
         raise exception.LoadBalancerConfigNotFoundByLoadBalancerId(
-                        load_balancer_id=load_balancer_id)
+            load_balancer_id=load_balancer_id)
     return result
 
 
 def load_balancer_config_create(context, values):
 
     try:
-        result = load_balancer_config_get_by_load_balancer_id(context,
-                                                values['load_balancer_id'])
+        result = load_balancer_config_get_by_load_balancer_id(
+            context, values['load_balancer_id'])
     except exception.LoadBalancerConfigNotFoundByLoadBalancerId:
         pass
     except Exception, exp:
@@ -204,7 +204,7 @@ def load_balancer_domain_get_by_name(context, domain_name):
                         first()
     if not result:
         raise exception.LoadBalancerDomainNotFoundByName(
-                        domain_name=domain_name)
+            domain_name=domain_name)
     return result
 
 
@@ -239,7 +239,7 @@ def load_balancer_domain_destroy(context, domain_id):
         context.session.query(models.LoadBalancerDomain).\
                 filter_by(id=domain_id).\
                 update({'deleted': True,
-                    'deleted_at': utcnow()})
+                        'deleted_at': utcnow()})
 
 
 def load_balancer_instance_association_get(context,
@@ -251,8 +251,8 @@ def load_balancer_instance_association_get(context,
                         first()
     if not result:
         raise exception.LoadBalancerInstanceAssociationNotFound(
-                        load_balancer_id=load_balancer_id,
-                        instance_uuid=instance_uuid)
+            load_balancer_id=load_balancer_id,
+            instance_uuid=instance_uuid)
     return result
 
 
@@ -262,15 +262,14 @@ def load_balancer_instance_association_get_all(context, load_balancer_id):
                         all()
     if not result:
         raise exception.LoadBalancerInstanceAssociationNotFoundAll(
-                        load_balancer_id=load_balancer_id)
+            load_balancer_id=load_balancer_id)
     return result
 
 
 def load_balancer_instance_association_create(context, values):
     try:
-        result = load_balancer_instance_association_get(context,
-                        values['load_balancer_id'],
-                        values['instance_uuid'])
+        result = load_balancer_instance_association_get(
+            context, values['load_balancer_id'], values['instance_uuid'])
     except exception.LoadBalancerInstanceAssociationNotFound:
         pass
     except Exception, exp:
@@ -302,7 +301,7 @@ def load_balancer_get_by_instance_uuid(context, instance_uuid):
                         all()
     if not result:
         raise exception.LoadBalancerNotFoundByInstanceUUID(
-                                instance_uuid=instance_uuid)
+            instance_uuid=instance_uuid)
 
     for association_ref in result:
         load_balancer_ref = load_balancer_get(context,

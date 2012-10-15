@@ -33,9 +33,9 @@ VERSION = '1.0'
 
 COMMANDS_V1 = {
     'lb-list': importutils.import_class(
-                'nozzle.client.v1_0.loadbalancer.ListLoadBalancer'),
+        'nozzle.client.v1_0.loadbalancer.ListLoadBalancer'),
     'lb-show': importutils.import_class(
-                'nozzle.client.v1_0.loadbalancer.ShowLoadBalancer'),
+        'nozzle.client.v1_0.loadbalancer.ShowLoadBalancer'),
 }
 
 COMMANDS = {'1.0': COMMANDS_V1}
@@ -101,79 +101,79 @@ class NozzleShell(App):
         :paramtype version: str
         """
         parser = argparse.ArgumentParser(
-                    description=description,
-                    add_help=False, )
+            description=description,
+            add_help=False, )
 
         # Common arguments
         parser.add_argument(
-                    '--version',
-                    action='version',
-                    version='%(prog)s {0}'.format(version), )
+            '--version',
+            action='version',
+            version='%(prog)s {0}'.format(version), )
         parser.add_argument(
-                    '-v', '--verbose',
-                    action='count',
-                    dest='verbose_level',
-                    default=self.DEFAULT_VERBOSE_LEVEL,
-                    help='Increase verbosity of output. Can be repeated.', )
+            '-v', '--verbose',
+            action='count',
+            dest='verbose_level',
+            default=self.DEFAULT_VERBOSE_LEVEL,
+            help='Increase verbosity of output. Can be repeated.', )
         parser.add_argument(
-                    '-q', '--quiet',
-                    action='store_const',
-                    dest='verbose_level',
-                    const=0,
-                    help='suppress output except warnings and errors', )
+            '-q', '--quiet',
+            action='store_const',
+            dest='verbose_level',
+            const=0,
+            help='suppress output except warnings and errors', )
         parser.add_argument(
-                    '-h', '--help',
-                    action=HelpAction,
-                    nargs=0,
-                    default=self,  # tricky
-                    help="show this help message and exit", )
+            '-h', '--help',
+            action=HelpAction,
+            nargs=0,
+            default=self,  # tricky
+            help="show this help message and exit", )
         parser.add_argument(
-                    '--debug',
-                    default=False,
-                    action='store_true',
-                    help='show tracebacks on errors', )
+            '--debug',
+            default=False,
+            action='store_true',
+            help='show tracebacks on errors', )
         # Global arguments
         parser.add_argument(
-                    '--os_auth_strategy', metavar='<auth_strategy>',
-                    default=env('OS_AUTH_STRATEGY', default='keystone'),
-                    help='Authentication strategy (Env: OS_AUTH_STRATEGY'
-                    ', default keystone). For now, any other value will'
-                    ' disable the authentication')
+            '--os_auth_strategy', metavar='<auth_strategy>',
+            default=env('OS_AUTH_STRATEGY', default='keystone'),
+            help=('Authentication strategy (Env: OS_AUTH_STRATEGY, '
+                  'default keystone). For now, any other value will '
+                  'disable the authentication'))
 
         parser.add_argument(
-                    '--os_auth_url', metavar='<auth_url>',
-                    default=env('OS_AUTH_URL'),
-                    help='Authentication URL (Env: OS_AUTH_URL)')
+            '--os_auth_url', metavar='<auth_url>',
+            default=env('OS_AUTH_URL'),
+            help='Authentication URL (Env: OS_AUTH_URL)')
 
         parser.add_argument(
-                    '--os_tenant_name', metavar='<auth_tenant_name>',
-                    default=env('OS_TENANT_NAME'),
-                    help='Authentication tenant name (Env: OS_TENANT_NAME)')
+            '--os_tenant_name', metavar='<auth_tenant_name>',
+            default=env('OS_TENANT_NAME'),
+            help='Authentication tenant name (Env: OS_TENANT_NAME)')
 
         parser.add_argument(
-                    '--os_username', metavar='<auth_username>',
-                    default=env('OS_USERNAME'),
-                    help='Authentication username (Env: OS_USERNAME)')
+            '--os_username', metavar='<auth_username>',
+            default=env('OS_USERNAME'),
+            help='Authentication username (Env: OS_USERNAME)')
 
         parser.add_argument(
-                    '--os_password', metavar='<auth_password>',
-                    default=env('OS_PASSWORD'),
-                    help='Authentication password (Env: OS_PASSWORD)')
+            '--os_password', metavar='<auth_password>',
+            default=env('OS_PASSWORD'),
+            help='Authentication password (Env: OS_PASSWORD)')
 
         parser.add_argument(
-                    '--os_region_name', metavar='<auth_region_name>',
-                    default=env('OS_REGION_NAME'),
-                    help='Authentication region name (Env: OS_REGION_NAME)')
+            '--os_region_name', metavar='<auth_region_name>',
+            default=env('OS_REGION_NAME'),
+            help='Authentication region name (Env: OS_REGION_NAME)')
 
         parser.add_argument(
-                    '--os_token', metavar='<token>',
-                    default=env('OS_TOKEN'),
-                    help='Defaults to env[OS_TOKEN]')
+            '--os_token', metavar='<token>',
+            default=env('OS_TOKEN'),
+            help='Defaults to env[OS_TOKEN]')
 
         parser.add_argument(
-                    '--os_url', metavar='<url>',
-                    default=env('OS_URL'),
-                    help='Defaults to env[OS_URL]')
+            '--os_url', metavar='<url>',
+            default=env('OS_URL'),
+            help='Defaults to env[OS_URL]')
         return parser
 
     def authenticate_user(self):

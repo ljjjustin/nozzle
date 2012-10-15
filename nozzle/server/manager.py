@@ -177,9 +177,9 @@ class ServerManager(manager.Manager):
                                        FLAGS.feedback_listen_port))
 
         args = {
-                'handler': handler,
-                'broadcast': broadcast,
-                'feedback': feedback,
+            'handler': handler,
+            'broadcast': broadcast,
+            'feedback': feedback,
         }
 
         self.pool.spawn(client_routine, **args)

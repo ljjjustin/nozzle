@@ -49,7 +49,7 @@ default_opts = [
     cfg.StrOpt('worker_manager',
                default='nozzle.worker.manager.WorkerManager',
                help='full class name for worker manager')
-    ]
+]
 
 
 api_opts = [
@@ -77,7 +77,7 @@ api_opts = [
     cfg.IntOpt('feedback_listen_port',
                default=5559,
                help='Port for nozzle api to get response from worker.'),
-    ]
+]
 
 
 sql_opts = [
@@ -93,13 +93,15 @@ sql_opts = [
     cfg.StrOpt('reconnect_interval',
                default=3,
                help='Retry interval when database connection error occur'),
-    ]
+]
+
 
 rpc_opts = [
     cfg.StrOpt('control_exchange',
                default='nova',
                help='AMQP exchange to connect to if using RabbitMQ'),
 ]
+
 
 protocol_opts = [
     cfg.ListOpt('tcp_postfixs',
@@ -108,7 +110,8 @@ protocol_opts = [
     cfg.ListOpt('http_postfixs',
                 default=['.elb7.sinasws.com', '.internal.elb7.sinasws.com'],
                 help='dns postfix for http protocol'),
-    ]
+]
+
 
 FLAGS = cfg.CONF
 FLAGS.register_opts(default_opts)
