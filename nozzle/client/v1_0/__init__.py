@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from nozzle.openstack.common import jsonutils
+
 from cliff.command import Command
 from cliff.lister import Lister
 from cliff.show import ShowOne
@@ -30,11 +32,11 @@ class NozzleCommand(Command):
     def run(self, parsed_args):
         return super(NozzleCommand, self).run(parsed_args)
 
-    def get_data(self, parsed_args):
-        pass
-
     def take_action(self, parsed_args):
         return self.get_data(parsed_args)
+
+    def get_data(self, parsed_args):
+        pass
 
 
 class CreateCommand(NozzleCommand, ShowOne):
@@ -44,9 +46,6 @@ class CreateCommand(NozzleCommand, ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(CreateCommand, self).get_parser(prog_name)
-        parser.add_argument(
-            '--tenant_id', metavar='tenant_id',
-            help=_('the owner tenant ID'),)
         self.add_known_arguments(parser)
         return parser
 
@@ -58,12 +57,27 @@ class CreateCommand(NozzleCommand, ShowOne):
 
     def get_data(self, parsed_args):
         nozzle_client = self.get_client()
-        ## prepare body
         body = self.make_request_body(parsed_args)
         obj_creator = getattr(nozzle_client, "create_%s" % self.resource)
         data = obj_creator(body)
-        info = self.resource in data and data[self.resource] or None
         ## deal with result
+        if data['code'] != 200:
+            raise Exception("error: %s" % data['message'])
+        info = data['data']
+        for k, v in info.iteritems():
+            if isinstance(v, list):
+                value = ""
+                for item in v:
+                    if value:
+                        value += "\n"
+                    if isinstance(item, dict):
+                        value += jsonutils.dumps(item)
+                    else:
+                        value += str(item)
+                info[k] = value
+            elif v is None:
+                info[k] = ""
+        return zip(*sorted(info.iteritems()))
 
 
 class UpdateCommand(NozzleCommand):
@@ -100,9 +114,10 @@ class DeleteCommand(NozzleCommand):
     def run(self, parsed_args):
         nozzle_client = self.get_client()
         ## prepare body
-        ##data = {self.resource, make_request_body(parsed_args)}
+        if not parsed_args.id:
+            raise Exception("Specify the uuid of the load balancer to delete")
         obj_deleter = getattr(nozzle_client, "delete_%s" % self.resource)
-        ##obj_deleter(id)
+        obj_deleter(parsed_args.id)
         return
 
 
@@ -120,16 +135,16 @@ class ListCommand(NozzleCommand, Lister):
         obj_lister = getattr(nozzle_client, "list_%ss" % self.resource)
 
         data = obj_lister()
-        info = []
-        collection = self.resource + 's'
-        if collection in data:
-            info = data[collection]
-        columns = len(info) > 0 and sorted(info[0].keys()) or []
+        if data['code'] != 200:
+            raise Exception("error: %s" % data['message'])
+        info = data['data']
+        columns = ['name', 'uuid', 'state', 'protocol']
         rows = []
         for i in info:
             row = []
             for k, v in i.items():
-                row.append(v)
+                if k in columns:
+                    row.append(v)
             rows.append(tuple(row))
 
         return (columns, tuple(rows))
@@ -142,11 +157,29 @@ class ShowCommand(NozzleCommand, ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(ShowCommand, self).get_parser(prog_name)
-        #parser.add_argument(
-        #        'id', metavar='ID or name of %s to delete' % self.resource)
+        parser.add_argument(
+            'id', metavar='ID or name of %s to show' % self.resource)
         return parser
 
     def get_data(self, parsed_args):
         nozzle_client = self.get_client()
         obj_shower = getattr(nozzle_client, "show_%s" % self.resource)
-        ##data = obj_shower()
+        data = obj_shower(parsed_args.id)
+        if data['code'] != 200:
+            raise Exception("error: %s" % data['message'])
+        info = data['data']
+
+        for k, v in info.iteritems():
+            if v is None:
+                info[k] = ""
+            elif isinstance(v, list):
+                value = ""
+                for item in v:
+                    if value:
+                        value += "\n"
+                    if isinstance(item, dict):
+                        value += jsonutils.dumps(item)
+                    else:
+                        value += str(item)
+                info[k] = value
+        return zip(*sorted(info.iteritems()))
