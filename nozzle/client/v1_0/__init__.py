@@ -89,14 +89,18 @@ class UpdateCommand(NozzleCommand):
         parser = super(UpdateCommand, self).get_parser(prog_name)
         parser.add_argument(
             'id', metavar='ID or name of %s to update' % self.resource)
+        self.add_known_arguments(parser)
         return parser
+
+    def add_known_arguments(self, parser):
+        pass
 
     def run(self, parsed_args):
         nozzle_client = self.get_client()
         ## prepare body
-        ##data = {self.resource, make_request_body(parsed_args)}
+        data = self.make_request_body(parsed_args)
         obj_updator = getattr(nozzle_client, "update_%s" % self.resource)
-        ##obj_updator(id, data)
+        obj_updator(parsed_args.id, body=data)
         return
 
 

@@ -117,3 +117,31 @@ class DeleteLoadBalancer(DeleteCommand):
 class UpdateLoadBalancer(UpdateCommand):
 
     resource = 'loadbalancer'
+
+    def add_known_arguments(self, parser):
+        parser.add_argument(
+            '--instances', metavar='instance_uuids',
+            help=_('instances uuids to be added to this load balancer'))
+        parser.add_argument(
+            '--domains', metavar='domains',
+            help=_("public dns binding to the load balancer to be created,"
+                   "do not need to set if protocol is not 'http'"))
+
+    def make_request_body(self, parsed_args):
+        load_balancer_values = {}
+
+        instance_uuids = []
+        if parsed_args.instances:
+            instance_uuids = parsed_args.instances.split(',')
+            instance_uuids = filter(lambda x: x, instance_uuids)
+        if len(instance_uuids) >= 1:
+            load_balancer_values['instance_uuids'] = instance_uuids
+
+        load_balancer_domains = []
+        if parsed_args.domains:
+            load_balancer_domains = parsed_args.domains.split(',')
+            load_balancer_domains = filter(lambda x: x, load_balancer_domains)
+        if len(load_balancer_domains) >= 1:
+            load_balancer_values['http_server_names'] = load_balancer_domains
+
+        return {'loadbalancer': load_balancer_values}
