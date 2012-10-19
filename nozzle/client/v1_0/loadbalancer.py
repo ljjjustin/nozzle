@@ -51,7 +51,7 @@ class CreateLoadBalancer(CreateCommand):
             help=_("traffics forwarded to which port of instance"))
         parser.add_argument(
             '--domains', metavar='domains',
-            help=_("public dns binding to the load balancer to be created,"
+            help=_("public dns binding to the load balancer to be created, "
                    "do not need to set if protocol is not 'http'"))
 
     def make_request_body(self, parsed_args):
@@ -124,7 +124,7 @@ class UpdateLoadBalancer(UpdateCommand):
             help=_('instances uuids to be added to this load balancer'))
         parser.add_argument(
             '--domains', metavar='domains',
-            help=_("public dns binding to the load balancer to be created,"
+            help=_("public dns binding to the load balancer to be created, "
                    "do not need to set if protocol is not 'http'"))
 
     def make_request_body(self, parsed_args):
