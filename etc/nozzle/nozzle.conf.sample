@@ -25,10 +25,10 @@ control_exchange=nova
 [nginx]
 listen = 127.0.0.1:80
 access_log_dir = /var/log/nginx
-configuration_backup_dir = /tmp/
+configuration_backup_dir = /var/lib/nozzle/backup/nginx
 
 
 [haproxy]
 listen = 127.0.0.1
 listen_port_range = 10000,61000
-configuration_backup_dir = /tmp/
+configuration_backup_dir = /var/lib/nozzle/backup/haproxy

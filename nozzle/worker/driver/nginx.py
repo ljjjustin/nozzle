@@ -16,7 +16,7 @@ nginx_opts = [
                default='/var/log/nginx/',
                help="Where to store nginx access log."),
     cfg.StrOpt('configuration_backup_dir',
-               default='/tmp/',
+               default='/var/lib/nozzle/backup/nginx',
                help="Where to backup nginx configuration."),
 ]
 

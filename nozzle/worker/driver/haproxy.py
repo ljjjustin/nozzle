@@ -1,5 +1,5 @@
 import os
-import time
+import datetime
 
 from nozzle.openstack.common import cfg
 from nozzle.openstack.common import log as logging
@@ -17,7 +17,7 @@ haproxy_opts = [
                default='10000,61000',
                help="Port range haproxy need to listen."),
     cfg.StrOpt('configuration_backup_dir',
-               default='/tmp/',
+               default='/var/lib/nozzle/backup/haproxy',
                help="Directory for backup haproxy configuration"),
 ]
 
@@ -207,7 +207,7 @@ class HaproxyConfigurer(object):
         return '\n'.join(servers)
 
     def _backup_original_cfg(self):
-        now = time.asctime().replace(' ', '_')
+        now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
         backup_filename = 'haproxy.cfg_' + now
 
         backup_path = os.path.join(self.cfg_backup_dir, backup_filename)

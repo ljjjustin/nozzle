@@ -123,7 +123,7 @@ def backup_config(filepath, backup_dir):
     if not os.path.exists(filepath):
         return
 
-    time_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %f")
+    time_str = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
     dst = os.path.join(backup_dir, time_str)
     try:
         shutil.move(filepath, dst)
@@ -142,10 +142,8 @@ def execute(cmd):
         subprocess.check_output(shlex.split(cmd), stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         LOG.warning('[%s] failed: %s' % (cmd, e.output))
-        raise exception.ProcessExecutionError(
-            exit_code=e.returncode,
-            output=e.output,
-            cmd=cmd)
+        raise exception.ProcessExecutionError(exit_code=e.returncode,
+                                              output=e.output, cmd=cmd)
 
 
 def synchronized(name):
@@ -156,7 +154,7 @@ def synchronized(name):
                       'method "%(method)s"...' %
                       {'lock': name, 'method': f.__name__})
 
-            lock_file_path = os.path.join('/var/run',
+            lock_file_path = os.path.join('/var/run/nozzle',
                                           'nozzle-worker.%s' % name)
 
             lock = lockfile.FileLock(lock_file_path, threaded=False)
