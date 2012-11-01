@@ -58,7 +58,7 @@ api_opts = [
                help='IP address for nozzle API to listen.'),
     cfg.IntOpt('api_listen_port',
                default=5556,
-               help='Port for nozzle api to listen.'),
+               help='Port for nozzle API to listen.'),
     cfg.StrOpt('server_listen',
                default='127.0.0.1',
                help='IP address for nozzle server to listen.'),
@@ -73,10 +73,10 @@ api_opts = [
                help='Port for nozzle worker to listen.'),
     cfg.StrOpt('feedback_listen',
                default='127.0.0.1',
-               help='IP address for nozzle API to get response from worker.'),
+               help='IP address for nozzle server to get response from worker.'),
     cfg.IntOpt('feedback_listen_port',
                default=5559,
-               help='Port for nozzle api to get response from worker.'),
+               help='Port for nozzle server to get response from worker.'),
 ]
 
 

@@ -105,8 +105,7 @@ class LoadBalancerNotFoundByName(NozzleException):
 
 
 class LoadBalancerNotFoundByInstanceUUID(NozzleException):
-    message = _("LoadBalancer %(instance_uuid)s could not be "
-                "found by name.")
+    message = _("LoadBalancer %(instance_uuid)s could not be found by name.")
 
 
 class LoadBalancerConfigNotFound(NozzleException):
@@ -140,9 +139,9 @@ class ProcessExecutionError(IOError):
         self.output = output
         self.cmd = cmd
 
-        message = 'Command: %(cmd)s\n' \
-                  'Exit code: %(exit_code)s\n' \
-                  'Output: %(output)s\r\n' % locals()
+        message = _('Command: %(cmd)s\n'
+                    'Exit code: %(exit_code)s\n'
+                    'Output: %(output)s\r\n') % locals()
 
         IOError.__init__(self, message)
 
@@ -155,7 +154,7 @@ class LBWorkerException(Exception):
     with the keyword arguments provided to the constructor.
 
     """
-    message = "An unknown exception occurred."
+    message = _("An unknown exception occurred.")
 
     def __init__(self, message=None, **kwargs):
         self.kwargs = kwargs
@@ -178,42 +177,42 @@ class LBWorkerException(Exception):
 
 
 class NotFound(LBWorkerException):
-    message = "Resource could not be found."
+    message = _("Resource could not be found.")
     code = 404
 
 
 class FileNotFound(NotFound):
-    message = "File %(file_path)s could not be found."
+    message = _("File %(file_path)s could not be found.")
 
 
 class DirNotFound(NotFound):
-    message = "Directory %(dir)s could not be found."
+    message = _("Directory %(dir)s could not be found.")
 
 
 class ConfigNotFound(NotFound):
-    message = "Could not find config at %(path)s"
+    message = _("Could not find config at %(path)s")
 
 
 class Invalid(LBWorkerException):
-    message = "Unacceptable parameters."
+    message = _("Unacceptable parameters.")
     code = 400
 
 
 class InvalidType(Invalid):
-    message = "Valid type should be %(valid_type)s not %(invalid_type)s"
+    message = _("Valid type should be %(valid_type)s not %(invalid_type)s")
 
 
 class InvalidPort(Invalid):
-    message = "Invalid port %(port)s. %(msg)s"
+    message = _("Invalid port %(port)s. %(msg)s")
 
 
 class InvalidIpv4Address(Invalid):
-    message = "%(address)s is not a valid IP v4 address."
+    message = _("%(address)s is not a valid IP v4 address.")
 
 
 class NginxConfFileExists(Invalid):
-    message = ("The supplied nginx configuration file (%(path)s) "
-               "already exists, it is expected not to exist.")
+    message = _("The supplied nginx configuration file (%(path)s) "
+                "already exists, it is expected not to exist.")
 
 
 class BadRequest(LBWorkerException):
@@ -221,44 +220,44 @@ class BadRequest(LBWorkerException):
     The worker could not comply with the request since
     it is either malformed or otherwise incorrect.
     """
-    message = "%(explanation)s"
+    message = _("%(explanation)s")
 
 
 class ConfigureError(LBWorkerException):
-    message = "Could not configure the server."
+    message = _("Could not configure the server.")
 
 
 class NginxConfigureError(ConfigureError):
-    message = "Could not configure nginx: %(explanation)s"
+    message = _("Could not configure nginx: %(explanation)s")
 
 
 class NginxCreateProxyError(NginxConfigureError):
-    message = "Could not create the nginx proxy: %(explanation)s"
+    message = _("Could not create the nginx proxy: %(explanation)s")
 
 
 class NginxUpdateProxyError(NginxConfigureError):
-    message = "Could not update the nginx proxy: %(explanation)s"
+    message = _("Could not update the nginx proxy: %(explanation)s")
 
 
 class NginxDeleteProxyError(NginxConfigureError):
-    message = "Could not delete the nginx proxy: %(explanation)s"
+    message = _("Could not delete the nginx proxy: %(explanation)s")
 
 
 class HaproxyConfigureError(ConfigureError):
-    message = "Could not configure haproxy: %(explanation)s"
+    message = _("Could not configure haproxy: %(explanation)s")
 
 
 class HaproxyCreateError(HaproxyConfigureError):
-    message = "Could not create the haproxy proxy: %(explanation)s"
+    message = _("Could not create the haproxy proxy: %(explanation)s")
 
 
 class HaproxyCreateCfgError(HaproxyConfigureError):
-    message = ("Could not create the haproxy proxy "
-               " configuration: %(explanation)s")
+    message = _("Could not create the haproxy proxy "
+                " configuration: %(explanation)s")
 
 
 class HaproxyUpdateError(HaproxyConfigureError):
-    message = "Could not update the haproxy proxy: %(explanation)s"
+    message = _("Could not update the haproxy proxy: %(explanation)s")
 
 
 class HaproxyDeleteError(HaproxyConfigureError):
@@ -266,10 +265,10 @@ class HaproxyDeleteError(HaproxyConfigureError):
 
 
 class HaproxyLBExists(Invalid):
-    message = ("The supplied load balancer (%(name)s) "
-               "already exists, it is expected not to exist.")
+    message = _("The supplied load balancer (%(name)s) "
+                "already exists, it is expected not to exist.")
 
 
 class HaproxyLBNotExists(Invalid):
-    message = ("The supplied load balancer (%(name)s) "
-               "does not exists, it is expected to exist.")
+    message = _("The supplied load balancer (%(name)s) "
+                "does not exists, it is expected to exist.")

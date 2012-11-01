@@ -245,7 +245,7 @@ class NginxProxyConfigurer(object):
 
         # TODO(wenjinahn): ngx healthy check
 
-        max_fails = 1
+        max_fails = 3
         fail_timeout = 10
         server_list = []
         for ip in msg['instance_ips']:

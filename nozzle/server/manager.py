@@ -69,7 +69,7 @@ def client_routine(*args, **kwargs):
                                                   request_msg])
                 except Exception:
                     pass
-            except Exception, e:
+            except Exception as e:
                 cli_msg['code'] = 500
                 cli_msg['message'] = str(e)
                 LOG.exception(cli_msg['message'])
@@ -98,7 +98,7 @@ def worker_routine(*args, **kwargs):
                 args = msg_body
                 ctxt = context.get_admin_context()
                 api.update_load_balancer_state(ctxt, **args)
-            except Exception, exp:
+            except Exception as exp:
                 print str(exp)
                 continue
 
@@ -137,10 +137,10 @@ def checker_routine(*args, **kwargs):
                     request_msg = jsonutils.dumps(message)
                     LOG.debug(">>>>>>> worker: %s" % request_msg)
                     broadcast.send_multipart([msg_type, msg_uuid, request_msg])
-                except Exception, exp:
+                except Exception as exp:
                     print str(exp)
                     continue
-        except Exception:
+        except Exception as exp:
             print str(exp)
             continue
 
