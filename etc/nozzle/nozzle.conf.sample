@@ -1,26 +1,46 @@
 [DEFAULT]
 verbose=True
+
+## config nozzle-api
 api_paste_config = api-paste.ini
 auth_strategy = keystone
 api_listen = 0.0.0.0
 api_listen_port = 5556
+
+## config nozzle-server
 server_listen = 0.0.0.0
 server_listen_port = 5557
 broadcast_listen = 127.0.0.1
 broadcast_listen_port = 5558
 feedback_listen = 127.0.0.1
 feedback_listen_port = 5559
-sql_connection=mysql://root:nova@127.0.0.1:3306/nozzle
-nova_admin_username=nova
-nova_admin_password=nova
-nova_admin_tenant_name=service
-nova_admin_auth_url=http://localhost:5000/v2.0
-nova_region_name=RegionOne
-rabbit_userid=guest
-rabbit_password=nova
+sql_connection = mysql://root:nova@127.0.0.1:3306/nozzle
+# dns postfix for tcp protocol
+tcp_postfixs = .elb4.sinasws.com
+# dns postfix for http protocol
+http_postfixs = .elb7.sinasws.com
+
+# config how to connect to nova-api
+nova_admin_username = nova
+nova_admin_password = nova
+nova_admin_tenant_name = service
+nova_admin_auth_url = http://localhost:5000/v2.0
+nova_region_name = RegionOne
+
+# config rabbitmq notification
+control_exchange=nova
 notification_driver=nozzle.openstack.common.notifier.rabbit_notifier
 notification_topics=loadbalancer
-control_exchange=nova
+# IP address of the RabbitMQ installation
+rabbit_host = 127.0.0.1
+# Port where RabbitMQ server is running/listening
+rabbit_port = 5672
+# User ID used for RabbitMQ connections
+rabbit_userid = guest
+# Password of the RabbitMQ server
+rabbit_password = nova
+# Location of a virtual RabbitMQ installation.
+# rabbit_virtual_host = /
 
 [nginx]
 listen = 127.0.0.1:80
