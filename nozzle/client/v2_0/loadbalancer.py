@@ -16,11 +16,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from nozzle.client.v1_0 import ListCommand
-from nozzle.client.v1_0 import ShowCommand
-from nozzle.client.v1_0 import CreateCommand
-from nozzle.client.v1_0 import DeleteCommand
-from nozzle.client.v1_0 import UpdateCommand
+from nozzle.client.v2_0 import ListCommand
+from nozzle.client.v2_0 import ShowCommand
+from nozzle.client.v2_0 import CreateCommand
+from nozzle.client.v2_0 import DeleteCommand
+from nozzle.client.v2_0 import UpdateCommand
+
 
 class ListLoadBalancer(ListCommand):
 
@@ -75,7 +76,7 @@ class CreateLoadBalancer(CreateCommand):
             raise Exception("instance_port should between 1~65535")
         else:
             instance_port = int(parsed_args.port)
-        if not  1 <= instance_port <= 65535:
+        if not 1 <= instance_port <= 65535:
             raise Exception("instance_port should between 1~65535")
 
         load_balancer_domains = []

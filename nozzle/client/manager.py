@@ -16,7 +16,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from nozzle.client.v1_0 import client
+from nozzle.client.v2_0 import client
 
 
 class ClientManager(object):

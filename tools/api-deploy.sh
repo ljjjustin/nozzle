@@ -38,9 +38,9 @@ sed -i -e '/loadbalance/d' /etc/keystone/default_catalog.templates
 
 (cat <<EOF
 
-catalog.RegionOne.loadbalance.publicURL = http://localhost:5556/v1.0
-catalog.RegionOne.loadbalance.adminURL = http://localhost:5556/v1.0
-catalog.RegionOne.loadbalance.internalURL = http://localhost:5556/v1.0
+catalog.RegionOne.loadbalance.publicURL = http://localhost:5556/v2.0
+catalog.RegionOne.loadbalance.adminURL = http://localhost:5556/v2.0
+catalog.RegionOne.loadbalance.internalURL = http://localhost:5556/v2.0
 catalog.RegionOne.loadbalance.name = Load Balance Service
 EOF
 ) >> /etc/keystone/default_catalog.templates

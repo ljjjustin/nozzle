@@ -25,7 +25,7 @@ from nozzle.client.serializer import Serializer
 
 
 class Client(object):
-    """Client for the nozzle v1.0 API.
+    """Client for the nozzle v2.0 API.
 
     :param string username: Username for authentication. (optional)
     :param string password: Password for authentication. (optional)
@@ -69,7 +69,7 @@ class Client(object):
                         (self.loadbalancers_path, instance_uuid))
 
     def __init__(self, **kwargs):
-        """Initialize a new client for the Nozzle v1.0 API."""
+        """Initialize a new client for the Nozzle v2.0 API."""
         super(Client, self).__init__()
         self.httpclient = HTTPClient(**kwargs)
         ##self.version = '1.0'

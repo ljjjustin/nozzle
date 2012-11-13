@@ -24,7 +24,7 @@ def get_all_instance_uuids():
 
 if __name__ == '__main__':
 
-    from nozzle.client.v1_0 import client
+    from nozzle.client.v2_0 import client
 
     instance_uuids = get_all_instance_uuids()
     if len(instance_uuids) < 1:

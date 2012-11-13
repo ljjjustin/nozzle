@@ -2,11 +2,17 @@
 use = egg:Paste#urlmap
 /: nozzleversions
 /v1.0: nozzleapi_v1_0
+/v2.0: nozzleapi_v2_0
 
 [composite:nozzleapi_v1_0]
 use = call:nozzle.api.auth:pipeline_factory
 noauth = faultwrap nozzleapi_app_v1_0
 keystone = faultwrap authtoken keystonecontext nozzleapi_app_v1_0
+
+[composite:nozzleapi_v2_0]
+use = call:nozzle.api.auth:pipeline_factory
+noauth = faultwrap nozzleapi_app_v2_0
+keystone = faultwrap authtoken keystonecontext nozzleapi_app_v2_0
 
 [filter:authtoken]
 paste.filter_factory = keystone.middleware.auth_token:filter_factory
@@ -29,3 +35,6 @@ paste.app_factory = nozzle.api.versions:Versions.factory
 
 [app:nozzleapi_app_v1_0]
 paste.app_factory = nozzle.api:APIRouterV10.factory
+
+[app:nozzleapi_app_v2_0]
+paste.app_factory = nozzle.api:APIRouterV20.factory
