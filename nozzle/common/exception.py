@@ -49,6 +49,7 @@ class Forbidden(NozzleException):
     message = _("Forbidden: your credentials don't give you "
                 "access to this resource")
 
+
 class EndpointNotFound(NozzleException):
     message = _("endpoint not found")
 

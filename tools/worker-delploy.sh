@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# ensure directories
+mkdir -pv /etc/nozzle
+mkdir -pv /var/run/nozzle
+mkdir -pv /var/log/nozzle
+mkdir -pv /var/lib/nozzle
+mkdir -pv /var/lib/nozzle/backup
+mkdir -pv /var/lib/nozzle/backup/nginx
+mkdir -pv /var/lib/nozzle/backup/haproxy
+mkdir -pv /var/lock/nozzle
+
 # config nginx
 touch /etc/nginx/conf.d/sws-log-format.conf
 (cat <<EOF

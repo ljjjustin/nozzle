@@ -33,15 +33,15 @@ VERSION = '1.0'
 
 COMMANDS_V1 = {
     'lb-list': importutils.import_class(
-        'nozzle.client.v1_0.loadbalancer.ListLoadBalancer'),
+        'nozzle.client.v2_0.loadbalancer.ListLoadBalancer'),
     'lb-show': importutils.import_class(
-        'nozzle.client.v1_0.loadbalancer.ShowLoadBalancer'),
+        'nozzle.client.v2_0.loadbalancer.ShowLoadBalancer'),
     'lb-create': importutils.import_class(
-        'nozzle.client.v1_0.loadbalancer.CreateLoadBalancer'),
+        'nozzle.client.v2_0.loadbalancer.CreateLoadBalancer'),
     'lb-delete': importutils.import_class(
-        'nozzle.client.v1_0.loadbalancer.DeleteLoadBalancer'),
+        'nozzle.client.v2_0.loadbalancer.DeleteLoadBalancer'),
     'lb-update': importutils.import_class(
-        'nozzle.client.v1_0.loadbalancer.UpdateLoadBalancer'),
+        'nozzle.client.v2_0.loadbalancer.UpdateLoadBalancer'),
 }
 
 COMMANDS = {'1.0': COMMANDS_V1}

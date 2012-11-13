@@ -11,7 +11,7 @@ if sys.version_info < (2, 7):
 
 setup(
     name="nozzle",
-    version="0.1",
+    version="2.0",
     description="OpenStack Load Balancer Server",
     long_description="OpenStack Load Balancer Server",
     url='https://github.com/ljjjustin/nozzle',

@@ -88,3 +88,10 @@ class APIRouterV10(APIRouter):
     API routes mapping for nozzle API v1.0
     """
     _version = '1.0'
+
+
+class APIRouterV20(APIRouter):
+    """
+    API routes mapping for nozzle API v2.0
+    """
+    _version = '2.0'
