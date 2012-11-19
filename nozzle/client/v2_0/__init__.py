@@ -132,13 +132,21 @@ class ListCommand(NozzleCommand, Lister):
 
     def get_parser(self, prog_name):
         parser = super(ListCommand, self).get_parser(prog_name)
+        self.add_known_arguments(parser)
         return parser
+
+    def add_known_arguments(self, parser):
+        pass
 
     def get_data(self, parsed_args):
         nozzle_client = self.get_client()
         obj_lister = getattr(nozzle_client, "list_%ss" % self.resource)
 
-        data = obj_lister()
+        if parsed_args.all_tenants:
+            params = {'all_tenants': 1}
+        else:
+            params = {'all_tenants': 0}
+        data = obj_lister(**params)
         if data['code'] != 200:
             raise Exception("error: %s" % data['message'])
         info = data['data']

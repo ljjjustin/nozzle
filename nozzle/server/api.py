@@ -272,14 +272,18 @@ def get_load_balancer_by_instance_uuid(context, **kwargs):
 
 def get_all_load_balancers(context, **kwargs):
     expect_keys = [
-        'user_id', 'tenant_id',
+        'user_id', 'tenant_id', 'all_tenants',
     ]
     utils.check_input_parameters(expect_keys, **kwargs)
 
     result = []
     try:
-        filters = {'project_id': kwargs['tenant_id']}
-        context = context.elevated(read_deleted='no')
+        all_tenants = int(kwargs['all_tenants'])
+        if context.is_admin and all_tenants:
+            filters = {}
+        else:
+            filters = {'project_id': kwargs['tenant_id']}
+            context = context.elevated(read_deleted='no')
         all_load_balancers = db.load_balancer_get_all(context, filters=filters)
         for load_balancer_ref in all_load_balancers:
             result.append(format_msg_to_client(load_balancer_ref))

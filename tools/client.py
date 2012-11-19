@@ -37,6 +37,7 @@ if __name__ == '__main__':
                                   password=password,
                                   tenant_name=tenant_name,
                                   auth_url=auth_url)
+    load_balancers = []
     load_balancer_config = {
         'balancing_method': 'round_robin',
         'health_check_timeout_ms': 50000,
@@ -57,6 +58,7 @@ if __name__ == '__main__':
     }
     result = nozzle_client.create_loadbalancer(body=request_body)
     id = result['data']['uuid']
+    load_balancers.append(id)
     print nozzle_client.show_loadbalancer(id)
     print nozzle_client.list_loadbalancer_domains()
 
@@ -66,8 +68,6 @@ if __name__ == '__main__':
     nozzle_client.update_loadbalancer(id, body=request_body)
     print nozzle_client.show_loadbalancer(id)
     print nozzle_client.list_loadbalancer_domains()
-
-    nozzle_client.delete_loadbalancer(id)
 
     request_body = {
         'loadbalancer': {
@@ -81,14 +81,13 @@ if __name__ == '__main__':
     }
     result = nozzle_client.create_loadbalancer(body=request_body)
     id = result['data']['uuid']
+    load_balancers.append(id)
     print nozzle_client.show_loadbalancer(id)
     print nozzle_client.list_loadbalancer_domains()
 
     request_body['loadbalancer']['instance_uuids'] = selected_instances
     nozzle_client.update_loadbalancer(id, body=request_body)
     print nozzle_client.show_loadbalancer(id)
-
-    nozzle_client.delete_loadbalancer(id)
 
     request_body = {
         'loadbalancer': {
@@ -103,6 +102,12 @@ if __name__ == '__main__':
     }
     result = nozzle_client.create_loadbalancer(body=request_body)
     id = result['data']['uuid']
+    load_balancers.append(id)
     result = nozzle_client.get_by_instance_uuid(first_instance)
     print result
-    nozzle_client.delete_loadbalancer(id)
+
+    params = {'all_tenants': 1}
+    print nozzle_client.list_loadbalancers(**params)
+
+    for lb in load_balancers:
+        nozzle_client.delete_loadbalancer(lb)
