@@ -64,8 +64,11 @@ class Controller(object):
             'args': {
                 'user_id': context.user_id,
                 'tenant_id': context.tenant_id,
+                'is_admin': context.is_admin,
+                'all_tenants': False,
             },
         }
+        zmq_args['args'].update(req.GET)
         LOG.debug(zmq_args)
         result = self.client.call(zmq_args)
         return result

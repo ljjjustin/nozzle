@@ -33,7 +33,7 @@ $MYSQL -e "CREATE DATABASE $DATABASE CHARACTER SET utf8;"
 $MYSQL $DATABASE < $PWD/schema.sql
 
 ## add load balance into service catalog
-source nozzlerc
+source nozzlerc.sample
 sed -i -e '/loadbalance/d' /etc/keystone/default_catalog.templates
 
 (cat <<EOF

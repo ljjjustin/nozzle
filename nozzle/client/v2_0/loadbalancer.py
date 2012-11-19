@@ -27,6 +27,11 @@ class ListLoadBalancer(ListCommand):
 
     resource = 'loadbalancer'
 
+    def add_known_arguments(self, parser):
+        parser.add_argument(
+            '--all_tenants', metavar='show-all-tenants',
+            help=_('The name of the load balancer to be created'))
+
 
 class ShowLoadBalancer(ShowCommand):
 

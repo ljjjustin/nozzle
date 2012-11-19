@@ -55,6 +55,9 @@ if __name__ == '__main__':
             'config': load_balancer_config,
         }
     }
+    params = {'all_tenants': 0}
+    print nozzle_client.list_loadbalancers(**params)
+
     result = nozzle_client.create_loadbalancer(body=request_body)
     id = result['data']['uuid']
     print nozzle_client.show_loadbalancer(id)

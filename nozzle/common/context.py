@@ -99,10 +99,10 @@ class Context(object):
         return context
 
 
-def get_context(tenant_id=None, **kwargs):
+def get_context(tenant_id=None, is_admin=False, **kwargs):
     return Context(user_id=None,
                    tenant_id=tenant_id,
-                   is_admin=False,
+                   is_admin=is_admin,
                    read_deleted="no")
 
 
