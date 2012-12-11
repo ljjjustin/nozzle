@@ -154,9 +154,12 @@ class ListCommand(NozzleCommand, Lister):
         rows = []
         for i in info:
             row = []
-            for k, v in i.items():
-                if k in columns:
-                    row.append(v)
+            keys = i.keys()
+            for k in columns:
+                if k in keys:
+                    row.append(i[k])
+                else:
+                    row.append(None)
             rows.append(tuple(row))
 
         return (columns, tuple(rows))
