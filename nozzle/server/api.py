@@ -34,6 +34,7 @@ def format_msg_to_client(load_balancer_ref):
         'uuid', 'name', 'protocol', 'instance_port',
         'free', 'listen_port', 'state',
         'created_at', 'updated_at',
+        'user_id', 'project_id',
     ]
     for key in expect_keys:
         result[key] = getattr(load_balancer_ref, key)
