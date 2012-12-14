@@ -28,6 +28,7 @@ nova_admin_auth_url = http://localhost:5000/v2.0
 nova_region_name = RegionOne
 
 # config rabbitmq notification
+notification_enabled=True
 control_exchange=nova
 notification_driver=nozzle.openstack.common.notifier.rabbit_notifier
 notification_topics=loadbalancer

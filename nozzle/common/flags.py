@@ -100,6 +100,9 @@ rpc_opts = [
     cfg.StrOpt('control_exchange',
                default='nova',
                help='AMQP exchange to connect to if using RabbitMQ'),
+    cfg.BoolOpt('notification_enabled',
+               default=True,
+               help='Whether to send notification on changes'),
 ]
 
 
