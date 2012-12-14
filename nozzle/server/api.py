@@ -148,6 +148,9 @@ def get_msg_to_worker(context, method, **kwargs):
 
 
 def notify(context, load_balancer_ref, event):
+    if not FLAGS.notification_enabled:
+        return
+
     payload = {
         'tenant_id': load_balancer_ref.project_id,
         'uuid': load_balancer_ref.uuid,
