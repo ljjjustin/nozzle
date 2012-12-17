@@ -85,13 +85,13 @@ class CreateLoadBalancer(CreateCommand):
             raise Exception("instance_port should between 1~65535")
 
         load_balancer_domains = []
-        if parsed_args.protocol == 'http' and not parsed_args.domains:
-            raise Exception("Please specify one or more domains")
-        else:
+        if parsed_args.protocol == 'http':
+            if not parsed_args.domains:
+                raise Exception("Please specify one or more domains")
             load_balancer_domains = parsed_args.domains.split(',')
             load_balancer_domains = filter(lambda x: x, load_balancer_domains)
-        if len(load_balancer_domains) < 1:
-            raise Exception("Please specify one or more domains")
+            if len(load_balancer_domains) < 1:
+                raise Exception("Please specify one or more domains")
 
         load_balancer_config = {
             'balancing_method': 'round_robin',
