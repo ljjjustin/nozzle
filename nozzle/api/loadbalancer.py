@@ -146,6 +146,7 @@ class Controller(object):
             'args': {
                 'user_id': context.user_id,
                 'tenant_id': context.tenant_id,
+                'is_admin': context.is_admin,
                 'uuid': id,
             },
         }
