@@ -168,9 +168,11 @@ def create_load_balancer(context, **kwargs):
         uuid = result['data']['uuid']
         load_balancer_ref = db.load_balancer_get_by_uuid(context, uuid)
         notify(context, load_balancer_ref, 'loadbalancer.create.start')
-        return result
+        result = format_msg_to_client(load_balancer_ref)
     except Exception, exp:
         raise exception.CreateLoadBalancerFailed(msg=str(exp))
+
+    return {'data': result}
 
 
 def delete_load_balancer(context, **kwargs):
