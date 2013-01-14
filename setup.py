@@ -31,8 +31,12 @@ setup(
     install_requires=requirements,
     scripts=[
         'bin/nozzle-api',
-        'bin/nozzle-client',
         'bin/nozzle-server',
         'bin/nozzle-worker',
     ],
+    entry_points={
+        'console_scripts': [
+            'nozzle = nozzle.client.shell:main',
+        ]
+    },
 )

@@ -32,7 +32,7 @@ def utcnow():
 def is_admin_context(context):
     """Indicates if the request context is an administrator."""
     if not context:
-        raise Exception('die')
+        raise Exception('context required')
     return context.is_admin
 
 
