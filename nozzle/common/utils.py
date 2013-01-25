@@ -139,7 +139,8 @@ def execute(cmd):
 
     try:
         LOG.debug('Running cmd (subprocess): %s', cmd)
-        subprocess.check_output(shlex.split(cmd), stderr=subprocess.STDOUT)
+        return subprocess.check_output(shlex.split(cmd),
+                                       stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         LOG.warning('[%s] failed: %s' % (cmd, e.output))
         raise exception.ProcessExecutionError(exit_code=e.returncode,

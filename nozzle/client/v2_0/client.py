@@ -63,10 +63,15 @@ class Client(object):
         """Fetches information of a certain load balancer."""
         return self.get(self.loadbalancer_path % (loadbalancer))
 
-    def get_by_instance_uuid(self, instance_uuid):
-        """get info of load balancer by instance."""
-        return self.get("/%s/get_by_instance_uuid/%s" %
-                        (self.loadbalancers_path, instance_uuid))
+    def create_for_instance(self, body=None):
+        """create a new load balancer for instance."""
+        return self.post("/%s/create_for_instance" % (self.loadbalancers_path),
+                         body=body)
+
+    def delete_for_instance(self, instance_uuid):
+        """Delete and update loadbalancer for instance."""
+        return self.delete('/%s/delete_for_instance/%s' % (
+            self.loadbalancers_path, instance_uuid))
 
     def __init__(self, **kwargs):
         """Initialize a new client for the Nozzle v2.0 API."""

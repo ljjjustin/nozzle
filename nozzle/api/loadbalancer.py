@@ -106,6 +106,22 @@ class Controller(object):
         result = self.client.call(zmq_args)
         return result
 
+    def create_for_instance(self, req, body=None):
+        LOG.info(req.environ['nozzle.context'])
+        context = req.environ['nozzle.context']
+        zmq_args = {
+            'method': 'create_for_instance',
+            'args': {
+                'user_id': context.user_id,
+                'tenant_id': context.tenant_id,
+            },
+        }
+        loadbalancer = body['loadbalancer']
+        zmq_args['args'].update(loadbalancer)
+        LOG.debug(zmq_args)
+        result = self.client.call(zmq_args)
+        return result
+
     def show(self, req, id):
         LOG.info(req.environ['nozzle.context'])
         context = req.environ['nozzle.context']
@@ -154,11 +170,11 @@ class Controller(object):
         result = self.client.call(zmq_args)
         return result
 
-    def get_by_instance_uuid(self, req, id):
+    def delete_for_instance(self, req, id):
         LOG.info(req.environ['nozzle.context'])
         context = req.environ['nozzle.context']
         zmq_args = {
-            'method': 'get_load_balancer_by_instance_uuid',
+            'method': 'delete_for_instance',
             'args': {
                 'user_id': context.user_id,
                 'tenant_id': context.tenant_id,

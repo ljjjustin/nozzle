@@ -18,22 +18,34 @@
 
 import zmq
 
+from nozzle.openstack.common import cfg
 from nozzle.openstack.common import jsonutils
 from nozzle.openstack.common import log as logging
 
 from nozzle import manager
 from nozzle.common import exception
 from nozzle.common import flags
+from nozzle.common import utils
 from nozzle.worker.driver import haproxy
 from nozzle.worker.driver import nginx
 
+
+worker_opts = [
+    cfg.StrOpt('service_interface',
+               default='lo',
+               help="listen on which interface to provide service."),
+]
+
 FLAGS = flags.FLAGS
+FLAGS.register_opts(worker_opts, 'worker')
+
 LOG = logging.getLogger(__name__)
 
 
 class WorkerManager(manager.Manager):
 
     def __init__(self):
+        self.ips = []
         super(WorkerManager, self).__init__()
 
     def init_host(self):
@@ -42,7 +54,24 @@ class WorkerManager(manager.Manager):
         Child class should override this method
 
         """
-        pass
+        dev = FLAGS.worker.service_interface
+        cmd = 'ip addr show dev %s' % dev
+        out = utils.execute(cmd)
+        for line in out.split('\n'):
+            fields = line.split()
+            if fields and fields[0] == 'inet':
+                self.ips.append(fields[1].split('/')[0])
+
+    def binding_ip(self, ips):
+        dev = FLAGS.worker.service_interface
+        for ip in ips:
+            if ip in self.ips:
+                continue
+            if FLAGS.worker.service_interface == 'lo':
+                cmd = 'ip addr add %s/32 scope link dev %s' % (ip, dev)
+            else:
+                cmd = 'ip addr add %s/32 scope global dev %s' % (ip, dev)
+            utils.execute(cmd)
 
     def start(self):
         context = zmq.Context()
@@ -63,6 +92,9 @@ class WorkerManager(manager.Manager):
 
         self.ha_configurer = haproxy.HaproxyConfigurer()
         self.ngx_configurer = nginx.NginxProxyConfigurer()
+
+        self.binding_ip(self.ha_configurer._bind_ip)
+        self.binding_ip(self.ngx_configurer._bind_ip)
 
     def wait(self):
 

@@ -38,6 +38,19 @@ if __name__ == '__main__':
                                   tenant_name=tenant_name,
                                   auth_url=auth_url)
     load_balancers = []
+
+    ## create a load balancer in order to login
+    request_body = {
+        'loadbalancer': {
+            'instance_uuid': first_instance,
+            'instance_port': 22,
+        }
+    }
+
+    result = nozzle_client.create_for_instance(body=request_body)
+    id = result['data']['uuid']
+    print nozzle_client.show_loadbalancer(id)
+
     load_balancer_config = {
         'balancing_method': 'round_robin',
         'health_check_timeout_ms': 50000,
@@ -46,6 +59,8 @@ if __name__ == '__main__':
         'health_check_healthy_threshold': 5,
         'health_check_unhealthy_threshold': 2,
     }
+
+    ## create a http load balancer
     request_body = {
         'loadbalancer': {
             'name': 'http1',
@@ -62,6 +77,7 @@ if __name__ == '__main__':
     print nozzle_client.show_loadbalancer(id)
     print nozzle_client.list_loadbalancer_domains()
 
+    ## update http load balancer
     domains = ['www.111.com', 'www.222.com']
     request_body['loadbalancer']['instance_uuids'] = selected_instances
     request_body['loadbalancer']['http_server_names'] = domains
@@ -69,6 +85,7 @@ if __name__ == '__main__':
     print nozzle_client.show_loadbalancer(id)
     print nozzle_client.list_loadbalancer_domains()
 
+    ## create a tcp load balancer
     request_body = {
         'loadbalancer': {
             'name': 'tcp1',
@@ -85,29 +102,17 @@ if __name__ == '__main__':
     print nozzle_client.show_loadbalancer(id)
     print nozzle_client.list_loadbalancer_domains()
 
+    ## update tcp load balancer
     request_body['loadbalancer']['instance_uuids'] = selected_instances
     nozzle_client.update_loadbalancer(id, body=request_body)
     print nozzle_client.show_loadbalancer(id)
 
-    request_body = {
-        'loadbalancer': {
-            'free': True,
-            'name': 'ssh1',
-            'protocol': 'tcp',
-            'instance_port': 22,
-            'instance_uuids': [first_instance],
-            'http_server_names': [],
-            'config': load_balancer_config,
-        }
-    }
-    result = nozzle_client.create_loadbalancer(body=request_body)
-    id = result['data']['uuid']
-    load_balancers.append(id)
-    result = nozzle_client.get_by_instance_uuid(first_instance)
-    print result
-
+    ## get all tenant's load balancer
     params = {'all_tenants': 1}
     print nozzle_client.list_loadbalancers(**params)
 
     for lb in load_balancers:
         nozzle_client.delete_loadbalancer(lb)
+
+    ## delete instance and update associated load balancer
+    nozzle_client.delete_for_instance(first_instance)

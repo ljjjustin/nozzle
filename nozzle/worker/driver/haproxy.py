@@ -240,7 +240,7 @@ class HaproxyConfigurer(object):
             LOG.warn('%s', e)
             raise exception.HaproxyCreateCfgError(explanation=str(e))
 
-        new_cfg_path = '/etc/haproxy/haproxy.cfg.sws-lb-worker.new'
+        new_cfg_path = '/etc/haproxy/haproxy.cfg.new'
         cmd = 'cp %s %s' % (base_cfg_path, new_cfg_path)
         try:
             utils.execute(cmd)
@@ -320,7 +320,7 @@ class HaproxyConfigurer(object):
         new_config = "%s%s" % (''.join(config['header']),
                                '\n'.join(body_lines))
 
-        new_cfg_path = '/etc/haproxy/haproxy.cfg.sws-lb-worker.new.lb_deleted'
+        new_cfg_path = '/etc/haproxy/haproxy.cfg.new.lb_deleted'
         try:
             with open(new_cfg_path, 'w') as cfile:
                 cfile.write(new_config)

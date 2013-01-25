@@ -63,12 +63,16 @@ class NginxProxyConfigurer(object):
     Configure nginx
     """
 
+    _bind_ip = []
     listen_field = []
     access_log_dir = None
 
     def __init__(self, **kwargs):
         ip_port_list = FLAGS.nginx.listen
         validate.is_ipv4_port_list(ip_port_list)
+
+        for ip_port in ip_port_list:
+            self._bind_ip.append(ip_port.split(':')[0])
 
         _listen_field = map(lambda x: ("\tlisten %s;" % str(x)),
                             ip_port_list)

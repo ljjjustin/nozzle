@@ -77,10 +77,14 @@ class APIRouter(wsgi.Router):
                        action='update', conditions=dict(method=['PUT']))
         mapper.connect('/loadbalancers/{id}', controller=lb_resource,
                        action='delete', conditions=dict(method=['DELETE']))
-        mapper.connect('/loadbalancers/get_by_instance_uuid/{id}',
+        mapper.connect('/loadbalancers/create_for_instance',
                        controller=lb_resource,
-                       action='get_by_instance_uuid',
-                       conditions=dict(method=['GET']))
+                       action='create_for_instance',
+                       conditions=dict(method=['POST']))
+        mapper.connect('/loadbalancers/delete_for_instance/{id}',
+                       controller=lb_resource,
+                       action='delete_for_instance',
+                       conditions=dict(method=['DELETE']))
 
 
 class APIRouterV10(APIRouter):

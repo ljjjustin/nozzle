@@ -73,7 +73,7 @@ api_opts = [
                help='Port for nozzle worker to listen.'),
     cfg.StrOpt('feedback_listen',
                default='127.0.0.1',
-               help='IP address for nozzle server to get response from worker.'),
+               help='IP address for nozzle server to get workers response'),
     cfg.IntOpt('feedback_listen_port',
                default=5559,
                help='Port for nozzle server to get response from worker.'),
@@ -101,8 +101,8 @@ rpc_opts = [
                default='nova',
                help='AMQP exchange to connect to if using RabbitMQ'),
     cfg.BoolOpt('notification_enabled',
-               default=True,
-               help='Whether to send notification on changes'),
+                default=True,
+                help='Whether to send notification on changes'),
 ]
 
 

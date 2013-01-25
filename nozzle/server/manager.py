@@ -99,7 +99,7 @@ def worker_routine(*args, **kwargs):
                 ctxt = context.get_admin_context()
                 api.update_load_balancer_state(ctxt, **args)
             except Exception as exp:
-                print str(exp)
+                LOG.exception(str(exp))
                 continue
 
 
@@ -138,10 +138,10 @@ def checker_routine(*args, **kwargs):
                     LOG.debug(">>>>>>> worker: %s" % request_msg)
                     broadcast.send_multipart([msg_type, msg_uuid, request_msg])
                 except Exception as exp:
-                    print str(exp)
+                    LOG.exception(str(exp))
                     continue
         except Exception as exp:
-            print str(exp)
+            LOG.exception(str(exp))
             continue
 
 

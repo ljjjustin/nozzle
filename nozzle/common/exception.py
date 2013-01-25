@@ -91,6 +91,14 @@ class GetAllHttpServersFailed(NozzleException):
     message = _("get all http servers failed: %(msg)s")
 
 
+class CreateForInstanceFailed(NozzleException):
+    message = _("create load balancer for instance failed: %(msg)s")
+
+
+class DeleteForInstanceFailed(NozzleException):
+    message = _("delete load balancer for instance failed: %(msg)s")
+
+
 # db exceptions
 class LoadBalancerNotFound(NozzleException):
     message = _("LoadBalancer %(load_balancer_id)s could not be found.")

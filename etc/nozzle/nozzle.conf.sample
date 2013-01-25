@@ -43,6 +43,11 @@ rabbit_password = nova
 # Location of a virtual RabbitMQ installation.
 # rabbit_virtual_host = /
 
+
+[worker]
+service_interface=lo
+
+
 [nginx]
 listen = 127.0.0.1:80
 access_log_dir = /var/log/nginx

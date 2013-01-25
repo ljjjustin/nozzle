@@ -303,8 +303,8 @@ def load_balancer_get_by_instance_uuid(context, instance_uuid):
         raise exception.LoadBalancerNotFoundByInstanceUUID(
             instance_uuid=instance_uuid)
 
-    for association_ref in result:
-        load_balancer_ref = load_balancer_get(context,
-                                              association_ref.load_balancer_id)
-        if load_balancer_ref.free:
-            return load_balancer_ref
+    load_balancers = []
+    for association in result:
+        load_balancers.append(load_balancer_get(context,
+                                                association.load_balancer_id))
+    return load_balancers

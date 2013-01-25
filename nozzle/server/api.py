@@ -24,8 +24,10 @@ from nozzle.common import utils
 from nozzle.server import protocol
 from nozzle.server import state
 from nozzle.openstack.common.notifier import api as notifier
+from nozzle.openstack.common import log as logging
 
 FLAGS = flags.FLAGS
+LOG = logging.getLogger(__name__)
 
 
 def format_msg_to_client(load_balancer_ref):
@@ -175,6 +177,53 @@ def create_load_balancer(context, **kwargs):
     return {'data': result}
 
 
+def create_for_instance(context, **kwargs):
+    expect_keys = [
+        'user_id', 'tenant_id', 'instance_uuid', 'instance_port',
+    ]
+    utils.check_input_parameters(expect_keys, **kwargs)
+
+    instance_uuid = kwargs['instance_uuid']
+    instance_port = kwargs['instance_port']
+    try:
+        load_balancers = db.load_balancer_get_by_instance_uuid(context,
+                                                               instance_uuid)
+        for load_balancer_ref in load_balancers:
+            if load_balancer_ref.free:
+                break
+        result = format_msg_to_client(load_balancer_ref)
+    except exception.LoadBalancerNotFoundByInstanceUUID, exp:
+        pass
+    except Exception, exp:
+        raise exception.CreateForInstanceFailed(msg=str(exp))
+
+    try:
+        load_balancer_name = 'login-' + instance_uuid
+        load_balancer_config = {
+            'balancing_method': 'round_robin',
+            'health_check_timeout_ms': 50000,
+            'health_check_interval_ms': 15000,
+            'health_check_target_path': '/',
+            'health_check_healthy_threshold': 5,
+            'health_check_unhealthy_threshold': 2,
+        }
+        load_balancer_values = {
+            'tenant_id': kwargs['tenant_id'],
+            'user_id': kwargs['user_id'],
+            'free': True,
+            'protocol': 'tcp',
+            'name': load_balancer_name,
+            'config': load_balancer_config,
+            'instance_port': instance_port,
+            'instance_uuids': [instance_uuid],
+            'http_server_names': [],
+        }
+        return create_load_balancer(context, **load_balancer_values)
+    except Exception, exp:
+        raise exception.CreateForInstanceFailed(msg=str(exp))
+    return None
+
+
 def delete_load_balancer(context, **kwargs):
     expect_keys = [
         'tenant_id', 'uuid',
@@ -189,6 +238,44 @@ def delete_load_balancer(context, **kwargs):
     except Exception, exp:
         raise exception.DeleteLoadBalancerFailed(msg=str(exp))
 
+    return None
+
+
+def delete_for_instance(context, **kwargs):
+    expect_keys = [
+        'tenant_id', 'instance_uuid',
+    ]
+    utils.check_input_parameters(expect_keys, **kwargs)
+
+    instance_uuid = kwargs['instance_uuid']
+    try:
+        load_balancers = db.load_balancer_get_by_instance_uuid(context,
+                                                               instance_uuid)
+        for load_balancer_ref in load_balancers:
+            try:
+                if load_balancer_ref.free:
+                    args = {
+                        'tenant_id': context.tenant_id,
+                        'uuid': load_balancer_ref.uuid,
+                    }
+                    delete_load_balancer(context, **args)
+                elif load_balancer_ref.state != state.DELETING:
+                    old_instance_uuids = map(lambda x: x['instance_uuid'],
+                                             load_balancer_ref.instances)
+                    new_instance_uuids = filter(lambda x: x != instance_uuid,
+                                                old_instance_uuids)
+                    args = {
+                        'tenant_id': context.tenant_id,
+                        'user_id': context.user_id,
+                        'protocol': load_balancer_ref.protocol,
+                        'uuid': load_balancer_ref.uuid,
+                        'instance_uuids': new_instance_uuids,
+                    }
+                    update_load_balancer_instances(context, **args)
+            except Exception, exp:
+                LOG.info('delete_for_instance: failed for %s', str(exp))
+    except Exception, exp:
+        raise exception.DeleteForInstanceFailed(msg=str(exp))
     return None
 
 
