@@ -9,6 +9,7 @@ mkdir -pv /var/lib/nozzle/backup
 mkdir -pv /var/lib/nozzle/backup/nginx
 mkdir -pv /var/lib/nozzle/backup/haproxy
 mkdir -pv /var/lock/nozzle
+mkdir -pv /var/cache/nozzle
 
 # config nginx
 touch /etc/nginx/conf.d/sws-log-format.conf

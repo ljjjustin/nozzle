@@ -22,7 +22,7 @@ auth_protocol = http
 admin_tenant_name = service
 admin_user = nozzle
 admin_password = nova
-signing_dirname = /tmp/keystone-signing-nozzle
+signing_dir = /var/cache/nozzle
 
 [filter:keystonecontext]
 paste.filter_factory = nozzle.api.auth:KeystoneContext.factory
