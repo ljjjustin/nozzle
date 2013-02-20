@@ -22,37 +22,37 @@ class DBApiTestCase(unittest.TestCase):
         self.tenant_id = 'fake-project-0'
         self.load_balancer_id = utils.str_uuid()
         self.lb = {
-                'id': self.load_balancer_id,
-                'user_id': self.user_id,
-                'tenant_id': self.tenant_id,
-                'free': False,
-                'name': 'test-lb-1',
-                'state': 'creating',
-                'protocol': 'proto-1',
-                'dns_prefix': 'abcdefg',
-                'listen_port': 80,
-                'instance_port': 80,
+            'id': self.load_balancer_id,
+            'user_id': self.user_id,
+            'tenant_id': self.tenant_id,
+            'free': False,
+            'name': 'test-lb-1',
+            'state': 'creating',
+            'protocol': 'proto-1',
+            'dns_prefix': 'abcdefg',
+            'listen_port': 80,
+            'instance_port': 80,
         }
         self.configs['lb'] = self.lb
         self.config = {
-                'load_balancer_id': self.load_balancer_id,
-                'balancing_method': 'round_robin',
-                'health_check_timeout_ms': 5,
-                'health_check_interval_ms': 500,
-                'health_check_target_path': '/',
-                'health_check_healthy_threshold': 5,
-                'health_check_unhealthy_threshold': 3,
+            'load_balancer_id': self.load_balancer_id,
+            'balancing_method': 'round_robin',
+            'health_check_timeout_ms': 5,
+            'health_check_interval_ms': 500,
+            'health_check_target_path': '/',
+            'health_check_healthy_threshold': 5,
+            'health_check_unhealthy_threshold': 3,
         }
         self.configs['config'] = self.config
         self.domain = {
-                'load_balancer_id': self.load_balancer_id,
-                'name': "www.abc.com",
+            'load_balancer_id': self.load_balancer_id,
+            'name': "www.abc.com",
         }
         self.configs['domains'] = [self.domain]
         self.association = {
-                'load_balancer_id': self.load_balancer_id,
-                'instance_uuid': 'inst-0',
-                'instance_ip': '192.168.1.1',
+            'load_balancer_id': self.load_balancer_id,
+            'instance_uuid': 'inst-0',
+            'instance_ip': '192.168.1.1',
         }
         self.configs['associations'] = [self.association]
         self.context = context.get_context(self.user_id, self.tenant_id)
@@ -106,7 +106,7 @@ class DBApiTestCase(unittest.TestCase):
         self.config['balancing_method'] = 'test_method'
         self.config['health_check_target_path'] = '/index.html'
         db.load_balancer_update_config(self.context,
-                                      self.load_balancer_id, self.config)
+                                       self.load_balancer_id, self.config)
         actual = db.load_balancer_get(self.context, self.load_balancer_id)
         config_ref = models.LoadBalancerConfig()
         config_ref.update(self.config)
@@ -115,8 +115,8 @@ class DBApiTestCase(unittest.TestCase):
     def test_load_balancer_update_domains(self):
         self.truncate_all_tables()
         new_domains = [
-                {'name': 'www.hao.com'},
-                {'name': 'www.xyz.com'},
+            {'name': 'www.hao.com'},
+            {'name': 'www.xyz.com'},
         ]
         db.load_balancer_create(self.context, self.configs)
         actual = db.load_balancer_get(self.context, self.load_balancer_id)

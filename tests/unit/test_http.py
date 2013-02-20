@@ -29,49 +29,49 @@ class HttpTestCase(unittest.TestCase):
         self.instance_uuids = ['a-uuid', 'b-uuid', 'c-uuid']
         self.http_server_names = ['www.abc.com', 'www.xyz.com']
         self.lb = {
-                'uuid': self.uuid,
-                'name': self.name,
-                'user_id': self.user_id,
-                'project_id': self.project_id,
-                'protocol': self.protocol,
-                'state': state.CREATING,
-                'free': False,
-                'dns_prefix': self.dns_prefix,
-                'listen_port': self.listen_port,
-                'instance_port': self.instance_port,
+            'uuid': self.uuid,
+            'name': self.name,
+            'user_id': self.user_id,
+            'project_id': self.project_id,
+            'protocol': self.protocol,
+            'state': state.CREATING,
+            'free': False,
+            'dns_prefix': self.dns_prefix,
+            'listen_port': self.listen_port,
+            'instance_port': self.instance_port,
         }
         self.tmp = copy.deepcopy(self.lb)
         self.tmp['id'] = self.load_balancer_id
         self.lb_ref = models.LoadBalancer()
         self.lb_ref.update(self.tmp)
         self.config = {
-                'load_balancer_id': self.load_balancer_id,
-                'balancing_method': 'round_robin',
-                'health_check_timeout_ms': 100,
-                'health_check_interval_ms': 500,
-                'health_check_target_path': '/',
-                'health_check_healthy_threshold': 0,
-                'health_check_unhealthy_threshold': 0,
+            'load_balancer_id': self.load_balancer_id,
+            'balancing_method': 'round_robin',
+            'health_check_timeout_ms': 100,
+            'health_check_interval_ms': 500,
+            'health_check_target_path': '/',
+            'health_check_healthy_threshold': 0,
+            'health_check_unhealthy_threshold': 0,
         }
         self.tmp = copy.deepcopy(self.config)
         self.tmp['id'] = self.config_id
         self.config_ref = models.LoadBalancerConfig()
         self.config_ref.update(self.tmp)
         self.create_kwargs = {
-                'name': self.name,
-                'user_id': self.user_id,
-                'tenant_id': self.project_id,
-                'protocol': self.protocol,
-                'instance_port': self.instance_port,
-                'instance_uuids': self.instance_uuids,
-                'http_server_names': self.http_server_names,
-                'config': self.config,
+            'name': self.name,
+            'user_id': self.user_id,
+            'tenant_id': self.project_id,
+            'protocol': self.protocol,
+            'instance_port': self.instance_port,
+            'instance_uuids': self.instance_uuids,
+            'http_server_names': self.http_server_names,
+            'config': self.config,
         }
         self.delete_kwargs = {
-                'user_id': self.user_id,
-                'tenant_id': self.project_id,
-                'protocol': self.protocol,
-                'uuid': self.uuid,
+            'user_id': self.user_id,
+            'tenant_id': self.project_id,
+            'protocol': self.protocol,
+            'uuid': self.uuid,
         }
         self.ctxt = context.get_context(tenant_id=self.project_id)
 
@@ -81,7 +81,7 @@ class HttpTestCase(unittest.TestCase):
     def test_create_load_balancer(self):
         def _raise_exception(*args):
             raise exception.LoadBalancerNotFoundByName(
-                    load_balancer_name=self.create_kwargs['name'])
+                load_balancer_name=self.create_kwargs['name'])
 
         self.mox.StubOutWithMock(utils, 'get_all_domain_names')
         self.mox.StubOutWithMock(utils, 'str_uuid')
@@ -90,8 +90,8 @@ class HttpTestCase(unittest.TestCase):
         self.mox.StubOutWithMock(db, 'load_balancer_create')
         self.mox.StubOutWithMock(db, 'load_balancer_config_create')
         self.mox.StubOutWithMock(db, 'load_balancer_domain_create')
-        self.mox.StubOutWithMock(db,
-                'load_balancer_instance_association_create')
+        self.mox.StubOutWithMock(
+            db, 'load_balancer_instance_association_create')
 
         db.load_balancer_get_by_name(self.ctxt,
                                      self.create_kwargs['name']).\
@@ -112,8 +112,8 @@ class HttpTestCase(unittest.TestCase):
             self.tmp['id'] = index + 1
             domain_ref = models.LoadBalancerDomain()
             domain_ref.update(self.tmp)
-            db.load_balancer_domain_create(self.ctxt, domain_values).\
-                    AndReturn(domain_ref)
+            db.load_balancer_domain_create(
+                self.ctxt, domain_values).AndReturn(domain_ref)
         for uuid in self.create_kwargs['instance_uuids']:
             association_values = {
                 'load_balancer_id': self.load_balancer_id,
@@ -121,8 +121,8 @@ class HttpTestCase(unittest.TestCase):
             }
             association_ref = models.LoadBalancerInstanceAssociation()
             association_ref.update(association_values)
-            db.load_balancer_instance_association_create(self.ctxt,
-                    association_values).AndReturn(association_ref)
+            db.load_balancer_instance_association_create(
+                self.ctxt, association_values).AndReturn(association_ref)
         self.mox.ReplayAll()
         r = http.create_load_balancer(self.ctxt, **self.create_kwargs)
         self.mox.VerifyAll()
@@ -145,7 +145,7 @@ class HttpTestCase(unittest.TestCase):
     def test_create_load_balancer_failed_on_lb_create(self):
         def _raise_exception1(*args):
             raise exception.LoadBalancerNotFoundByName(
-                    load_balancer_name=self.create_kwargs['name'])
+                load_balancer_name=self.create_kwargs['name'])
 
         def _raise_exception2(*args):
             raise Exception()
@@ -264,7 +264,7 @@ class HttpTestCase(unittest.TestCase):
     def test_update_load_balancer_config_with_invalid_uuid(self):
         def _raise_exception(*args):
             raise exception.LoadBalancerNotFoundByUUID(
-                    uuid=self.delete_kwargs['uuid'])
+                uuid=self.delete_kwargs['uuid'])
 
         update_kwargs = copy.deepcopy(self.delete_kwargs)
         update_kwargs['config'] = self.config
@@ -285,24 +285,24 @@ class HttpTestCase(unittest.TestCase):
         update_kwargs['instance_uuids'] = new_instance_uuids
 
         self.mox.StubOutWithMock(db, 'load_balancer_get_by_uuid')
-        self.mox.StubOutWithMock(db,
-                'load_balancer_instance_association_create')
-        self.mox.StubOutWithMock(db,
-                'load_balancer_instance_association_destroy')
+        self.mox.StubOutWithMock(
+            db, 'load_balancer_instance_association_create')
+        self.mox.StubOutWithMock(
+            db, 'load_balancer_instance_association_destroy')
         self.mox.StubOutWithMock(db, 'load_balancer_update_state')
 
         load_balancer_ref = self.lb_ref
         for uuid in self.instance_uuids:
             association_values = {
-                    'load_balancer_id': load_balancer_ref.id,
-                    'instance_uuid': uuid,
+                'load_balancer_id': load_balancer_ref.id,
+                'instance_uuid': uuid,
             }
             association_ref = models.LoadBalancerInstanceAssociation()
             association_ref.update(association_values)
             load_balancer_ref.instances.append(association_ref)
 
-        db.load_balancer_get_by_uuid(self.ctxt, self.uuid).\
-                                     AndReturn(load_balancer_ref)
+        db.load_balancer_get_by_uuid(
+            self.ctxt, self.uuid).AndReturn(load_balancer_ref)
         old_instance_uuids = map(lambda x: x['instance_uuid'],
                                         load_balancer_ref.instances)
         need_deleted_instances = filter(lambda x: x not in new_instance_uuids,
@@ -310,20 +310,17 @@ class HttpTestCase(unittest.TestCase):
         need_created_instances = filter(lambda x: x not in old_instance_uuids,
                                         new_instance_uuids)
         for instance_uuid in need_deleted_instances:
-            db.load_balancer_instance_association_destroy(self.ctxt,
-                                        load_balancer_ref.id,
-                                        instance_uuid).\
-                                        AndReturn(None)
+            db.load_balancer_instance_association_destroy(
+                self.ctxt, load_balancer_ref.id, instance_uuid).AndReturn(None)
         for instance_uuid in need_created_instances:
             association_values = {
-                    'load_balancer_id': load_balancer_ref.id,
-                    'instance_uuid': instance_uuid,
+                'load_balancer_id': load_balancer_ref.id,
+                'instance_uuid': instance_uuid,
             }
-            db.load_balancer_instance_association_create(self.ctxt,
-                                        association_values).\
-                                        AndReturn(None)
-        db.load_balancer_update_state(self.ctxt, self.uuid, state.UPDATING).\
-                AndReturn(None)
+            db.load_balancer_instance_association_create(
+                self.ctxt, association_values).AndReturn(None)
+        db.load_balancer_update_state(
+            self.ctxt, self.uuid, state.UPDATING).AndReturn(None)
         self.mox.ReplayAll()
         r = http.update_load_balancer_instances(self.ctxt, **update_kwargs)
         self.mox.VerifyAll()
@@ -343,9 +340,9 @@ class HttpTestCase(unittest.TestCase):
         load_balancer_ref = self.lb_ref
         for index, domain in enumerate(self.http_server_names):
             domain_values = {
-                    'id': index + 1,
-                    'load_balancer_id': load_balancer_ref.id,
-                    'name': domain,
+                'id': index + 1,
+                'load_balancer_id': load_balancer_ref.id,
+                'name': domain,
             }
             domain_ref = models.LoadBalancerDomain()
             domain_ref.update(domain_values)
@@ -363,17 +360,17 @@ class HttpTestCase(unittest.TestCase):
 
         for domain in load_balancer_ref.domains:
             if domain.name in need_deleted_domains:
-                db.load_balancer_domain_destroy(self.ctxt, domain.id).\
-                        AndReturn(None)
+                db.load_balancer_domain_destroy(
+                    self.ctxt, domain.id).AndReturn(None)
         for domain in need_created_domains:
             domain_values = {
-                    'load_balancer_id': load_balancer_ref.id,
-                    'name': domain,
+                'load_balancer_id': load_balancer_ref.id,
+                'name': domain,
             }
-            db.load_balancer_domain_create(self.ctxt, domain_values).\
-                    AndReturn(None)
-        db.load_balancer_update_state(self.ctxt, self.uuid, state.UPDATING).\
-                AndReturn(None)
+            db.load_balancer_domain_create(
+                self.ctxt, domain_values).AndReturn(None)
+        db.load_balancer_update_state(
+            self.ctxt, self.uuid, state.UPDATING).AndReturn(None)
         self.mox.ReplayAll()
         r = http.update_load_balancer_http_servers(self.ctxt, **kwargs)
         self.mox.VerifyAll()

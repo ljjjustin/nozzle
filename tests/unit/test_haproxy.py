@@ -9,22 +9,23 @@ from nozzle.common import utils
 from nozzle.worker.driver import haproxy
 
 _msg = {
-        'user_id': "user_name",
-        'tenant_id': "tenant",
-        'uuid': "load_balancer_id",
-        'protocol': 'tcp',
-        'listen_port': 32768,
-        'instance_port': 544,
-        'balancing_method': 'source_binding',
-        'health_check_timeout_ms': 1111,
-        'health_check_interval_ms': 2222,
-        'health_check_healthy_threshold': 2,
-        'health_check_unhealthy_threshold': 3,
-        'instance_uuids': [
-            u'212269a0-8f4f-11e1-acdf-001c234d5fd1',
-            u'175c1a24-8f54-11e1-acdf-001c234d5fd1'],
-        'instance_ips': ['10.1.2.3', '10.2.3.4']
-        }
+    'user_id': "user_name",
+    'tenant_id': "tenant",
+    'uuid': "load_balancer_id",
+    'protocol': 'tcp',
+    'listen_port': 32768,
+    'instance_port': 544,
+    'balancing_method': 'source_binding',
+    'health_check_timeout_ms': 1111,
+    'health_check_interval_ms': 2222,
+    'health_check_healthy_threshold': 2,
+    'health_check_unhealthy_threshold': 3,
+    'instance_uuids': [
+        u'212269a0-8f4f-11e1-acdf-001c234d5fd1',
+        u'175c1a24-8f54-11e1-acdf-001c234d5fd1',
+    ],
+    'instance_ips': ['10.1.2.3', '10.2.3.4'],
+}
 
 
 _request_template = {u'args': _msg,
@@ -84,14 +85,14 @@ class TestHaproxyConfigurer(unittest.TestCase):
         for request in self.requests:
             self.manager.do_config(self.requests[request])
             self.manager._validate_request.assert_called_with(
-                                            self.requests[request])
+                self.requests[request])
 
         self.manager._create_lb.assert_called_once_with(
-                                    self.requests['create_lb']['args'])
+            self.requests['create_lb']['args'])
         self.manager._delete_lb.assert_called_once_with(
-                                    self.requests['delete_lb']['args'])
+            self.requests['delete_lb']['args'])
         self.manager._update_lb.assert_called_once_with(
-                                    self.requests['update_lb']['args'])
+            self.requests['update_lb']['args'])
 
     @mock.patch('lockfile.FileLock', mock.MagicMock())
     def test_do_config_with_bad_request(self):
@@ -140,12 +141,12 @@ class TestHaproxyConfigurer(unittest.TestCase):
         new_cfg_path = '/etc/haproxy/haproxy.cfg.new'
 
         self.manager._create_lb_haproxy_cfg = mock.MagicMock(
-                        return_value=new_cfg_path)
+            return_value=new_cfg_path)
         self.manager._test_haproxy_config = mock.MagicMock()
         self.manager._backup_original_cfg = mock.MagicMock(
-                        return_value=(0, backup_path))
+            return_value=(0, backup_path))
         self.manager._replace_original_cfg_with_new = mock.MagicMock(
-                        return_value=(0, None))
+            return_value=(0, None))
         self.manager._reload_haproxy_cfg = mock.MagicMock(return_value=0)
 
         self.manager._create_lb(args)
@@ -154,48 +155,48 @@ class TestHaproxyConfigurer(unittest.TestCase):
         self.manager._test_haproxy_config.assert_called_once_with(new_cfg_path)
         self.manager._backup_original_cfg.assert_called_once_with()
         self.manager._replace_original_cfg_with_new.assert_called_once_with(
-                                                        new_cfg_path)
+            new_cfg_path)
         self.manager._reload_haproxy_cfg.assert_called_once_with(backup_path)
 
     def test_create_lb_with_create_lb_haproxy_cfg_failed(self):
         args = self.requests['create_lb']['args']
         self.manager._create_lb_haproxy_cfg = mock.MagicMock(
-                        side_effect=exception.HaproxyCreateCfgError)
+            side_effect=exception.HaproxyCreateCfgError)
 
         self.assertRaises(exception.HaproxyCreateError,
-                            self.manager._create_lb, args)
+                          self.manager._create_lb, args)
 
     def test_create_lb_with_test_haproxy_config_failed(self):
         args = self.requests['create_lb']['args']
         new_cfg_path = '/etc/haproxy/haproxy.cfg.new'
 
         self.manager._create_lb_haproxy_cfg = mock.MagicMock(
-                        return_value=new_cfg_path)
+            return_value=new_cfg_path)
         self.manager._test_haproxy_config = mock.MagicMock(
-                        side_effect=exception.ProcessExecutionError)
+            side_effect=exception.ProcessExecutionError)
 
         self.assertRaises(exception.HaproxyCreateError,
-                            self.manager._create_lb, args)
+                          self.manager._create_lb, args)
 
     def test_create_lb_with_backup_original_cfg_failed(self):
         args = self.requests['create_lb']['args']
         self.manager._create_lb_haproxy_cfg = mock.MagicMock()
         self.manager._test_haproxy_config = mock.MagicMock()
         self.manager._backup_original_cfg = mock.MagicMock(
-                        return_value=(-1, 'backup failed'))
+            return_value=(-1, 'backup failed'))
 
         self.assertRaises(exception.HaproxyCreateError,
-                            self.manager._create_lb, args)
+                          self.manager._create_lb, args)
 
     def test_create_lb_with_replace_original_cfg_with_new_failed(self):
         args = self.requests['create_lb']['args']
         self.manager._create_lb_haproxy_cfg = mock.MagicMock()
         self.manager._test_haproxy_config = mock.MagicMock()
         self.manager._replace_original_cfg_with_new = mock.MagicMock(
-                        return_value=(-1, 'replace failed'))
+            return_value=(-1, 'replace failed'))
 
         self.assertRaises(exception.HaproxyCreateError,
-                            self.manager._create_lb, args)
+                          self.manager._create_lb, args)
 
     def test_create_lb_with_reload_haproxy_cfg_failed(self):
         args = self.requests['create_lb']['args']
@@ -205,40 +206,40 @@ class TestHaproxyConfigurer(unittest.TestCase):
         new_cfg_path = '/etc/haproxy/haproxy.cfg.new'
 
         self.manager._create_lb_haproxy_cfg = mock.MagicMock(
-                        return_value=new_cfg_path)
+            return_value=new_cfg_path)
         self.manager._test_haproxy_config = mock.MagicMock()
         self.manager._backup_original_cfg = mock.MagicMock(
-                        return_value=(0, backup_path))
+            return_value=(0, backup_path))
         self.manager._replace_original_cfg_with_new = mock.MagicMock(
-                        return_value=(0, None))
+            return_value=(0, None))
         self.manager._reload_haproxy_cfg = mock.MagicMock(return_value=-1)
 
         self.assertRaises(exception.HaproxyCreateError,
-                            self.manager._create_lb, args)
+                          self.manager._create_lb, args)
 
     def test_delete_lb(self):
         args = self.requests['delete_lb']['args']
         self.manager.cfg_backup_dir = '/path/backup'
         backup_path = os.path.join(self.manager.cfg_backup_dir,
-                                    'haproxy.cfg_W_M_1_12')
+                                   'haproxy.cfg_W_M_1_12')
         new_cfg_path = '/etc/haproxy/haproxy.cfg.new.lb_deleted'
         self.manager._create_lb_deleted_haproxy_cfg = mock.MagicMock(
-                        return_value=new_cfg_path)
+            return_value=new_cfg_path)
         self.manager._test_haproxy_config = mock.MagicMock()
         self.manager._backup_original_cfg = mock.MagicMock(
-                        return_value=(0, backup_path))
+            return_value=(0, backup_path))
         self.manager._replace_original_cfg_with_new = mock.MagicMock(
-                        return_value=(0, None))
+            return_value=(0, None))
         self.manager._reload_haproxy_cfg = mock.MagicMock(return_value=0)
 
         self.manager._delete_lb(args)
 
         self.manager._create_lb_deleted_haproxy_cfg.assert_called_once_with(
-                                                        args)
+            args)
         self.manager._test_haproxy_config.assert_called_once_with(new_cfg_path)
         self.manager._backup_original_cfg.assert_called_once_with()
         self.manager._replace_original_cfg_with_new.assert_called_once_with(
-                                                        new_cfg_path)
+            new_cfg_path)
         self.manager._reload_haproxy_cfg.assert_called_once_with(backup_path)
 
     def test_delete_lb_with_test_haproxy_config_failed(self):
@@ -246,19 +247,19 @@ class TestHaproxyConfigurer(unittest.TestCase):
         new_cfg_path = '/etc/haproxy/haproxy.cfg.new'
 
         self.manager._create_lb_deleted_haproxy_cfg = mock.MagicMock(
-                        return_value=new_cfg_path)
+            return_value=new_cfg_path)
         self.manager._test_haproxy_config = mock.MagicMock(
-                        side_effect=exception.ProcessExecutionError)
+            side_effect=exception.ProcessExecutionError)
 
         self.assertRaises(exception.HaproxyDeleteError,
-                            self.manager._delete_lb, args)
+                          self.manager._delete_lb, args)
 
     def test_delete_lb_with_backup_original_cfg_failed(self):
         args = self.requests['delete_lb']['args']
         self.manager._create_lb_deleted_haproxy_cfg = mock.MagicMock()
         self.manager._test_haproxy_config = mock.MagicMock()
         self.manager._backup_original_cfg = mock.MagicMock(
-                        return_value=(-1, 'backup failed'))
+            return_value=(-1, 'backup failed'))
 
         self.assertRaises(exception.HaproxyDeleteError,
                           self.manager._delete_lb, args)
@@ -268,7 +269,7 @@ class TestHaproxyConfigurer(unittest.TestCase):
         self.manager._create_lb_deleted_haproxy_cfg = mock.MagicMock()
         self.manager._test_haproxy_config = mock.MagicMock()
         self.manager._replace_original_cfg_with_new = mock.MagicMock(
-                        return_value=(-1, 'replace failed'))
+            return_value=(-1, 'replace failed'))
 
         self.assertRaises(exception.HaproxyDeleteError,
                           self.manager._delete_lb, args)
@@ -300,60 +301,60 @@ class TestHaproxyConfigurer(unittest.TestCase):
         deleted_cfg_path = '/etc/haproxy/haproxy.cfg.deleted'
         new_cfg_path = '/etc/haproxy/haproxy.cfg.new'
         self.manager._create_lb_deleted_haproxy_cfg = mock.MagicMock(
-                        return_value=deleted_cfg_path)
+            return_value=deleted_cfg_path)
         self.manager._create_lb_haproxy_cfg = mock.MagicMock(
-                        return_value=new_cfg_path)
+            return_value=new_cfg_path)
         self.manager._test_haproxy_config = mock.MagicMock()
         self.manager._backup_original_cfg = mock.MagicMock(
-                        return_value=(0, backup_path))
+            return_value=(0, backup_path))
         self.manager._replace_original_cfg_with_new = mock.MagicMock(
-                        return_value=(0, None))
+            return_value=(0, None))
         self.manager._reload_haproxy_cfg = mock.MagicMock(return_value=0)
 
         self.manager._update_lb(args)
 
         self.manager._create_lb_deleted_haproxy_cfg.assert_called_once_with(
-                                                        args)
+            args)
         self.manager._create_lb_haproxy_cfg.assert_called_once_with(
-                        args, base_cfg_path=deleted_cfg_path)
+            args, base_cfg_path=deleted_cfg_path)
         self.manager._test_haproxy_config.assert_called_once_with(new_cfg_path)
         self.manager._backup_original_cfg.assert_called_once_with()
         self.manager._replace_original_cfg_with_new.assert_called_once_with(
-                                                        new_cfg_path)
+            new_cfg_path)
         self.manager._reload_haproxy_cfg.assert_called_once_with(backup_path)
 
     def test_update_lb_with_create_lb_deleted_haproxy_cfg_failed(self):
         args = self.requests['update_lb']['args']
         self.manager._create_lb_deleted_haproxy_cfg = mock.MagicMock(
-                        side_effect=exception.HaproxyLBNotExists)
+            side_effect=exception.HaproxyLBNotExists)
 
         self.assertRaises(exception.HaproxyUpdateError,
-                            self.manager._update_lb, args)
+                          self.manager._update_lb, args)
 
     def test_update_lb_with_create_lb_haproxy_cfg_failed(self):
         args = self.requests['update_lb']['args']
         deleted_cfg_path = '/etc/haproxy/haproxy.cfg.deleted'
         self.manager._create_lb_deleted_haproxy_cfg = mock.MagicMock(
-                        return_value=deleted_cfg_path)
+            return_value=deleted_cfg_path)
         self.manager._create_lb_haproxy_cfg = mock.MagicMock(
-                        side_effect=exception.HaproxyCreateCfgError)
+            side_effect=exception.HaproxyCreateCfgError)
 
         self.assertRaises(exception.HaproxyUpdateError,
-                            self.manager._update_lb, args)
+                          self.manager._update_lb, args)
 
     def test_update_lb_with_test_haproxy_config_failed(self):
         args = self.requests['update_lb']['args']
         deleted_cfg_path = '/etc/haproxy/haproxy.cfg.deleted'
         new_cfg_path = '/etc/haproxy/haproxy.cfg.new'
         self.manager._create_lb_deleted_haproxy_cfg = mock.MagicMock(
-                        return_value=deleted_cfg_path)
+            return_value=deleted_cfg_path)
         self.manager._create_lb_haproxy_cfg = mock.MagicMock(
-                        return_value=new_cfg_path)
+            return_value=new_cfg_path)
         self.manager._test_haproxy_config = mock.MagicMock(
-                        side_effect=exception.ProcessExecutionError)
+            side_effect=exception.ProcessExecutionError)
 
         self.assertRaises(exception.HaproxyUpdateError,
-                            self.manager._update_lb, args)
+                          self.manager._update_lb, args)
 
     def test_update_lb_with_backup_original_cfg_failed(self):
         args = self.requests['update_lb']['args']
@@ -361,47 +362,47 @@ class TestHaproxyConfigurer(unittest.TestCase):
         self.manager._create_lb_haproxy_cfg = mock.MagicMock()
         self.manager._test_haproxy_config = mock.MagicMock()
         self.manager._backup_original_cfg = mock.MagicMock(
-                        return_value=(-1, 'backup failed'))
+            return_value=(-1, 'backup failed'))
 
         self.assertRaises(exception.HaproxyUpdateError,
-                            self.manager._update_lb, args)
+                          self.manager._update_lb, args)
 
     def test_update_lb_with_replace_original_cfg_with_new_failed(self):
         args = self.requests['update_lb']['args']
         self.manager.cfg_backup_dir = '/path/backup'
         backup_path = os.path.join(self.manager.cfg_backup_dir,
-                                    'haproxy.cfg_W_M_1_12')
+                                   'haproxy.cfg_W_M_1_12')
         self.manager._create_lb_deleted_haproxy_cfg = mock.MagicMock()
         self.manager._create_lb_haproxy_cfg = mock.MagicMock()
         self.manager._test_haproxy_config = mock.MagicMock()
         self.manager._backup_original_cfg = mock.MagicMock(
-                        return_value=(0, backup_path))
+            return_value=(0, backup_path))
         self.manager._replace_original_cfg_with_new = mock.MagicMock(
-                        return_value=(-1, 'replace failed'))
+            return_value=(-1, 'replace failed'))
 
         self.assertRaises(exception.HaproxyUpdateError,
-                            self.manager._update_lb, args)
+                          self.manager._update_lb, args)
 
     def test_update_lb_with_reload_haproxy_cfg_failed(self):
         args = self.requests['update_lb']['args']
         self.manager.cfg_backup_dir = '/path/backup'
         backup_path = os.path.join(self.manager.cfg_backup_dir,
-                                    'haproxy.cfg_W_M_1_12')
+                                   'haproxy.cfg_W_M_1_12')
         deleted_cfg_path = '/etc/haproxy/haproxy.cfg.deleted'
         new_cfg_path = '/etc/haproxy/haproxy.cfg.new'
         self.manager._create_lb_deleted_haproxy_cfg = mock.MagicMock(
-                        return_value=deleted_cfg_path)
+            return_value=deleted_cfg_path)
         self.manager._create_lb_haproxy_cfg = mock.MagicMock(
-                        return_value=new_cfg_path)
+            return_value=new_cfg_path)
         self.manager._test_haproxy_config = mock.MagicMock()
         self.manager._backup_original_cfg = mock.MagicMock(
-                        return_value=(0, backup_path))
+            return_value=(0, backup_path))
         self.manager._replace_original_cfg_with_new = mock.MagicMock(
-                        return_value=(0, None))
+            return_value=(0, None))
         self.manager._reload_haproxy_cfg = mock.MagicMock(return_value=-1)
 
         self.assertRaises(exception.HaproxyUpdateError,
-                            self.manager._update_lb, args)
+                          self.manager._update_lb, args)
 
     def test_validate_request(self):
         args = self.requests['create_lb']['args']
@@ -428,8 +429,8 @@ class TestHaproxyConfigurer(unittest.TestCase):
                                  for i in range(len(args['instance_uuids']))]
         expected = '\n'.join(servers)
 
-        self.assertEqual(expected,
-                self.manager._create_haproxy_lb_server_directive(args))
+        method = self.manager._create_haproxy_lb_server_directive
+        self.assertEqual(expected, method(args))
 
     @mock.patch('time.asctime', mock.MagicMock(return_value='W_M_1_12'))
     @mock.patch('os.path.join', mock.MagicMock(return_value='/path/to/cfg'))
@@ -451,7 +452,7 @@ class TestHaproxyConfigurer(unittest.TestCase):
         backup_filename = 'haproxy.cfg_W_M_1_12'
         self.manager.cfg_backup_dir = '/path/backup'
         utils.execute = mock.MagicMock(
-                side_effect=exception.ProcessExecutionError)
+            side_effect=exception.ProcessExecutionError)
 
         rc, backup_path = self.manager._backup_original_cfg()
 
@@ -474,7 +475,7 @@ class TestHaproxyConfigurer(unittest.TestCase):
         new_cfg_path = '/path/to/new_cfg'
         cmd = "cp /path/to/new_cfg /etc/haproxy/haproxy.cfg"
         utils.execute = mock.MagicMock(
-                side_effect=exception.ProcessExecutionError)
+            side_effect=exception.ProcessExecutionError)
 
         rc, desc = self.manager._replace_original_cfg_with_new(new_cfg_path)
 
@@ -487,8 +488,8 @@ class TestHaproxyConfigurer(unittest.TestCase):
         new_cfg_path = '/etc/haproxy/haproxy.cfg.new'
         cmd = "cp %s %s" % (base_cfg_path, new_cfg_path)
         new_cfg_content = '# haproxy proxy configuation'
-        self.manager._create_haproxy_listen_cfg = \
-                mock.MagicMock(return_value=new_cfg_content)
+        self.manager._create_haproxy_listen_cfg = mock.MagicMock(
+            return_value=new_cfg_content)
         utils.execute = mock.MagicMock()
 
         with mock.patch('__builtin__.open',
@@ -496,8 +497,8 @@ class TestHaproxyConfigurer(unittest.TestCase):
             rc = self.manager._create_lb_haproxy_cfg(args)
 
         self.assertEqual(rc, new_cfg_path)
-        self.manager._create_haproxy_listen_cfg.assert_called_once_with(args,
-                                                    base_cfg_path)
+        self.manager._create_haproxy_listen_cfg.assert_called_once_with(
+            args, base_cfg_path)
         utils.execute.assert_called_once_with(cmd)
         fake_file.assert_called_once_with(new_cfg_path, 'a')
         fake_file().write.assert_called_once_with(new_cfg_content)
@@ -505,19 +506,19 @@ class TestHaproxyConfigurer(unittest.TestCase):
     def test_create_lb_haproxy_cfg_with_create_haproxy_listen_cfg_failed(self):
         args = self.requests['create_lb']['args']
         self.manager._create_haproxy_listen_cfg = mock.MagicMock(
-                        side_effect=exception.HaproxyLBExists)
+            side_effect=exception.HaproxyLBExists)
 
         self.assertRaises(exception.HaproxyCreateCfgError,
-                            self.manager._create_lb_haproxy_cfg, args)
+                          self.manager._create_lb_haproxy_cfg, args)
 
     def test_create_lb_haproxy_cfg_with_execute_failed(self):
         args = self.requests['create_lb']['args']
         self.manager._create_haproxy_listen_cfg = mock.MagicMock()
         utils.execute = mock.MagicMock(
-                        side_effect=exception.ProcessExecutionError)
+            side_effect=exception.ProcessExecutionError)
 
         self.assertRaises(exception.HaproxyCreateCfgError,
-                            self.manager._create_lb_haproxy_cfg, args)
+                          self.manager._create_lb_haproxy_cfg, args)
 
     @mock.patch('__builtin__.open', mock.MagicMock(side_effect=IOError))
     def test_create_lb_haproxy_cfg_with_io_failed(self):
@@ -526,7 +527,7 @@ class TestHaproxyConfigurer(unittest.TestCase):
         utils.execute = mock.MagicMock()
 
         self.assertRaises(exception.HaproxyCreateCfgError,
-                            self.manager._create_lb_haproxy_cfg, args)
+                          self.manager._create_lb_haproxy_cfg, args)
 
     def test_create_haproxy_listen_cfg(self):
         args = self.requests['create_lb']['args']
@@ -545,23 +546,23 @@ class TestHaproxyConfigurer(unittest.TestCase):
         server_directives = '\n'.join(servers)
         self.manager._get_lb_name = mock.MagicMock(return_value=lb_name)
         self.manager._is_lb_in_use = mock.MagicMock(return_value=False)
-        self.manager._create_haproxy_lb_server_directive = \
-                        mock.MagicMock(return_value=server_directives)
+        self.manager._create_haproxy_lb_server_directive = mock.MagicMock(
+            return_value=server_directives)
 
         ret = self.manager._create_haproxy_listen_cfg(args)
 
         bind_ips = self.manager._bind_ip
         bind_directive = ','.join(map(lambda ip: "%s:%s" % (
-                                    ip, args['listen_port']), bind_ips))
-        haproxy_lb_fmt = \
-            '\nlisten\t%s\n\tmode tcp\n\tbind %s\n\tbalance %s\n\ttimeout check %sms\n%s'
+            ip, args['listen_port']), bind_ips))
+        haproxy_lb_fmt = ('\nlisten\t%s\n\tmode tcp\n\t'
+                          'bind %s\n\tbalance %s\n\ttimeout check %sms\n%s')
         expected = haproxy_lb_fmt % (lb_name, bind_directive, 'source',
-                                    args['health_check_timeout_ms'],
-                                    server_directives)
+                                     args['health_check_timeout_ms'],
+                                     server_directives)
         self.assertEqual(expected, ret)
         self.manager._get_lb_name.assert_called_once_with(args)
         self.manager._is_lb_in_use.assert_called_once_with(lb_name,
-                                                            base_cfg_path)
+                                                           base_cfg_path)
         ls_server_directive = self.manager._create_haproxy_lb_server_directive
         ls_server_directive.assert_called_once_with(args)
 
@@ -582,7 +583,7 @@ class TestHaproxyConfigurer(unittest.TestCase):
         self.manager._is_lb_in_use = mock.MagicMock(return_value=False)
 
         self.assertRaises(exception.HaproxyCreateError,
-                            self.manager._create_haproxy_listen_cfg, args)
+                          self.manager._create_haproxy_listen_cfg, args)
 
     def test_create_lb_deleted_haproxy_cfg(self):
         args = self.requests['delete_lb']['args']
@@ -637,10 +638,10 @@ class TestHaproxyConfigurer(unittest.TestCase):
     def test_test_haproxy_config_with_execute_failed(self):
         cfg_path = '/path/to/cfg'
         utils.execute = mock.MagicMock(
-                            side_effect=exception.ProcessExecutionError)
+            side_effect=exception.ProcessExecutionError)
 
         self.assertRaises(exception.ProcessExecutionError,
-                            self.manager._test_haproxy_config, cfg_path)
+                          self.manager._test_haproxy_config, cfg_path)
 
     def test_reload_haproxy_cfg(self):
         pid = 12345
@@ -651,7 +652,7 @@ class TestHaproxyConfigurer(unittest.TestCase):
         self.manager._reload_haproxy_cfg(backup_path)
 
         cmd = ("haproxy -f /etc/haproxy/haproxy.cfg -p "
-                "/var/run/haproxy.pid -sf %s " % pid)
+               "/var/run/haproxy.pid -sf %s " % pid)
         utils.execute.assert_called_with(cmd)
 
     def test_format_haproxy_config(self):

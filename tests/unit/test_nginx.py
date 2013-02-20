@@ -9,23 +9,23 @@ from nozzle.common import utils
 from nozzle.worker.driver import nginx
 
 _msg = {
-        u'user_id': u'test',
-        u'tenant_id': u'test',
-        u'uuid': u'testLB',
-        u'protocol': u'http',
-        u'instance_port': 80,
-        u'listen_port': 80,
-        u'health_check_timeout_ms': 5,
-        u'balancing_method': u'source_binding',
-        u'health_check_unhealthy_threshold': 0,
-        u'health_check_healthy_threshold': 0,
-        u'health_check_interval_ms': 500,
-        u'health_check_fail_count': 2,
-        u'health_check_target_path': u'/',
-        u'http_server_names': [u"g.cn", u't.cn'],
-        u'instance_ips': [u'10.0.0.1'],
-        u'dns_names': [u'abc.lb.com.cn', u'abc.interal.lb.com.cn'],
-        }
+    u'user_id': u'test',
+    u'tenant_id': u'test',
+    u'uuid': u'testLB',
+    u'protocol': u'http',
+    u'instance_port': 80,
+    u'listen_port': 80,
+    u'health_check_timeout_ms': 5,
+    u'balancing_method': u'source_binding',
+    u'health_check_unhealthy_threshold': 0,
+    u'health_check_healthy_threshold': 0,
+    u'health_check_interval_ms': 500,
+    u'health_check_fail_count': 2,
+    u'health_check_target_path': u'/',
+    u'http_server_names': [u"g.cn", u't.cn'],
+    u'instance_ips': [u'10.0.0.1'],
+    u'dns_names': [u'abc.lb.com.cn', u'abc.interal.lb.com.cn'],
+}
 
 
 _request_template = {u'args': _msg,
@@ -108,10 +108,10 @@ class TestConfigureNginx(unittest.TestCase):
         self.manager._delete_http_ngx_cfg(args)
 
         utils.delete_if_exists.assert_called_once_with(
-                                '/etc/nginx/sites-enabled/%s' % confname)
+            '/etc/nginx/sites-enabled/%s' % confname)
         utils.backup_config.assert_called_once_with(
-                                '/etc/nginx/sites-available/%s' % confname,
-                                self.manager.backup_dir)
+            '/etc/nginx/sites-available/%s' % confname,
+            self.manager.backup_dir)
 
     def test_create_ngx_upstream_directive(self):
         args = self.requests['create_lb']['args']
@@ -205,7 +205,7 @@ server {
         self.manager._create_http_ngx_cfg = mock.MagicMock()
         self.manager._delete_http_ngx_cfg = mock.MagicMock()
         self.manager._test_http_ngx_cfg = mock.MagicMock(
-                side_effect=exception.ProcessExecutionError)
+            side_effect=exception.ProcessExecutionError)
 
         self.assertRaises(exception.NginxCreateProxyError,
                           self.manager._create_lb, args)
@@ -319,7 +319,7 @@ server {
     def test_create_http_ngx_cfg_with_file_exists(self):
         args = self.requests['create_lb']['args']
         self.assertRaises(exception.NginxConfFileExists,
-            self.manager._create_http_ngx_cfg, args)
+                          self.manager._create_http_ngx_cfg, args)
 
     @mock.patch('os.path.exists', mock.MagicMock(return_value=False))
     @mock.patch('__builtin__.open', mock.MagicMock(side_effect=IOError))

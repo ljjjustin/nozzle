@@ -50,37 +50,37 @@ class ApiTestCase(unittest.TestCase):
         self.lb_uuid = 'lb-uuid-1'
         self.dns_prefix = 'abcdefghij'
         self.lb = {
-                'name': 'test-lb-1',
-                'user_id': 'a-fake-user-0',
-                'project_id': self.project_id,
-                'uuid': self.lb_uuid,
-                'protocol': self.protocol,
-                'dns_prefix': self.dns_prefix,
-                'instance_port': 80,
+            'name': 'test-lb-1',
+            'user_id': 'a-fake-user-0',
+            'project_id': self.project_id,
+            'uuid': self.lb_uuid,
+            'protocol': self.protocol,
+            'dns_prefix': self.dns_prefix,
+            'instance_port': 80,
         }
         self.tmp = copy.deepcopy(self.lb)
         self.tmp['id'] = self.load_balancer_id
         self.lb_ref = models.LoadBalancer()
         self.lb_ref.update(self.tmp)
         self.config = {
-                'load_balancer_id': self.load_balancer_id,
-                'balancing_method': 'round_robin',
-                'health_check_timeout_ms': 100,
-                'health_check_interval_ms': 500,
-                'health_check_target_path': '/',
-                'health_check_healthy_threshold': 0,
-                'health_check_unhealthy_threshold': 0,
+            'load_balancer_id': self.load_balancer_id,
+            'balancing_method': 'round_robin',
+            'health_check_timeout_ms': 100,
+            'health_check_interval_ms': 500,
+            'health_check_target_path': '/',
+            'health_check_healthy_threshold': 0,
+            'health_check_unhealthy_threshold': 0,
         }
         self.tmp = copy.deepcopy(self.config)
         self.tmp['id'] = self.config_id
         self.config_ref = models.LoadBalancerConfig()
         self.config_ref.update(self.tmp)
         self.kwargs = {
-                'user_id': 'a-fake-user-0',
-                'tenant_id': self.project_id,
-                'protocol': self.protocol,
-                'uuid': self.lb_uuid,
-                'all_tenants': True,
+            'user_id': 'a-fake-user-0',
+            'tenant_id': self.project_id,
+            'protocol': self.protocol,
+            'uuid': self.lb_uuid,
+            'all_tenants': True,
         }
         self.all_domains = []
         for name in self.http_server_names:
@@ -96,7 +96,8 @@ class ApiTestCase(unittest.TestCase):
         self.mox.StubOutWithMock(db, 'load_balancer_get_by_uuid')
         self.lb_ref.config = self.config_ref
         protocol.get_protocol_module(self.protocol).AndReturn(fake_module)
-        db.load_balancer_get_by_uuid(self.context, self.lb_uuid).AndReturn(self.lb_ref)
+        db.load_balancer_get_by_uuid(
+            self.context, self.lb_uuid).AndReturn(self.lb_ref)
         self.mox.ReplayAll()
         r = api.create_load_balancer(self.context, **self.kwargs)
         self.mox.VerifyAll()
@@ -166,9 +167,9 @@ class ApiTestCase(unittest.TestCase):
         expect['http_server_names'] = []
         for index, domain in enumerate(self.http_server_names):
             domain_values = {
-                    'id': index + 1,
-                    'load_balancer_id': load_balancer_ref.id,
-                    'name': domain,
+                'id': index + 1,
+                'load_balancer_id': load_balancer_ref.id,
+                'name': domain,
             }
             expect['http_server_names'].append(domain)
             domain_ref = models.LoadBalancerDomain()
@@ -217,9 +218,9 @@ class ApiTestCase(unittest.TestCase):
         expect['http_server_names'] = []
         for index, domain in enumerate(self.http_server_names):
             domain_values = {
-                    'id': index + 1,
-                    'load_balancer_id': load_balancer_ref.id,
-                    'name': domain,
+                'id': index + 1,
+                'load_balancer_id': load_balancer_ref.id,
+                'name': domain,
             }
             expect['http_server_names'].append(domain)
             domain_ref = models.LoadBalancerDomain()
@@ -249,8 +250,8 @@ class ApiTestCase(unittest.TestCase):
 
     def test_get_all_http_servers(self):
         kwargs = {
-                'user_id': 'a-fake-user-0',
-                'tenant_id': self.project_id,
+            'user_id': 'a-fake-user-0',
+            'tenant_id': self.project_id,
         }
         admin_context = self.context.elevated(read_deleted='no')
         self.mox.StubOutWithMock(db, 'load_balancer_domain_get_all')

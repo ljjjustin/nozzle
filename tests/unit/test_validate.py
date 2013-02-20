@@ -8,50 +8,50 @@ from nozzle.common import validate
 
 
 _create_http_lb_request = {
-        u'cmd': u'create_lb',
-        u'args': {
-            u'user_id': u'demo',
-            u'tenant_id': u'demo',
-            u'uuid': u'myLB',
-            u'protocol': u'http',
-            u'instance_port': 80,
-            u'listen_port': 80,
-            u'health_check_timeout_ms': 5,
-            u'balancing_method': u'source_binding',
-            u'health_check_unhealthy_threshold': 0,
-            u'health_check_healthy_threshold': 0,
-            u'health_check_interval_ms': 500,
-            u'health_check_fail_count': 2,
-            u'health_check_target_path': u'/',
-            u'instance_uuids': [u'681500b4-d08c-4208-83b3-68b2b57c1e23'],
-            u'dns_names': [u'abc.lb.com.cn', u'abc.interal.lb.com.cn'],
-            u'instance_ips': [u'10.0.0.1'],
-            u'http_server_names': [u"g.cn"],
-            },
-        }
+    u'cmd': u'create_lb',
+    u'args': {
+        u'user_id': u'demo',
+        u'tenant_id': u'demo',
+        u'uuid': u'myLB',
+        u'protocol': u'http',
+        u'instance_port': 80,
+        u'listen_port': 80,
+        u'health_check_timeout_ms': 5,
+        u'balancing_method': u'source_binding',
+        u'health_check_unhealthy_threshold': 0,
+        u'health_check_healthy_threshold': 0,
+        u'health_check_interval_ms': 500,
+        u'health_check_fail_count': 2,
+        u'health_check_target_path': u'/',
+        u'instance_uuids': [u'681500b4-d08c-4208-83b3-68b2b57c1e23'],
+        u'dns_names': [u'abc.lb.com.cn', u'abc.interal.lb.com.cn'],
+        u'instance_ips': [u'10.0.0.1'],
+        u'http_server_names': [u"g.cn"],
+    },
+}
 
 
 _create_tcp_lb_request = {
-        'cmd': 'create_lb',
-        'args': {
-            'user_id': "user_name",
-            'tenant_id': "tenant",
-            'uuid': "load_balancer_id",
-            'protocol': 'tcp',
-            'listen_port': 11999,
-            'instance_port': 544,
-            'balancing_method': 'source_binding',
-            'health_check_timeout_ms': 1111,
-            'health_check_interval_ms': 2222,
-            'health_check_healthy_threshold': 2,
-            'health_check_unhealthy_threshold': 3,
-            'instance_uuids': [
-                u'212269a0-8f4f-11e1-acdf-001c234d5fd1',
-                u'175c1a24-8f54-11e1-acdf-001c234d5fd1'],
-            'instance_ips': ['10.1.2.3', '10.2.3.4'],
-            u'dns_names': [u'abc.lb.com.cn', u'abc.interal.lb.com.cn'],
-            },
-        }
+    'cmd': 'create_lb',
+    'args': {
+        'user_id': "user_name",
+        'tenant_id': "tenant",
+        'uuid': "load_balancer_id",
+        'protocol': 'tcp',
+        'listen_port': 11999,
+        'instance_port': 544,
+        'balancing_method': 'source_binding',
+        'health_check_timeout_ms': 1111,
+        'health_check_interval_ms': 2222,
+        'health_check_healthy_threshold': 2,
+        'health_check_unhealthy_threshold': 3,
+        'instance_uuids': [
+            u'212269a0-8f4f-11e1-acdf-001c234d5fd1',
+            u'175c1a24-8f54-11e1-acdf-001c234d5fd1'],
+        'instance_ips': ['10.1.2.3', '10.2.3.4'],
+        u'dns_names': [u'abc.lb.com.cn', u'abc.interal.lb.com.cn'],
+    },
+}
 
 
 class TestValidate(unittest.TestCase):
@@ -212,7 +212,8 @@ class TestValidate(unittest.TestCase):
         self.assertRaises(exception.BadRequest,
                           validate._do_basic_check, request)
 
-    @mock.patch.object(validate, '_check_create_or_update_lb', mock.MagicMock())
+    @mock.patch.object(validate, '_check_create_or_update_lb',
+                       mock.MagicMock())
     @mock.patch.object(validate, '_check_delete_lb', mock.MagicMock())
     def test_do_basic_check(self):
         request = {u'args': u'...',
