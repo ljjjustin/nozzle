@@ -6,3 +6,6 @@ httplib2
 pyzmq
 sqlalchemy>0.6.4
 webob==1.0.8
+lockfile
+iso8601
+novaclient
