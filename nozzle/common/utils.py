@@ -155,7 +155,7 @@ def synchronized(name):
                       'method "%(method)s"...' %
                       {'lock': name, 'method': f.__name__})
 
-            lock_file_path = os.path.join('/var/run/nozzle',
+            lock_file_path = os.path.join('/var/lib/nozzle',
                                           'nozzle-worker.%s' % name)
 
             lock = lockfile.FileLock(lock_file_path, threaded=False)
