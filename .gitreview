@@ -1,4 +1,4 @@
 [gerrit]
-host=gerrit.sinasws.com
+host=review.ustack.com
 port=29418
 project=nozzle.git
