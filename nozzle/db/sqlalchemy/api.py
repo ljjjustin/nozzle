@@ -74,27 +74,24 @@ def model_query(context, model, **kwargs):
 
 
 def load_balancer_get(context, load_balancer_id):
-    result = model_query(context, models.LoadBalancer).\
-                        filter_by(id=load_balancer_id).\
-                        first()
+    result = model_query(context, models.LoadBalancer).filter_by(
+        id=load_balancer_id).first()
     if not result:
         raise exception.LoadBalancerNotFound(load_balancer_id=load_balancer_id)
     return result
 
 
 def load_balancer_get_by_uuid(context, uuid):
-    result = model_query(context, models.LoadBalancer).\
-                        filter_by(uuid=uuid).\
-                        first()
+    result = model_query(context, models.LoadBalancer).filter_by(
+        uuid=uuid).first()
     if not result:
         raise exception.LoadBalancerNotFoundByUUID(uuid=uuid)
     return result
 
 
 def load_balancer_get_by_name(context, name):
-    result = model_query(context, models.LoadBalancer).\
-                        filter_by(name=name).\
-                        first()
+    result = model_query(context, models.LoadBalancer).filter_by(
+        name=name).first()
     if not result:
         raise exception.LoadBalancerNotFoundByName(load_balancer_name=name)
     return result
@@ -126,35 +123,34 @@ def load_balancer_create(context, values):
 
 def load_balancer_destroy(context, load_balancer_id):
     with context.session.begin():
-        context.session.query(models.LoadBalancer).\
-                filter_by(id=load_balancer_id).\
-                update({'deleted': True,
-                        'state': 'deleted',
-                        'deleted_at': utcnow()})
+        context.session.query(models.LoadBalancer).filter_by(
+            id=load_balancer_id).update(
+                {'deleted': True,
+                 'state': 'deleted',
+                 'deleted_at': utcnow()})
 
 
 def load_balancer_update_state(context, load_balancer_uuid, state):
     with context.session.begin():
-        context.session.query(models.LoadBalancer).\
-                filter_by(uuid=load_balancer_uuid).\
-                update({'state': state,
-                        'updated_at': literal_column('updated_at')})
+        context.session.query(models.LoadBalancer).filter_by(
+            uuid=load_balancer_uuid).update(
+                {'state': state,
+                 'updated_at': literal_column('updated_at')}
+            )
 
 
 # load_balancer_config
 def load_balancer_config_get(context, config_id):
-    result = model_query(context, models.LoadBalancerConfig).\
-                        filter_by(id=config_id).\
-                        first()
+    result = model_query(context, models.LoadBalancerConfig).filter_by(
+        id=config_id).first()
     if not result:
         raise exception.LoadBalancerConfigNotFound(config_id=config_id)
     return result
 
 
 def load_balancer_config_get_by_load_balancer_id(context, load_balancer_id):
-    result = model_query(context, models.LoadBalancerConfig).\
-                        filter_by(load_balancer_id=load_balancer_id).\
-                        first()
+    result = model_query(context, models.LoadBalancerConfig).filter_by(
+        load_balancer_id=load_balancer_id).first()
     if not result:
         raise exception.LoadBalancerConfigNotFoundByLoadBalancerId(
             load_balancer_id=load_balancer_id)
@@ -182,26 +178,24 @@ def load_balancer_config_create(context, values):
 
 def load_balancer_config_destroy(context, config_id):
     with context.session.begin():
-        context.session.query(models.LoadBalancerConfig).\
-                filter_by(id=config_id).\
-                update({'deleted': True,
-                        'deleted_at': utcnow()})
+        context.session.query(models.LoadBalancerConfig).filter_by(
+            id=config_id).update(
+                {'deleted': True,
+                 'deleted_at': utcnow()})
 
 
 # load_balancer_domain
 def load_balancer_domain_get(context, domain_id):
-    result = model_query(context, models.LoadBalancerDomain).\
-                        filter_by(id=domain_id).\
-                        first()
+    result = model_query(context, models.LoadBalancerDomain).filter_by(
+        id=domain_id).first()
     if not result:
         raise exception.LoadBalancerDomainNotFound(domain_id=domain_id)
     return result
 
 
 def load_balancer_domain_get_by_name(context, domain_name):
-    result = model_query(context, models.LoadBalancerDomain).\
-                        filter_by(name=domain_name).\
-                        first()
+    result = model_query(context, models.LoadBalancerDomain).filter_by(
+        name=domain_name).first()
     if not result:
         raise exception.LoadBalancerDomainNotFoundByName(
             domain_name=domain_name)
@@ -211,9 +205,8 @@ def load_balancer_domain_get_by_name(context, domain_name):
 @require_admin_context
 def load_balancer_domain_get_all(context, filters=None):
     filters = filters or dict()
-    return model_query(context, models.LoadBalancerDomain).\
-                       filter_by(**filters).\
-                       all()
+    return model_query(context, models.LoadBalancerDomain).filter_by(
+        **filters).all()
 
 
 def load_balancer_domain_create(context, values):
@@ -236,19 +229,19 @@ def load_balancer_domain_create(context, values):
 
 def load_balancer_domain_destroy(context, domain_id):
     with context.session.begin():
-        context.session.query(models.LoadBalancerDomain).\
-                filter_by(id=domain_id).\
-                update({'deleted': True,
-                        'deleted_at': utcnow()})
+        context.session.query(models.LoadBalancerDomain).filter_by(
+            id=domain_id).update(
+                {'deleted': True,
+                 'deleted_at': utcnow()})
 
 
 def load_balancer_instance_association_get(context,
                                            load_balancer_id,
                                            instance_uuid):
-    result = model_query(context, models.LoadBalancerInstanceAssociation).\
-                        filter_by(load_balancer_id=load_balancer_id).\
-                        filter_by(instance_uuid=instance_uuid).\
-                        first()
+    model = models.LoadBalancerInstanceAssociation
+    result = model_query(context, model).filter_by(
+        load_balancer_id=load_balancer_id).filter_by(
+            instance_uuid=instance_uuid).first()
     if not result:
         raise exception.LoadBalancerInstanceAssociationNotFound(
             load_balancer_id=load_balancer_id,
@@ -257,9 +250,9 @@ def load_balancer_instance_association_get(context,
 
 
 def load_balancer_instance_association_get_all(context, load_balancer_id):
-    result = model_query(context, models.LoadBalancerInstanceAssociation).\
-                        filter_by(load_balancer_id=load_balancer_id).\
-                        all()
+    model = models.LoadBalancerInstanceAssociation
+    result = model_query(context, model).filter_by(
+        load_balancer_id=load_balancer_id).all()
     if not result:
         raise exception.LoadBalancerInstanceAssociationNotFoundAll(
             load_balancer_id=load_balancer_id)
@@ -288,17 +281,17 @@ def load_balancer_instance_association_destroy(context,
                                                load_balancer_id,
                                                instance_uuid):
     with context.session.begin():
-        context.session.query(models.LoadBalancerInstanceAssociation).\
-                filter_by(load_balancer_id=load_balancer_id).\
-                filter_by(instance_uuid=instance_uuid).\
-                delete()
+        model = models.LoadBalancerInstanceAssociation
+        context.session.query(model).filter_by(
+            load_balancer_id=load_balancer_id).filter_by(
+                instance_uuid=instance_uuid).delete()
         context.session.flush()
 
 
 def load_balancer_get_by_instance_uuid(context, instance_uuid):
-    result = model_query(context, models.LoadBalancerInstanceAssociation).\
-                        filter_by(instance_uuid=instance_uuid).\
-                        all()
+    model = models.LoadBalancerInstanceAssociation
+    result = model_query(context, model).filter_by(
+        instance_uuid=instance_uuid).all()
     if not result:
         raise exception.LoadBalancerNotFoundByInstanceUUID(
             instance_uuid=instance_uuid)

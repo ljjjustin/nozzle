@@ -93,16 +93,15 @@ class HttpTestCase(unittest.TestCase):
         self.mox.StubOutWithMock(
             db, 'load_balancer_instance_association_create')
 
-        db.load_balancer_get_by_name(self.ctxt,
-                                     self.create_kwargs['name']).\
-                                     WithSideEffects(_raise_exception).\
-                                     AndReturn(None)
+        db.load_balancer_get_by_name(
+            self.ctxt, self.create_kwargs['name']).WithSideEffects(
+                _raise_exception).AndReturn(None)
         utils.get_all_domain_names().AndReturn(list())
         utils.str_uuid().AndReturn(self.uuid)
         utils.gen_dns_prefix().AndReturn(self.dns_prefix)
         db.load_balancer_create(self.ctxt, self.lb).AndReturn(self.lb_ref)
-        db.load_balancer_config_create(self.ctxt, self.config).\
-                AndReturn(self.config_ref)
+        db.load_balancer_config_create(
+            self.ctxt, self.config).AndReturn(self.config_ref)
         for index, domain in enumerate(self.http_server_names):
             domain_values = {
                 'load_balancer_id': self.load_balancer_id,
@@ -133,10 +132,9 @@ class HttpTestCase(unittest.TestCase):
             raise Exception()
 
         self.mox.StubOutWithMock(db, 'load_balancer_get_by_name')
-        db.load_balancer_get_by_name(self.ctxt,
-                                     self.create_kwargs['name']).\
-                                     WithSideEffects(_raise_exception).\
-                                     AndReturn(None)
+        db.load_balancer_get_by_name(
+            self.ctxt, self.create_kwargs['name']).WithSideEffects(
+                _raise_exception).AndReturn(None)
         self.mox.ReplayAll()
         self.assertRaises(Exception, http.create_load_balancer,
                           self.ctxt, **self.create_kwargs)
@@ -155,16 +153,15 @@ class HttpTestCase(unittest.TestCase):
         self.mox.StubOutWithMock(utils, 'get_all_domain_names')
         self.mox.StubOutWithMock(utils, 'str_uuid')
         self.mox.StubOutWithMock(utils, 'gen_dns_prefix')
-        db.load_balancer_get_by_name(self.ctxt,
-                                     self.create_kwargs['name']).\
-                                     WithSideEffects(_raise_exception1).\
-                                     AndReturn(None)
+        db.load_balancer_get_by_name(
+            self.ctxt, self.create_kwargs['name']).WithSideEffects(
+                _raise_exception1).AndReturn(None)
         utils.get_all_domain_names().AndReturn(list())
         utils.str_uuid().AndReturn(self.uuid)
         utils.gen_dns_prefix().AndReturn(self.dns_prefix)
-        db.load_balancer_create(self.ctxt, self.lb).\
-                                WithSideEffects(_raise_exception2).\
-                                AndReturn(None)
+        db.load_balancer_create(
+            self.ctxt, self.lb).WithSideEffects(
+                _raise_exception2).AndReturn(None)
         self.mox.ReplayAll()
         self.assertRaises(exception.CreateLoadBalancerFailed,
                           http.create_load_balancer,
@@ -247,15 +244,14 @@ class HttpTestCase(unittest.TestCase):
 
         load_balancer_ref = self.lb_ref
         load_balancer_ref.config = self.config_ref
-        db.load_balancer_get_by_uuid(self.ctxt, self.uuid).\
-                                     AndReturn(load_balancer_ref)
-        db.load_balancer_config_destroy(self.ctxt,
-                                        load_balancer_ref.config.id).\
-                                        AndReturn(None)
-        db.load_balancer_config_create(self.ctxt, self.config).\
-                                       AndReturn(self.config_ref)
-        db.load_balancer_update_state(self.ctxt, self.uuid, state.UPDATING).\
-                                      AndReturn(None)
+        db.load_balancer_get_by_uuid(
+            self.ctxt, self.uuid).AndReturn(load_balancer_ref)
+        db.load_balancer_config_destroy(
+            self.ctxt, load_balancer_ref.config.id).AndReturn(None)
+        db.load_balancer_config_create(
+            self.ctxt, self.config).AndReturn(self.config_ref)
+        db.load_balancer_update_state(
+            self.ctxt, self.uuid, state.UPDATING).AndReturn(None)
         self.mox.ReplayAll()
         r = http.update_load_balancer_config(self.ctxt, **update_kwargs)
         self.mox.VerifyAll()
@@ -270,9 +266,9 @@ class HttpTestCase(unittest.TestCase):
         update_kwargs['config'] = self.config
 
         self.mox.StubOutWithMock(db, 'load_balancer_get_by_uuid')
-        db.load_balancer_get_by_uuid(self.ctxt, self.uuid).\
-                                     WithSideEffects(_raise_exception).\
-                                     AndReturn(None)
+        db.load_balancer_get_by_uuid(
+            self.ctxt, self.uuid).WithSideEffects(
+                _raise_exception).AndReturn(None)
         self.mox.ReplayAll()
         self.assertRaises(exception.UpdateLoadBalancerFailed,
                           http.update_load_balancer_config,
@@ -304,7 +300,7 @@ class HttpTestCase(unittest.TestCase):
         db.load_balancer_get_by_uuid(
             self.ctxt, self.uuid).AndReturn(load_balancer_ref)
         old_instance_uuids = map(lambda x: x['instance_uuid'],
-                                        load_balancer_ref.instances)
+                                 load_balancer_ref.instances)
         need_deleted_instances = filter(lambda x: x not in new_instance_uuids,
                                         old_instance_uuids)
         need_created_instances = filter(lambda x: x not in old_instance_uuids,
@@ -348,8 +344,8 @@ class HttpTestCase(unittest.TestCase):
             domain_ref.update(domain_values)
             load_balancer_ref.domains.append(domain_ref)
 
-        db.load_balancer_get_by_uuid(self.ctxt, self.uuid).\
-                AndReturn(load_balancer_ref)
+        db.load_balancer_get_by_uuid(
+            self.ctxt, self.uuid).AndReturn(load_balancer_ref)
         utils.get_all_domain_names().AndReturn(list())
 
         old_http_servers = map(lambda x: x['name'], load_balancer_ref.domains)

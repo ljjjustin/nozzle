@@ -265,8 +265,9 @@ class HaproxyConfigurer(object):
             raise exception.HaproxyLBExists(name=lb_name)
 
         listen_port = int(msg['listen_port'])
-        if (listen_port < self.listen_port_min or
-            listen_port > self.listen_port_max):
+        listen_port_min = self.listen_port_min
+        listen_port_max = self.listen_port_max
+        if listen_port < listen_port_min or listen_port > listen_port_max:
             warn_msg = 'Valid listen port(%s) should between %s and %s' % (
                 listen_port, self.listen_port_min, self.listen_port_max)
             LOG.error(warn_msg)

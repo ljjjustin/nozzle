@@ -78,12 +78,12 @@ class TestConfigureNginx(unittest.TestCase):
 
     @mock.patch('lockfile.FileLock', mock.MagicMock())
     def test_do_config_with_bad_request(self):
-        self.manager._validate_request = \
-                        mock.MagicMock(side_effect=exception.BadRequest)
+        self.manager._validate_request = mock.MagicMock(
+            side_effect=exception.BadRequest)
 
         for method in self.requests:
             self.assertRaises(exception.NginxConfigureError,
-                                self.manager.do_config, self.requests[method])
+                              self.manager.do_config, self.requests[method])
 
     def test_reload_http_ngx_cfg(self):
         utils.execute = mock.MagicMock()

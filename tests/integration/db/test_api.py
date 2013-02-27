@@ -61,8 +61,8 @@ class DBApiTestCase(unittest.TestCase):
         pass
 
     def truncate_table(self, table):
-        self.connection.execution_options(autocommit=True).\
-                execute("TRUNCATE %s;" % table)
+        self.connection.execution_options(
+            autocommit=True).execute("TRUNCATE %s;" % table)
 
     def truncate_all_tables(self):
         self.truncate_table('load_balancer_instance_association')
