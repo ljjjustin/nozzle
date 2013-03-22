@@ -16,7 +16,7 @@ setup(
     long_description="OpenStack Load Balancer Server",
     url='https://github.com/ljjjustin/nozzle',
     license='Apache',
-    author='Sina Corp.',
+    author='UnitedStack Corp.',
     author_email='iamljj@gmail.com',
     packages=find_packages(exclude=['bin', 'tests', 'tools']),
     classifiers=[
